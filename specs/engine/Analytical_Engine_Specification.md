@@ -138,7 +138,7 @@ New KPIs can be added to the BADS as the methodology evolves. This is a convenie
 
 ### Reference Document
 
-Full KPI definitions, calculations, benchmarks, and data source mappings: `REBOOT/RBv2/Basic_Analytic_Data_Set.md`
+Full KPI definitions, calculations, benchmarks, and data source mappings: `specs/engine/Basic_Analytic_Data_Set.md`
 
 ---
 
@@ -210,7 +210,7 @@ Area weights are configured (not equal by default): Vacancy/Occupancy 9%, Market
 - Fully deterministic — same data always produces same scores
 - Every score is traceable to specific fields, specific benchmark thresholds or budget targets, and specific scoring method
 - Scoring items, benchmarks, and weights are addable and adjustable without restructuring
-- Reference document: Scoring Model Specification (`REBOOT/RBv2/Scoring_Model_Specification.md`)
+- Reference document: Scoring Model Specification (`specs/scoring/Scoring_Model_Specification.md`)
 
 ---
 
@@ -615,9 +615,9 @@ Improve the AI's interpretive depth, add new analysis modes, or connect addition
 
 ## Reference Documents
 
-- **Scoring Model Specification** — 65 scored items across 12 areas, three input types (Data/Checklist/Comparative), rollup logic, and area/item/sub-item weights for Layer 1 (`REBOOT/RBv2/Scoring_Model_Specification.md`)
-- **Basic Analytic Data Set** — 124 standard KPIs, calculations, benchmarks, and data source mappings (`REBOOT/RBv2/Basic_Analytic_Data_Set.md`)
-- **Complete Data Inventory** — all 1,100+ fields from all data sources (`REBOOT/RBv2/Complete_Data_Inventory.md`)
-- **Analytical Question Inventory** — all 400+ predefined diagnostic questions for Layer 3 (`REBOOT/RBv2/Analytical_Question_Inventory.md`)
+- **Scoring Model Specification** — 65 scored items across 12 areas, three input types (Data/Checklist/Comparative), rollup logic, and area/item/sub-item weights for Layer 1 (`specs/scoring/Scoring_Model_Specification.md`)
+- **Basic Analytic Data Set** — 124 standard KPIs, calculations, benchmarks, and data source mappings (`specs/engine/Basic_Analytic_Data_Set.md`)
+- **Complete Data Inventory** — all 1,100+ fields from all data sources (`specs/data/Complete_Data_Inventory.md`)
+- **Analytical Question Inventory** — all 400+ predefined diagnostic questions for Layer 3 (`specs/engine/Analytical_Question_Inventory.md`)
 - **System Concept** — foundational business requirements and data source definitions (`REBOOT/RBv1/IMPLEMENTATION/System_Concept.md`)
-- **Data Collection Architecture** — PM Data Set and Audit Data Set definitions (defined in `REBOOT/RBv2/Complete_Data_Inventory.md`, Section: Data Collection Architecture)
+- **Data Collection Architecture** — PM Data Set and Audit Data Set definitions (defined in `specs/data/Complete_Data_Inventory.md`, Section: Data Collection Architecture)

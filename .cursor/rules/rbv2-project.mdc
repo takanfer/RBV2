@@ -1,7 +1,7 @@
 ---
 description: RBv2 Multifamily Property Assessment Platform — project constraints, authoritative sources, and conventions
 globs:
-  - REBOOT/RBv2/**
+  - "**"
 alwaysApply: true
 ---
 
@@ -11,31 +11,31 @@ alwaysApply: true
 
 When information conflicts, the document higher in this list wins. Never invent values — always source from the authoritative file.
 
-| Priority | Document | Source of Truth For |
-|----------|----------|-------------------|
-| 1 | `Scoring_Weights_Final_Update.json` | Locked-in weight values (12 area weights, 65 item weights, 315 sub-item points) |
-| 2 | `Scoring_Model_Specification.md` | Scoring structure, methodology, design principles, area/item definitions |
-| 3 | `Scoring_Model_Workbook.html` | Weight editing interface, sub-item point budgets, tier definitions |
-| 4 | `Computation_Rules_Workbook.html` | Computation rules, data sources, formulas for every scored item |
-| 5 | `Scoring_Thresholds_Calibration.md` | Raw-value-to-score thresholds for Data and Comparative items |
-| 6 | `Analytical_Engine_Specification.md` | Engine architecture, layers, simulated optimal budget, date range variable |
-| 6a | `Basic_Analytic_Data_Set.md` | 124 pre-computed KPIs, calculations, and benchmarks |
-| 7 | `Complete_Data_Inventory.md` | Complete field inventory (1,100+ fields across all sources) |
-| 8 | `Audit_Workbook_Specification.md` | Audit data collection instrument (field procedures, workflow badges) |
-| 9 | `spec_1_multifamily_property_assessment_platform.md` | Platform requirements, tech stack, data architecture, domain model |
-| 10 | `Project_Skeleton_Specification.md` | Locked tech stack, monorepo structure, naming conventions, testing, CI/CD |
-| 11 | `Database_Schema_Specification.md` | Migration-ready DDL for all PostgreSQL (110 tables) and ClickHouse (15 fact tables) — 125 total, 1393 columns |
-| 12 | `Shared_Type_Definitions.md` | Pydantic model reference — generated from DDL via `codegen/generate_models.py` (14 domain modules) |
-| 13 | `Service_Interface_Contracts.md` | Service interfaces for 15 services (Phases 0-6), data shapes reference `src/shared/models/`, error conditions |
-| 14 | `Data_Onramp_Specification.md` | Two data streams, 4 intake channels, vendor adapters, column mapping, review queue, raw evidence pipeline |
-| 15 | `scoring_config.json` | Machine-readable scoring structure (12 areas, 65 items, 315 sub-items, weights, tiers) |
-| 16 | `Code_Patterns_Specification.md` | Exact code templates for services, routes, repositories, exceptions, tests, Celery tasks, audit logging |
-| 17 | `API_Design_Specification.md` | REST API conventions: URL patterns, pagination, error shapes, auth headers, OpenAPI |
-| 18 | `Authentication_Middleware_Specification.md` | JWT claims schema, FastAPI dependency chain, tenant resolution flow, CORS |
-| 19 | `Infrastructure_Specification.md` | Environment variables, Docker Compose, S3 bucket structure, secrets management, production topology |
-| 20 | `Observability_Specification.md` | Structured logging format, correlation IDs, health checks, audit logging, monitoring metrics |
+| Priority | Document | Path | Source of Truth For |
+|----------|----------|------|-------------------|
+| 1 | `Scoring_Weights_Final_Update.json` | `config/` | Locked-in weight values (12 area weights, 65 item weights, 315 sub-item points) |
+| 2 | `Scoring_Model_Specification.md` | `specs/scoring/` | Scoring structure, methodology, design principles, area/item definitions |
+| 3 | `Scoring_Model_Workbook.html` | `config/` | Weight editing interface, sub-item point budgets, tier definitions |
+| 4 | `Computation_Rules_Workbook.html` | `config/` | Computation rules, data sources, formulas for every scored item |
+| 5 | `Scoring_Thresholds_Calibration.md` | `specs/scoring/` | Raw-value-to-score thresholds for Data and Comparative items |
+| 6 | `Analytical_Engine_Specification.md` | `specs/engine/` | Engine architecture, layers, simulated optimal budget, date range variable |
+| 6a | `Basic_Analytic_Data_Set.md` | `specs/engine/` | 124 pre-computed KPIs, calculations, and benchmarks |
+| 7 | `Complete_Data_Inventory.md` | `specs/data/` | Complete field inventory (1,100+ fields across all sources) |
+| 8 | `Audit_Workbook_Specification.md` | `specs/data/` | Audit data collection instrument (field procedures, workflow badges) |
+| 9 | `spec_1_multifamily_property_assessment_platform.md` | `specs/platform/` | Platform requirements, tech stack, data architecture, domain model |
+| 10 | `Project_Skeleton_Specification.md` | `specs/platform/` | Locked tech stack, monorepo structure, naming conventions, testing, CI/CD |
+| 11 | `Database_Schema_Specification.md` | `specs/platform/` | Migration-ready DDL for all PostgreSQL (110 tables) and ClickHouse (15 fact tables) — 125 total, 1393 columns |
+| 12 | `Shared_Type_Definitions.md` | `specs/platform/` | Pydantic model reference — generated from DDL via `codegen/generate_models.py` (14 domain modules) |
+| 13 | `Service_Interface_Contracts.md` | `specs/platform/` | Service interfaces for 15 services (Phases 0-6), data shapes reference `src/shared/models/`, error conditions |
+| 14 | `Data_Onramp_Specification.md` | `specs/data/` | Two data streams, 4 intake channels, vendor adapters, column mapping, review queue, raw evidence pipeline |
+| 15 | `scoring_config.json` | `config/` | Machine-readable scoring structure (12 areas, 65 items, 315 sub-items, weights, tiers) |
+| 16 | `Code_Patterns_Specification.md` | `specs/patterns/` | Exact code templates for services, routes, repositories, exceptions, tests, Celery tasks, audit logging |
+| 17 | `API_Design_Specification.md` | `specs/patterns/` | REST API conventions: URL patterns, pagination, error shapes, auth headers, OpenAPI |
+| 18 | `Authentication_Middleware_Specification.md` | `specs/auth/` | JWT claims schema, FastAPI dependency chain, tenant resolution flow, CORS |
+| 19 | `Infrastructure_Specification.md` | `specs/patterns/` | Environment variables, Docker Compose, S3 bucket structure, secrets management, production topology |
+| 20 | `Observability_Specification.md` | `specs/patterns/` | Structured logging format, correlation IDs, health checks, audit logging, monitoring metrics |
 
-All specification files live in `REBOOT/RBv2/`.
+Specification files are organized under `specs/` by domain. Configuration files live in `config/`. Planning documents live in `planning/`.
 
 ## Scoring Structure
 
@@ -149,12 +149,12 @@ Source: Scoring Model Specification Design Principle 9; Analytical Engine Specif
 
 ## Model Generation Pipeline
 
-The DDL in `Database_Schema_Specification.md` is the single source of truth for all data structures. Pydantic models are **generated**, not hand-written.
+The DDL in `specs/platform/Database_Schema_Specification.md` is the single source of truth for all data structures. Pydantic models are **generated**, not hand-written.
 
 - **Generator:** `codegen/generate_models.py` (uses sqlglot parser, not regex)
 - **Test fixtures:** `codegen/test_ddl.sql` + `codegen/expected_asset.py` (answer key)
 - **Output:** `codegen/output/` → copied to `src/shared/models/`
-- **Regenerate after DDL changes:** `python codegen/generate_models.py Database_Schema_Specification.md src/shared/models/`
+- **Regenerate after DDL changes:** `python codegen/generate_models.py specs/platform/Database_Schema_Specification.md src/shared/models/`
 
 Do not hand-edit files in `src/shared/models/`. Change the DDL and regenerate.
 

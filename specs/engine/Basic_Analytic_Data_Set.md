@@ -304,8 +304,8 @@ The system should allow benchmark overrides at the property, submarket, and port
 
 ## Reference Documents
 
-- **Analytical Engine Specification** — 5-layer analytical architecture that consumes these KPIs (`REBOOT/RBv2/Analytical_Engine_Specification.md`)
-- **Complete Data Inventory** — all 1,100+ fields referenced in data source mappings (`REBOOT/RBv2/Complete_Data_Inventory.md`)
-- **Analytical Question Inventory** — 400+ diagnostic questions that reference these KPIs (`REBOOT/RBv2/Analytical_Question_Inventory.md`)
-- **Scoring Model Specification** — Layer 1 scoring methodology (`REBOOT/RBv2/Scoring_Model_Specification.md`)
-- **System Concept** — data processing architecture and data model (`REBOOT/RBv2/spec_1_multifamily_property_assessment_platform.md`)
+- **Analytical Engine Specification** — 5-layer analytical architecture that consumes these KPIs (`specs/engine/Analytical_Engine_Specification.md`)
+- **Complete Data Inventory** — all 1,100+ fields referenced in data source mappings (`specs/data/Complete_Data_Inventory.md`)
+- **Analytical Question Inventory** — 400+ diagnostic questions that reference these KPIs (`specs/engine/Analytical_Question_Inventory.md`)
+- **Scoring Model Specification** — Layer 1 scoring methodology (`specs/scoring/Scoring_Model_Specification.md`)
+- **System Concept** — data processing architecture and data model (`specs/platform/spec_1_multifamily_property_assessment_platform.md`)

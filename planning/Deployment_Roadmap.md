@@ -101,13 +101,13 @@ All previously identified documentation gaps have been closed:
 
 ## Governance Model
 
-Source: `rbv2-project.mdc` lines 147-163 (Model Generation Pipeline, Working Principles)
+Source: `rbv2-project.mdc` lines 150-169 (Model Generation Pipeline, Working Principles)
 
 ### DDL-First Pipeline
 
-The DDL in `Database_Schema_Specification.md` is the single source of truth for all data structures (rbv2-project.mdc line 163: "DDL is the source of truth").
+The DDL in `Database_Schema_Specification.md` is the single source of truth for all data structures (rbv2-project.mdc line 168: "DDL is the source of truth").
 
-Pipeline (rbv2-project.mdc lines 148-153):
+Pipeline (rbv2-project.mdc lines 152-158):
 1. DDL is written/modified in `Database_Schema_Specification.md`
 2. `codegen/generate_models.py` parses the DDL and generates Pydantic models
 3. Generated `.py` files are copied to `src/shared/models/`

@@ -712,11 +712,11 @@ Additionally, the analytical engine produces a Simulated Optimal Budget (see Ana
 
 ## Authoritative Sources
 
-- **Locked-in weight values:** Scoring Weights Final (`REBOOT/RBv2/Scoring_Weights_Final_Update.json`)
-- **Weight editing interface and sub-item point budgets:** Scoring Model Workbook (`REBOOT/RBv2/Scoring_Model_Workbook.html`)
-- **Computation rules, data sources, and formulas:** Computation Rules Workbook (`REBOOT/RBv2/Computation_Rules_Workbook.html`)
-- **Engine architecture, simulated optimal budget, date range variable:** Analytical Engine Specification (`REBOOT/RBv2/Analytical_Engine_Specification.md`)
-- **Pre-computed KPIs and benchmarks:** Basic Analytic Data Set (`REBOOT/RBv2/Basic_Analytic_Data_Set.md`)
-- **Scoring thresholds and calibration:** Scoring Thresholds Calibration (`REBOOT/RBv2/Scoring_Thresholds_Calibration.md`)
-- **Audit data collection instrument:** Audit Workbook Specification (`REBOOT/RBv2/Audit_Workbook_Specification.md`)
-- **Complete field inventory:** Complete Data Inventory (`REBOOT/RBv2/Complete_Data_Inventory.md`)
+- **Locked-in weight values:** Scoring Weights Final (`config/Scoring_Weights_Final_Update.json`)
+- **Weight editing interface and sub-item point budgets:** Scoring Model Workbook (`config/Scoring_Model_Workbook.html`)
+- **Computation rules, data sources, and formulas:** Computation Rules Workbook (`config/Computation_Rules_Workbook.html`)
+- **Engine architecture, simulated optimal budget, date range variable:** Analytical Engine Specification (`specs/engine/Analytical_Engine_Specification.md`)
+- **Pre-computed KPIs and benchmarks:** Basic Analytic Data Set (`specs/engine/Basic_Analytic_Data_Set.md`)
+- **Scoring thresholds and calibration:** Scoring Thresholds Calibration (`specs/scoring/Scoring_Thresholds_Calibration.md`)
+- **Audit data collection instrument:** Audit Workbook Specification (`specs/data/Audit_Workbook_Specification.md`)
+- **Complete field inventory:** Complete Data Inventory (`specs/data/Complete_Data_Inventory.md`)

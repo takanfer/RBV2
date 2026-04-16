@@ -27,8 +27,8 @@ from pathlib import Path
 ROOT: Path = Path(__file__).resolve().parent.parent  # REBOOT/RBv2/
 
 _STATIC_ALIASES: dict[str, str] = {
-    "spec_1": "spec_1_multifamily_property_assessment_platform.md",
-    "DDL": "Database_Schema_Specification.md",
+    "spec_1": "specs/platform/spec_1_multifamily_property_assessment_platform.md",
+    "DDL": "specs/platform/Database_Schema_Specification.md",
     "ADR-001": "docs/adrs/ADR-001-python-version.md",
     "ADR-002": "docs/adrs/ADR-002-api-framework.md",
     "ADR-003": "docs/adrs/ADR-003-database-access.md",
@@ -49,7 +49,12 @@ _STATIC_ALIASES: dict[str, str] = {
 
 DOC_ALIASES: dict[str, str] = {}
 SCAN_DIRS: list[Path] = []
-EXCLUDE_PREFIXES = ["DEPRECATED/", "codegen/output/"]
+EXCLUDE_PREFIXES = ["DEPRECATED/", "codegen/output/", "codegen/test_fixtures/"]
+
+_SPEC_SUBDIRS = [
+    "specs/platform", "specs/patterns", "specs/scoring",
+    "specs/engine", "specs/data", "specs/auth", "specs/ui",
+]
 
 
 def _init_root(root_path: Path) -> None:
@@ -64,8 +69,29 @@ def _init_root(root_path: Path) -> None:
         for _p in rules_dir.glob("*.mdc"):
             DOC_ALIASES[_p.name] = f".cursor/rules/{_p.name}"
 
+    # Root-level .md files (if any remain)
     for _p in ROOT.glob("*.md"):
         DOC_ALIASES[_p.name] = _p.name
+
+    # specs/ subdirectories
+    for subdir in _SPEC_SUBDIRS:
+        spec_dir = ROOT / subdir
+        if spec_dir.is_dir():
+            for _p in spec_dir.glob("*.md"):
+                DOC_ALIASES[_p.name] = f"{subdir}/{_p.name}"
+
+    # config/ directory
+    config_dir = ROOT / "config"
+    if config_dir.is_dir():
+        for _p in config_dir.glob("*"):
+            if _p.is_file():
+                DOC_ALIASES[_p.name] = f"config/{_p.name}"
+
+    # planning/ directory
+    planning_dir = ROOT / "planning"
+    if planning_dir.is_dir():
+        for _p in planning_dir.glob("*.md"):
+            DOC_ALIASES[_p.name] = f"planning/{_p.name}"
 
     adrs_dir = ROOT / "docs" / "adrs"
     if adrs_dir.is_dir():
@@ -74,6 +100,26 @@ def _init_root(root_path: Path) -> None:
 
     SCAN_DIRS.clear()
     SCAN_DIRS.extend([ROOT, rules_dir, adrs_dir])
+    for subdir in _SPEC_SUBDIRS:
+        d = ROOT / subdir
+        if d.is_dir():
+            SCAN_DIRS.append(d)
+    for extra in ["config", "planning"]:
+        d = ROOT / extra
+        if d.is_dir():
+            SCAN_DIRS.append(d)
+
+
+def _gt_path(relative: str) -> Path:
+    """Resolve a ground truth file path, trying the given relative path first
+    then falling back to the filename at ROOT level (for test fixtures)."""
+    primary = ROOT / relative
+    if primary.exists():
+        return primary
+    fallback = ROOT / Path(relative).name
+    if fallback.exists():
+        return fallback
+    return primary
 
 
 def get_files_to_scan() -> list[Path]:
@@ -502,10 +548,10 @@ def pass_1_ddl_names(report: ValidationReport, ddl_gt: DDLGroundTruth,
     all_tables = set(ddl_gt.tables.keys())
 
     skip_files = {
-        (ROOT / "Database_Schema_Specification.md").resolve(),
-        (ROOT / "Shared_Type_Definitions.md").resolve(),
+        _gt_path("specs/platform/Database_Schema_Specification.md").resolve(),
+        _gt_path("specs/platform/Shared_Type_Definitions.md").resolve(),
         # spec_1 uses area.item notation (vacancy.turn_cycle), not table.column
-        (ROOT / "spec_1_multifamily_property_assessment_platform.md").resolve(),
+        _gt_path("specs/platform/spec_1_multifamily_property_assessment_platform.md").resolve(),
     }
 
     for fpath in files:
@@ -539,7 +585,7 @@ def pass_1_ddl_names(report: ValidationReport, ddl_gt: DDLGroundTruth,
 
 def pass_1b_enum_values(report: ValidationReport, ddl_gt: DDLGroundTruth,
                         files: list[Path]):
-    ddl_file = (ROOT / "Database_Schema_Specification.md").resolve()
+    ddl_file = _gt_path("specs/platform/Database_Schema_Specification.md").resolve()
 
     known_enums: dict[str, tuple[str, list[str]]] = {}
     for tbl, col_enums in ddl_gt.enum_comments.items():
@@ -777,7 +823,7 @@ def pass_4_file_paths(report: ValidationReport, skeleton_gt: SkeletonGroundTruth
         r"`((?:src|docker|db|tests|codegen|\.github|\.cursor|docs|frontend)"
         r"/[a-zA-Z0-9_./-]+\.\w+)`")
 
-    skeleton_file = (ROOT / "Project_Skeleton_Specification.md").resolve()
+    skeleton_file = _gt_path("specs/platform/Project_Skeleton_Specification.md").resolve()
 
     for fpath in files:
         if fpath.resolve() == skeleton_file:
@@ -836,7 +882,7 @@ def pass_5_operations(report: ValidationReport, service_gt: ServiceGroundTruth,
     for svc_data in service_gt.services.values():
         all_ops.update(svc_data["operations"])
 
-    contracts_file = (ROOT / "Service_Interface_Contracts.md").resolve()
+    contracts_file = _gt_path("specs/platform/Service_Interface_Contracts.md").resolve()
 
     target_files = [
         f for f in files
@@ -1020,7 +1066,7 @@ def pass_8_phase_consistency(report: ValidationReport,
         if svc_data["directory"]:
             canonical_dir[svc_name] = svc_data["directory"].rstrip("/")
 
-    roadmap = ROOT / "Deployment_Roadmap.md"
+    roadmap = _gt_path("planning/Deployment_Roadmap.md")
     if roadmap.exists():
         text = roadmap.read_text(encoding="utf-8")
         rel = "Deployment_Roadmap.md"
@@ -1076,7 +1122,7 @@ def pass_9_service_consistency(report: ValidationReport,
                                files: list[Path]):
     expected_count = len(service_gt.services)
     svc_count_pat = re.compile(r"(\d+)\s+services?\b", re.IGNORECASE)
-    contracts_file = (ROOT / "Service_Interface_Contracts.md").resolve()
+    contracts_file = _gt_path("specs/platform/Service_Interface_Contracts.md").resolve()
 
     for fpath in files:
         if fpath.resolve() == contracts_file:
@@ -1180,7 +1226,7 @@ def pass_10_scoring_names(report: ValidationReport,
 
 def pass_11_all_enums(report: ValidationReport, ddl_gt: DDLGroundTruth,
                       files: list[Path]):
-    ddl_file = (ROOT / "Database_Schema_Specification.md").resolve()
+    ddl_file = _gt_path("specs/platform/Database_Schema_Specification.md").resolve()
 
     all_enums: dict[str, list[str]] = {}
     for tbl, col_enums in ddl_gt.enum_comments.items():
@@ -1275,7 +1321,7 @@ def pass_12_tech_stack(report: ValidationReport, files: list[Path]):
 
 def pass_13_db_attribution(report: ValidationReport, ddl_gt: DDLGroundTruth,
                            files: list[Path]):
-    ddl_file = (ROOT / "Database_Schema_Specification.md").resolve()
+    ddl_file = _gt_path("specs/platform/Database_Schema_Specification.md").resolve()
     ch_pat = re.compile(r"ClickHouse\s+(?:table\s+)?`(\w+)`", re.IGNORECASE)
     pg_pat = re.compile(r"PostgreSQL\s+(?:table\s+)?`(\w+)`", re.IGNORECASE)
 
@@ -1315,7 +1361,7 @@ def pass_13_db_attribution(report: ValidationReport, ddl_gt: DDLGroundTruth,
 
 def pass_14_bitemporal_audit(report: ValidationReport, ddl_gt: DDLGroundTruth,
                              files: list[Path]):
-    ddl_file = (ROOT / "Database_Schema_Specification.md").resolve()
+    ddl_file = _gt_path("specs/platform/Database_Schema_Specification.md").resolve()
     bitemp_claim_pat = re.compile(
         r"`(\w+)`[^`\n]{0,40}(?:bitemporal|valid_from\s*/\s*valid_to)", re.IGNORECASE)
     audit_claim_pat = re.compile(
@@ -1566,7 +1612,7 @@ def pass_18_line_content(report: ValidationReport, files: list[Path]):
 
 
 def pass_19_section_refs(report: ValidationReport, files: list[Path]):
-    spec1_path = ROOT / "spec_1_multifamily_property_assessment_platform.md"
+    spec1_path = _gt_path("specs/platform/spec_1_multifamily_property_assessment_platform.md")
     if not spec1_path.exists():
         return
     spec1_text = spec1_path.read_text(encoding="utf-8")
@@ -1638,50 +1684,50 @@ def main():
 
     print("Loading ground truth...")
 
-    ddl_gt = extract_ddl_ground_truth(ROOT / "Database_Schema_Specification.md")
+    ddl_gt = extract_ddl_ground_truth(_gt_path("specs/platform/Database_Schema_Specification.md"))
     print(f"  DDL: {ddl_gt.pg_table_count} PG tables, "
           f"{ddl_gt.ch_table_count} CH tables, "
           f"{sum(len(c) for c in ddl_gt.tables.values())} total columns, "
           f"{len(ddl_gt.bitemporal_tables)} bitemporal, "
           f"{len(ddl_gt.audit_tables)} with audit cols")
 
-    scoring_gt = extract_scoring_ground_truth(ROOT / "scoring_config.json")
+    scoring_gt = extract_scoring_ground_truth(_gt_path("config/scoring_config.json"))
     print(f"  Scoring: {scoring_gt.area_count} areas, "
           f"{scoring_gt.item_count} items, "
           f"{scoring_gt.sub_item_count} sub-items")
 
     weights_gt = extract_weights_ground_truth(
-        ROOT / "Scoring_Weights_Final_Update.json")
+        _gt_path("config/Scoring_Weights_Final_Update.json"))
     print(f"  Weights: {weights_gt.total_keys} keys")
 
     comp_gt = extract_computation_ground_truth(
-        ROOT / "Computation_Rules_DATA.json")
+        _gt_path("config/Computation_Rules_DATA.json"))
     print(f"  Computation Rules: {len(comp_gt.area_names)} areas, "
           f"{len(comp_gt.item_names)} items, "
           f"{len(comp_gt.item_types)} types")
 
     service_gt = extract_service_ground_truth(
-        ROOT / "Service_Interface_Contracts.md")
+        _gt_path("specs/platform/Service_Interface_Contracts.md"))
     print(f"  Services: {len(service_gt.services)} services, "
           f"{service_gt.total_operations} operations")
 
     skeleton_gt = extract_skeleton_ground_truth(
-        ROOT / "Project_Skeleton_Specification.md")
+        _gt_path("specs/platform/Project_Skeleton_Specification.md"))
     print(f"  Skeleton: {len(skeleton_gt.paths)} paths in tree")
 
     onramp_gt = extract_onramp_ground_truth(
-        ROOT / "Data_Onramp_Specification.md")
+        _gt_path("specs/data/Data_Onramp_Specification.md"))
     print(f"  Onramp: {len(onramp_gt.ingestion_types)} ingestion types, "
           f"{len(onramp_gt.resolution_options)} resolution options")
 
     shared_gt = extract_shared_types_ground_truth(
-        ROOT / "Shared_Type_Definitions.md")
+        _gt_path("specs/platform/Shared_Type_Definitions.md"))
     print(f"  Shared Types: {shared_gt.total_models} models, "
           f"{shared_gt.total_fields} fields, "
           f"{len(shared_gt.module_names)} modules")
 
     spec1_gt = extract_spec1_ground_truth(
-        ROOT / "spec_1_multifamily_property_assessment_platform.md")
+        _gt_path("specs/platform/spec_1_multifamily_property_assessment_platform.md"))
     print(f"  Spec1: {len(spec1_gt.requirement_ids)} requirement IDs")
 
     print()
