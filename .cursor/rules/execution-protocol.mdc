@@ -1,0 +1,155 @@
+---
+description: Execution protocol for task pickup, implementation, verification, and session management. Apply when starting or resuming implementation work.
+alwaysApply: false
+---
+
+# Execution Protocol
+
+This rule governs how an agent picks up tasks, implements them, verifies completion, handles getting stuck, and manages session transitions. It works with `agent-behavior.mdc` (always-on behavioral constraints) and the phase-specific rules (`phase-0-foundations.mdc`, etc.).
+
+## Task Pickup
+
+### Before Starting Any Task
+
+1. **Read the task definition** from `planning/Implementation_Tasks.md`. Identify the exact task ID, "What," "Files," "Refs," "Depends on," and "Done when" fields.
+2. **Verify all dependencies are complete.** Check that every task listed in "Depends on" has been marked complete with a commit hash. If any dependency is incomplete, STOP and report the blocker.
+3. **Read every file listed in "Refs."** Not from memory. Open each file and read the relevant sections cited in the task. This is mandatory — see `agent-behavior.mdc` "Do The Research."
+4. **Read the phase rule.** Load the relevant `.cursor/rules/phase-N-*.mdc` file for the current phase.
+5. **State your plan.** Before writing any code, state:
+   - What you will create or modify (exact file paths)
+   - What patterns you will follow (cite the Code Patterns section number)
+   - What you will test
+   - What you are uncertain about (if anything)
+
+### Task Status Markers
+
+In `planning/Implementation_Tasks.md`, tasks use this format:
+
+```
+- [ ] **P0-T01: Task name**     ← Not started
+- [~] **P0-T01: Task name**     ← In progress
+- [x] **P0-T01: Task name** — `abc123` ← Complete (with commit hash)
+- [!] **P0-T01: Task name**     ← Blocked
+```
+
+When you pick up a task, mark it `[~]` (in progress). When complete, mark `[x]` with the commit hash. When blocked, mark `[!]` and explain the blocker in a note below the task.
+
+## Implementation
+
+### Code Writing Protocol
+
+1. **Follow Code Patterns exactly.** Every service, route, repository, exception, and test must match the templates in `Code_Patterns_Specification.md`. Deviations are not allowed unless the pattern is physically impossible for the specific case.
+2. **All code must be sourced from specifications.** Column names from DDL. Function signatures from Service Interface Contracts. Error codes from API Design Specification. URL patterns from API Design Specification. Nothing from memory.
+3. **One task at a time.** Complete the current task before starting the next. Do not partially implement multiple tasks.
+4. **Commit after each task.** Each task gets its own commit with the task ID in the commit message.
+
+### Commit Format
+
+```
+P{phase}-T{number}: {short description}
+
+{What was implemented, tested, and verified}
+
+Refs: {specification files consulted}
+```
+
+Example:
+```
+P0-T08: Tenancy and identity migration
+
+Create Alembic migration for tenant, user_account, audit_log tables.
+RLS policies applied for all three tables. Migration tested up/down.
+
+Refs: Database_Schema_Specification.md, phase-0-foundations.mdc
+```
+
+## Verification
+
+### After Every Task
+
+Run ALL of the following checks:
+
+1. **Linter:** `ruff check src/ tests/` — must pass with zero errors.
+2. **Tests:** `pytest` — all tests must pass, including new tests for the current task.
+3. **Validator:** `python codegen/validate_docs.py` — must pass with zero errors (if any documentation was modified).
+4. **Migration round-trip** (if task creates migrations): `alembic upgrade head && alembic downgrade base && alembic upgrade head` — must succeed.
+5. **Type check** (if applicable): verify Pydantic models match DDL column types.
+
+### Done-When Criteria
+
+A task is complete ONLY when:
+- Every item in the "Done when" field is individually verified (not assumed)
+- All automated checks pass
+- The commit has been created
+- The task status is updated in `planning/Implementation_Tasks.md`
+
+Do NOT mark a task complete if any Done-When item cannot be verified. Report what passed and what did not.
+
+## Getting Stuck
+
+### When to Stop
+
+Stop and report if:
+- A specification is ambiguous and the ambiguity affects implementation (e.g., "which table does this field belong to?")
+- Two specifications contradict each other
+- A dependency's output does not match what the current task expects
+- A test cannot be made to pass after 3 genuine attempts
+- The task scope is larger than described (e.g., "6 tables" but you count 8)
+
+### How to Report
+
+When stuck, provide:
+1. **Task ID** — which task you're working on
+2. **What you tried** — specific actions, not summaries
+3. **What failed** — exact error messages or contradictions
+4. **What you need** — a specific question or decision from the user
+5. **What you can do while waiting** — any parallelizable work
+
+### Do Not Guess
+
+If a specification gap forces you to make a design decision, do NOT make it silently. Stop, explain the gap, propose options with trade-offs, and wait for a decision. This is a core principle from `agent-behavior.mdc` "No Assumptions."
+
+## Session Protocol
+
+### At Session Start
+
+1. Read `planning/Implementation_Tasks.md` to identify the current phase and next task.
+2. Read the phase rule for the current phase.
+3. Read `agent-behavior.mdc` (always applied, but refresh your understanding).
+4. Check for any `[!]` blocked tasks and resolve or report them.
+5. Check for any `[~]` in-progress tasks from a prior session — these need verification or completion before starting new work.
+
+### At Session End
+
+Before ending a session:
+
+1. **Commit all work.** No uncommitted changes should remain.
+2. **Update task status** in `planning/Implementation_Tasks.md`.
+3. **Run the validator:** `python codegen/validate_docs.py` — confirm zero errors.
+4. **Write a session summary** (see Session Handoff Protocol) documenting:
+   - Tasks completed (with commit hashes)
+   - Tasks in progress (with status)
+   - Known blockers
+   - Next task to pick up
+
+### Mid-Session Checkpoints
+
+After every 3 completed tasks within a session, pause and:
+1. Run the full test suite (`pytest`)
+2. Run the validator
+3. Commit and push
+4. Review the remaining tasks for the current phase
+
+## Phase Transitions
+
+### Phase Gate
+
+A phase is complete when:
+1. ALL tasks in the phase are marked `[x]` with commit hashes
+2. ALL checkpoint tasks (e.g., P0-CK1, P0-CK2, P0-CK3) are complete
+3. The phase gate verification (see Phase Gate Specifications) passes
+4. The user has approved the phase gate report
+
+### Do Not Start the Next Phase Without Approval
+
+After completing a phase gate, present the gate report to the user and wait for explicit approval to proceed to the next phase. This is a human-in-the-loop checkpoint — do not skip it.
