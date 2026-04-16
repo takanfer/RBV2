@@ -1,0 +1,122 @@
+[
+  {
+    "pass": "DDL Names",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 13,
+    "injected": "Reference non-existent table `fake_table.column_a`"
+  },
+  {
+    "pass": "Enum Values",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 15,
+    "injected": "Wrong role enum value `super_admin` instead of `viewer`"
+  },
+  {
+    "pass": "Line Numbers",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 17,
+    "injected": "Cite line 9999 of Database_Schema_Specification.md which has ~100 lines"
+  },
+  {
+    "pass": "Counts",
+    "file": "Deployment_Roadmap.md",
+    "line_hint": 5,
+    "injected": "Claim '125 total tables' when DDL has 5"
+  },
+  {
+    "pass": "File Paths",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 19,
+    "injected": "Reference `src/services/data_ingestion/nonexistent_file.py` not in skeleton"
+  },
+  {
+    "pass": "Operations",
+    "file": ".cursor/rules/phase-0-foundations.mdc",
+    "line_hint": 5,
+    "injected": "Reference `get_nonexistent_op` not in Service_Interface_Contracts.md"
+  },
+  {
+    "pass": "Doc Refs",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 27,
+    "injected": "Reference `Nonexistent_Document.md` which does not exist"
+  },
+  {
+    "pass": "Enum Consistency",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 39,
+    "injected": "Resolution options use `override` instead of `defer`"
+  },
+  {
+    "pass": "Phase Consistency",
+    "file": "Deployment_Roadmap.md",
+    "line_hint": 13,
+    "injected": "Swap services between phases (Scoring in Phase 0, Ingestion in Phase 1)"
+  },
+  {
+    "pass": "Service Consistency",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 5,
+    "injected": "Claim '15 services' when contracts define 2"
+  },
+  {
+    "pass": "Scoring Names",
+    "file": "Computation_Rules_DATA.json",
+    "line_hint": 0,
+    "injected": "Area 1 name 'Vacancy/Occupancy WRONG' mismatches scoring_config"
+  },
+  {
+    "pass": "All Enums",
+    "file": "Deployment_Roadmap.md",
+    "line_hint": 19,
+    "injected": "Cite `user_account.role` with `invalid_role` not in DDL"
+  },
+  {
+    "pass": "Tech Stack",
+    "file": "Deployment_Roadmap.md",
+    "line_hint": 17,
+    "injected": "Mention 'built with Django' contradicting ADR-002 FastAPI decision"
+  },
+  {
+    "pass": "DB Attribution",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 33,
+    "injected": "Attribute PG table `property` to ClickHouse"
+  },
+  {
+    "pass": "Bitemporal",
+    "file": "Deployment_Roadmap.md",
+    "line_hint": 18,
+    "injected": "Claim `source_asset` is bitemporal but it lacks valid_from/valid_to"
+  },
+  {
+    "pass": "Internal Links",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 35,
+    "injected": "Broken markdown link to Ghost_Document.md"
+  },
+  {
+    "pass": "Model vs DDL",
+    "file": "Shared_Type_Definitions.md",
+    "line_hint": 0,
+    "injected": "Change total models from 5 to 99 (DDL has 5 tables)"
+  },
+  {
+    "pass": "Data Layers",
+    "file": "Scoring_Model_Specification.md",
+    "line_hint": 7,
+    "injected": "Call Layer A 'Canonical Model' instead of 'Raw Evidence Store'"
+  },
+  {
+    "pass": "Line Content",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 41,
+    "injected": "Cite Data_Onramp_Specification.md line 3 defines 'zebra_protocol' (not there)"
+  },
+  {
+    "pass": "Section Refs",
+    "file": "Implementation_Tasks.md",
+    "line_hint": 23,
+    "injected": "Reference spec_1 §99.9 which does not exist in spec_1 headings"
+  }
+]

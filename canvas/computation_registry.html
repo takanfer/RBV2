@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computation Registry — Restructured Analytical Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08090d;--surface:#10131a;--surface2:#171c28;--surface3:#1e2436;
+  --text:#dce4f0;--text2:#8b99b0;--text3:#576175;
+  --border:#1c2333;--border2:#2a3348;
+  --blue:#5b9bf5;--green:#4ade80;--amber:#f5a623;--red:#f06;--purple:#b07df0;
+  --cyan:#22d3ee;--pink:#f472b6;--lime:#a3e635;--orange:#fb923c;--teal:#2dd4bf;
+  --merged-bg:rgba(91,155,245,0.08);--merged-border:rgba(91,155,245,0.25);
+  --new-bg:rgba(74,222,128,0.08);--new-border:rgba(74,222,128,0.25);
+  --reframed-bg:rgba(245,166,35,0.08);--reframed-border:rgba(245,166,35,0.25);
+  --capability-bg:rgba(176,125,240,0.08);--capability-border:rgba(176,125,240,0.25);
+}
+html{font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:'Source Sans 3',sans-serif;line-height:1.6}
+h1,h2,h3{font-family:'Literata',serif;font-weight:600}
+code,.mono{font-family:'JetBrains Mono',monospace;font-size:.85em}
+
+.container{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
+
+header{padding:3rem 0 1.5rem;animation:fadeIn .6s}
+header h1{font-size:2.2rem;letter-spacing:-.02em;margin-bottom:.4rem}
+header .subtitle{color:var(--text2);font-size:1rem;max-width:800px}
+.principles{margin:1.5rem 0;padding:1rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.principles h3{font-size:.9rem;color:var(--text2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em}
+.principles ol{margin-left:1.25rem;color:var(--text2);font-size:.88rem}
+.principles ol li{margin-bottom:.25rem}
+.principles ol li strong{color:var(--text)}
+
+.stats-row{display:flex;gap:1rem;flex-wrap:wrap;margin:1.5rem 0}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.75rem 1.25rem;min-width:100px;text-align:center}
+.stat-card .n{font-family:'Literata',serif;font-size:1.8rem;display:block}
+.stat-card .l{font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-top:.15rem}
+.stat-card.merged .n{color:var(--blue)}
+.stat-card.new .n{color:var(--green)}
+.stat-card.reframed .n{color:var(--amber)}
+.stat-card.capability .n{color:var(--purple)}
+
+.controls{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin:1.5rem 0;display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+.controls label{color:var(--text2);font-size:.82rem;font-weight:500}
+.controls select,.controls input[type=text]{background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:.4rem .65rem;font-size:.82rem;font-family:inherit}
+.controls input[type=text]{flex:1;min-width:180px}
+.controls select{min-width:160px}
+.tag-filters{display:flex;gap:.3rem;flex-wrap:wrap}
+.tag-btn{background:var(--surface2);color:var(--text3);border:1px solid var(--border);border-radius:4px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;transition:all .15s;font-family:inherit}
+.tag-btn:hover{color:var(--text2);border-color:var(--border2)}
+.tag-btn.active{background:var(--blue);color:#08090d;border-color:var(--blue)}
+.btn{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);border-radius:6px;padding:.35rem .85rem;font-size:.78rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn:hover{background:var(--surface3);color:var(--text)}
+
+.legend{display:flex;gap:1.25rem;flex-wrap:wrap;margin:0 0 1.5rem;font-size:.78rem;color:var(--text2)}
+.legend-item{display:flex;align-items:center;gap:.35rem}
+.legend-swatch{width:12px;height:12px;border-radius:3px}
+
+.comp{margin-bottom:1rem;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface);animation:slideUp .4s ease}
+.comp.merged{border-left:3px solid var(--blue)}
+.comp.new{border-left:3px solid var(--green)}
+.comp.reframed{border-left:3px solid var(--amber)}
+.comp.capability{border-left:3px solid var(--purple)}
+.comp.unchanged{border-left:3px solid var(--text3)}
+
+.comp-header{padding:.75rem 1rem;cursor:pointer;display:flex;align-items:flex-start;gap:.75rem;transition:background .15s}
+.comp-header:hover{background:var(--surface2)}
+.comp-id{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:500;color:var(--blue);min-width:40px;padding-top:.1rem}
+.comp-main{flex:1}
+.comp-question{font-size:.95rem;font-weight:500;color:var(--text)}
+.comp-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem}
+.comp-tag{font-size:.68rem;padding:.1rem .4rem;border-radius:3px;background:var(--surface3);color:var(--text2);border:1px solid var(--border)}
+.comp-status{font-size:.68rem;padding:.1rem .4rem;border-radius:3px;font-weight:600}
+.status-unchanged{background:var(--surface3);color:var(--text3)}
+.status-merged{background:var(--merged-bg);color:var(--blue);border:1px solid var(--merged-border)}
+.status-new{background:var(--new-bg);color:var(--green);border:1px solid var(--new-border)}
+.status-reframed{background:var(--reframed-bg);color:var(--amber);border:1px solid var(--reframed-border)}
+.status-capability{background:var(--capability-bg);color:var(--purple);border:1px solid var(--capability-border)}
+.comp-origin{font-size:.72rem;color:var(--text3);margin-top:.2rem}
+.comp-toggle{color:var(--text3);font-size:1rem;padding-top:.15rem;transition:transform .2s}
+.comp.open .comp-toggle{transform:rotate(180deg)}
+
+.comp-body{display:none;padding:1rem 1.25rem;border-top:1px solid var(--border);font-size:.85rem}
+.comp.open .comp-body{display:block}
+.comp-body .section{margin-bottom:.75rem}
+.comp-body .section-title{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:600;margin-bottom:.3rem}
+.comp-body .fact-list{display:flex;flex-wrap:wrap;gap:.3rem}
+.comp-body .fact{background:var(--surface2);border:1px solid var(--border);padding:.15rem .5rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--cyan)}
+.comp-body .note{padding:.5rem .75rem;border-radius:6px;font-size:.82rem;margin-top:.5rem}
+.note-merged{background:var(--merged-bg);border:1px solid var(--merged-border);color:var(--blue)}
+.note-new{background:var(--new-bg);border:1px solid var(--new-border);color:var(--green)}
+.note-reframed{background:var(--reframed-bg);border:1px solid var(--reframed-border);color:var(--amber)}
+.note-capability{background:var(--capability-bg);border:1px solid var(--capability-border);color:var(--purple)}
+.comp-body .data-sources{color:var(--text2)}
+.comp-body .data-sources code{color:var(--teal)}
+.comp-body .diagnostic-views{display:flex;flex-wrap:wrap;gap:.3rem}
+.comp-body .view-tag{background:var(--surface3);border:1px solid var(--border2);padding:.15rem .5rem;border-radius:4px;font-size:.75rem;color:var(--pink)}
+
+.section-divider{margin:2rem 0 1.5rem;padding:1rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.section-divider h2{font-size:1.1rem;color:var(--text)}
+.section-divider p{color:var(--text2);font-size:.85rem;margin-top:.25rem}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:800px){.controls{flex-direction:column}.stats-row{gap:.5rem}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>Computation Registry</h1>
+  <p class="subtitle">Restructured analytical engine: 96 patterns consolidated into unique computations with output facts. No judgmental thresholds. No family lock-in. Each computation produces facts that any diagnostic view can consume.</p>
+</header>
+
+<div class="principles">
+  <h3>Foundational Principles</h3>
+  <ol>
+    <li><strong>Data equality</strong> — PM/CRM and field/audit data are co-equal primary sources</li>
+    <li><strong>Hybrid scoring</strong> — Full precision internally, 0-10 externally</li>
+    <li><strong>Three layers</strong> — Data layer (by domain), computation layer (flat), diagnostic views (by category)</li>
+    <li><strong>Separation of concerns</strong> — Computations produce facts. Scoring judges. No judgmental thresholds in computations.</li>
+    <li><strong>Multi-view outputs</strong> — One computation's facts can feed multiple diagnostic views simultaneously</li>
+  </ol>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card"><span class="n" id="totalCount">—</span><span class="l">Computations</span></div>
+  <div class="stat-card"><span class="n">96</span><span class="l">Original Patterns</span></div>
+  <div class="stat-card merged"><span class="n" id="mergedCount">—</span><span class="l">Merged</span></div>
+  <div class="stat-card new"><span class="n" id="newCount">—</span><span class="l">New</span></div>
+  <div class="stat-card reframed"><span class="n" id="reframedCount">—</span><span class="l">Reframed</span></div>
+  <div class="stat-card capability"><span class="n" id="capCount">—</span><span class="l">→ Capabilities</span></div>
+</div>
+
+<div class="controls">
+  <label>Status:</label>
+  <select id="statusFilter">
+    <option value="all">All</option>
+    <option value="unchanged">Unchanged</option>
+    <option value="merged">Merged</option>
+    <option value="new">New</option>
+    <option value="reframed">Reframed</option>
+    <option value="capability">→ Capability</option>
+  </select>
+  <label>Tags:</label>
+  <div class="tag-filters" id="tagFilters"></div>
+  <input type="text" id="searchBox" placeholder="Search computations…">
+  <button class="btn" id="expandAll">Expand All</button>
+  <button class="btn" id="collapseAll">Collapse All</button>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--text3)"></div>Unchanged</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--blue)"></div>Merged (duplicates consolidated)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div>New (missing question added)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--amber)"></div>Reframed (data equality or threshold fix)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--purple)"></div>→ Capability (became system property)</div>
+</div>
+
+<div id="registry"></div>
+</div>
+
+<script>
+const TAGS = ['vacancy','leasing','retention','financial','pricing','maintenance','marketing','competitive','experience','operations','current-state','forward-look','segmentation'];
+
+const COMPUTATIONS = [
+// ===== VACANCY LIFECYCLE =====
+{id:'C01',q:'What is the vacancy duration distribution overall and by segment?',status:'reframed',origin:'VTP-01',tags:['vacancy','financial'],
+ facts:['median_vacancy_days','p75_vacancy_days','p90_vacancy_days','vacancy_duration_distribution','segment_vacancy_distributions'],
+ data:'vacancy_cycle_episode',
+ views:['Vacancy Health','Financial Impact','Portfolio Segmentation'],
+ change:'Removed judgmental threshold (slow_duration_days=21). Computation now produces distribution only; scoring layer decides what constitutes "slow."',
+ desc:'Computes median, p75, p90 total vacancy days across all completed episodes. Segments by unit type, building, floor. Returns distributions, not judgments.'},
+
+{id:'C02',q:'Which phase of the vacancy lifecycle consumes the most time?',status:'reframed',origin:'VTP-02',tags:['vacancy','maintenance','leasing','operations'],
+ facts:['phase_shares','bottleneck_phase','pre_turn_days','post_turn_days','pre_turn_cost','post_turn_cost'],
+ data:'vacancy_cycle_episode',
+ views:['Vacancy Health','Maintenance Accountability','Leasing Accountability','Financial Impact'],
+ change:'Now explicitly produces pre-turn vs post-turn split, enabling separate accountability metrics and separate cost attribution (vacancy cost vs VDOM cost).',
+ desc:'Decomposes each vacancy into phases: pre-work wait, active make-ready, ready-to-list, days-on-market, sign-to-move-in. Computes mean/median share per phase. Identifies bottleneck phase. Splits total into pre-turn days (maintenance-owned) and post-turn days (leasing-owned).'},
+
+{id:'C03',q:'How long between move-out and the first work order?',status:'reframed',origin:'VTP-04',tags:['vacancy','maintenance','operations'],
+ facts:['median_pre_work_delay','pre_work_delay_distribution','pre_work_delay_by_segment'],
+ data:'vacancy_cycle_episode, make_ready_episode',
+ views:['Vacancy Health','Maintenance Accountability'],
+ change:'Removed judgmental threshold (make_ready_lag_days=7). Produces distribution only.',
+ desc:'Measures days between move-out date and first make-ready work order. Segments by unit type, building, vendor count.'},
+
+{id:'C04',q:'How long is active make-ready work taking?',status:'reframed',origin:'MMR-01',tags:['vacancy','maintenance','operations'],
+ facts:['median_make_ready_days','make_ready_duration_distribution','make_ready_by_segment'],
+ data:'make_ready_episode',
+ views:['Vacancy Health','Maintenance Accountability','Financial Impact'],
+ change:'Removed judgmental threshold (cycle_time_days_weak=7). Added: integrates vacant unit audit observations as co-equal input on actual unit readiness timeline.',
+ desc:'Computes active make-ready cycle time from first work order to completion. Segments by unit type, vendor, scope of work. Integrates field audit observations of unit condition where available.'},
+
+{id:'C05',q:'How long between unit ready and listing live?',status:'reframed',origin:'VTP-03',tags:['vacancy','marketing','operations'],
+ facts:['median_ready_to_list_days','ready_to_list_distribution','ready_to_list_by_segment'],
+ data:'vacancy_cycle_episode',
+ views:['Vacancy Health','Marketing Effectiveness'],
+ change:'Removed judgmental threshold (listing_lag_days=3). Produces distribution only.',
+ desc:'Measures gap between make-ready completion and listing going live. Segments by unit type, building, day-of-week of completion.'},
+
+{id:'C06',q:'How long are units sitting on market after listing (days on market)?',status:'reframed',origin:'VTP-06 (partial)',tags:['vacancy','leasing','marketing'],
+ facts:['median_days_on_market','dom_distribution','dom_by_unit_type','fast_list_slow_lease_rate'],
+ data:'vacancy_cycle_episode, listing_marketing_episode',
+ views:['Vacancy Health','Leasing Accountability','Marketing Effectiveness'],
+ change:'Expanded from VTP-06 (which only flagged fast-to-list/slow-to-lease). Now produces full days-on-market distribution by unit type — the leasing team\'s accountability metric.',
+ desc:'Computes days from listing live to lease signed. Segments by unit type. Also identifies the subset that listed quickly but leased slowly (demand/pricing signal vs operational signal).'},
+
+{id:'C07',q:'How many dead days between lease signing and move-in?',status:'reframed',origin:'VTP-07',tags:['vacancy','leasing','financial'],
+ facts:['median_sign_to_movein_gap','gap_distribution','dead_rent_total'],
+ data:'vacancy_cycle_episode',
+ views:['Vacancy Health','Leasing Accountability','Financial Impact'],
+ change:'Removed judgmental thresholds (gap > 3 days, share >= 0.30). Produces distribution and dead rent calculation only.',
+ desc:'Calculates gap between lease execution date and actual move-in date. Sums dead rent for gap periods.'},
+
+{id:'C08',q:'How often do residents leave before lease expiration and how many days do they surrender?',status:'unchanged',origin:'VTP-08',tags:['vacancy','retention'],
+ facts:['early_moveout_rate','median_surrendered_days','early_moveout_by_segment'],
+ data:'lease_term_fact, lease_move_out_fact',
+ views:['Vacancy Health','Retention Health'],
+ change:null,
+ desc:'Compares actual move-out date vs lease expiration. Computes early departure rate and surrendered lease days by segment.'},
+
+{id:'C09',q:'How often are residents holding over past lease expiration without a signed renewal?',status:'unchanged',origin:'VTP-09',tags:['vacancy','retention'],
+ facts:['holdover_rate','median_holdover_days','holdover_conversion_paths'],
+ data:'lease_term_fact, lease_move_out_fact, renewal_cycle_episode',
+ views:['Vacancy Health','Retention Health'],
+ change:null,
+ desc:'Identifies residents occupying past lease end without signed renewal. Tracks holdover duration and whether holdover eventually converts to renewal or vacancy.'},
+
+{id:'C10',q:'Are there months where turnover volume overwhelms maintenance capacity?',status:'unchanged',origin:'VTP-10',tags:['vacancy','maintenance','operations','forward-look'],
+ facts:['monthly_turnover_volume','monthly_throughput','bottleneck_months','throughput_gaps'],
+ data:'make_ready_episode, vacancy_cycle_episode',
+ views:['Vacancy Health','Maintenance Accountability','Forward Look'],
+ change:null,
+ desc:'Groups episodes by month. Compares incoming turns vs maintenance throughput capacity. Identifies bottleneck months.'},
+
+{id:'C11',q:'Does listing multiple same-type units simultaneously slow leasing?',status:'unchanged',origin:'VTP-11',tags:['vacancy','marketing','leasing'],
+ facts:['cannibalization_delta','concurrent_listing_impact'],
+ data:'vacancy_cycle_episode, listing_marketing_episode',
+ views:['Vacancy Health','Marketing Effectiveness'],
+ change:null,
+ desc:'Buckets episodes by number of concurrent same-type listings. Compares median leasing days across buckets to detect cannibalization effect.'},
+
+{id:'C12',q:'Which units turn over repeatedly within 12 months?',status:'unchanged',origin:'VTP-12',tags:['vacancy','retention','financial'],
+ facts:['repeat_turnover_units','chronic_turnover_units','cumulative_repeat_loss'],
+ data:'vacancy_cycle_episode',
+ views:['Vacancy Health','Retention Health','Financial Impact'],
+ change:null,
+ desc:'Rolling 12-month window per unit. Identifies units with 2+ vacancy episodes. Sums cumulative vacancy loss.'},
+
+{id:'C13',q:'Are slow turns caused by underspending or overspending on make-ready?',status:'unchanged',origin:'VTP-13',tags:['vacancy','maintenance','financial'],
+ facts:['cost_speed_quadrant_distribution','slow_cheap_share','slow_expensive_share'],
+ data:'make_ready_episode',
+ views:['Vacancy Health','Maintenance Accountability','Financial Impact'],
+ change:null,
+ desc:'Creates 2×2 matrix using median duration and median cost as cutpoints (fast/slow × cheap/expensive). Analyzes distribution across quadrants.'},
+
+{id:'C14',q:'Are new residents failing within 90 days of move-in?',status:'unchanged',origin:'VTP-14',tags:['vacancy','leasing','retention'],
+ facts:['back_to_back_vacancy_rate','early_failure_units'],
+ data:'vacancy_cycle_episode, lease_term_fact',
+ views:['Vacancy Health','Leasing Accountability','Retention Health'],
+ change:null,
+ desc:'Identifies units where new lease ended within 90 days of move-in, creating immediate re-vacancy. Signal of screening or placement failure.'},
+
+// NEW VACANCY COMPUTATIONS
+{id:'C15',q:'What is the current vacancy rate?',status:'new',origin:'None — gap identified',tags:['vacancy','current-state'],
+ facts:['vacancy_rate','physical_vacancy_rate','economic_vacancy_rate','down_unit_count','model_unit_count'],
+ data:'current_state_snapshot_episode, unit_inventory_fact',
+ views:['Vacancy Health','Current Snapshot','Financial Impact'],
+ change:'NEW: Basic vacancy rate was never explicitly computed. Also separates physical vacancy (truly empty units) from economic vacancy (all non-revenue-producing units including down units, models, employee units).',
+ desc:'Computes vacancy rate as vacant units / total units. Separately computes economic vacancy (all non-revenue units / total). Identifies down units, model units, and other non-revenue categories.'},
+
+{id:'C16',q:'What is the occupancy trend over the last 6-12 months?',status:'new',origin:'None — gap identified',tags:['vacancy','current-state'],
+ facts:['monthly_occupancy_series','occupancy_trend_direction','occupancy_trend_slope'],
+ data:'vacancy_cycle_episode, lease_term_fact, unit_inventory_fact',
+ views:['Vacancy Health','Current Snapshot','Forward Look'],
+ change:'NEW: No pattern tracked occupancy over time. Essential for understanding whether the property is improving or declining.',
+ desc:'Reconstructs monthly occupancy from lease and vacancy data. Computes trend direction and slope.'},
+
+{id:'C17',q:'What are the move-out reasons and what fraction are voluntary vs involuntary?',status:'new',origin:'None — gap identified',tags:['vacancy','retention','experience'],
+ facts:['moveout_reason_distribution','voluntary_rate','involuntary_rate','skip_eviction_rate','transfer_rate'],
+ data:'lease_move_out_fact, turnover_interview_data',
+ views:['Vacancy Health','Retention Health','Experience Quality'],
+ change:'NEW: Existing patterns tracked WHEN residents leave but never WHY. Integrates turnover interview data (field) as co-equal source alongside PM move-out reason codes.',
+ desc:'Categorizes move-outs by reason (rent increase, maintenance, life event, eviction, skip, transfer, etc.). Separates voluntary vs involuntary. Integrates PM reason codes with turnover interview data for richer picture.'},
+
+{id:'C18',q:'What did vacant units actually look like during field walks?',status:'new',origin:'None — gap identified (data equality)',tags:['vacancy','maintenance','operations'],
+ facts:['field_observed_conditions','condition_vs_pm_status','units_not_ready_despite_pm','units_ready_despite_pm'],
+ data:'vacant_unit_audit_fact, current_state_snapshot_episode',
+ views:['Vacancy Health','Maintenance Accountability','Data Agreement'],
+ change:'NEW: Field observations of vacant unit condition were treated as validation, not primary input. Now a standalone computation producing co-equal facts about actual unit condition.',
+ desc:'Records field-observed condition of walked vacant units. Compares observed readiness to PM-reported status. Produces bidirectional discrepancy data — units PM says ready but aren\'t, AND units that appear ready but PM says aren\'t.'},
+
+{id:'C19',q:'How many notices to vacate are outstanding and what does the near-term pipeline look like?',status:'merged',origin:'CSD-06 + CSD-07 (partial)',tags:['vacancy','forward-look','current-state'],
+ facts:['active_notice_count','notice_by_month','projected_30day_vacancy','projected_90day_vacancy','capacity_ratio','cascade_risk_ratio'],
+ data:'notice_pipeline_episode, vacancy_cycle_episode, make_ready_episode, lease_term_fact',
+ views:['Vacancy Health','Current Snapshot','Forward Look','Maintenance Accountability'],
+ change:'Merged CSD-06 (maintenance capacity) and CSD-07 (cascade risk) into one forward-looking vacancy pipeline computation. Also incorporates the notice-to-vacate pipeline that was missing as a standalone.',
+ desc:'Counts active notices. Projects 30-day and 90-day vacancy volume from notices + lease expirations. Compares against maintenance throughput capacity. Computes cascade risk ratio.'},
+
+// ===== LEASING PIPELINE =====
+{id:'C20',q:'How fast is the property responding to leads? (CRM + mystery shop)',status:'merged',origin:'LFA-01 + MEQ-01',tags:['leasing','experience','competitive'],
+ facts:['crm_median_response_minutes','shop_median_response_minutes','combined_response_assessment','response_by_source','response_by_staff','response_vs_competitors'],
+ data:'leasing_conversion_episode, mystery_shop_experience_episode',
+ views:['Leasing Effectiveness','Experience Quality','Competitive Position'],
+ change:'MERGED LFA-01 (CRM response) and MEQ-01 (mystery shop response). These measure the same behavior from different data sources. Now produces co-equal CRM and mystery shop response metrics. Also incorporates competitive mystery shop data for relative comparison (from MEQ-03).',
+ desc:'Measures response speed from two co-equal sources: CRM timestamps (what the system records) and mystery shop observations (what actually happened). Segments by source, staff, and time of day. Includes competitive comparison from mystery shop data.'},
+
+{id:'C21',q:'What is the lead-to-tour conversion rate?',status:'reframed',origin:'LFA-02',tags:['leasing'],
+ facts:['lead_to_tour_conversion','conversion_by_source','conversion_by_staff','conversion_by_unit_type'],
+ data:'leasing_conversion_episode',
+ views:['Leasing Effectiveness'],
+ change:'Removed judgmental threshold (weak_conversion_pct=0.10). Produces conversion rates only.',
+ desc:'Groups leads with tour outcome. Computes conversion rate by source and staff member.'},
+
+{id:'C22',q:'What is the tour-to-application conversion rate?',status:'reframed',origin:'LFA-03',tags:['leasing'],
+ facts:['tour_to_app_conversion','conversion_by_source','conversion_by_staff'],
+ data:'leasing_conversion_episode',
+ views:['Leasing Effectiveness'],
+ change:'Removed judgmental threshold. Produces conversion rates only.',
+ desc:'Of leads reaching tour stage, computes rate advancing to application.'},
+
+{id:'C23',q:'What is the application-to-signed-lease conversion rate?',status:'reframed',origin:'LFA-04',tags:['leasing'],
+ facts:['app_to_sign_conversion','loss_reason_distribution'],
+ data:'leasing_conversion_episode',
+ views:['Leasing Effectiveness'],
+ change:'Removed judgmental threshold. Produces conversion rate and loss reason breakdown only.',
+ desc:'Of applications submitted, computes conversion to signed lease. Categorizes loss reasons.'},
+
+{id:'C24',q:'At which funnel stage do most prospects drop out?',status:'reframed',origin:'LFA-05',tags:['leasing'],
+ facts:['stall_stage_distribution','dominant_stall_stage','dominant_stall_share'],
+ data:'leasing_conversion_episode',
+ views:['Leasing Effectiveness'],
+ change:'Removed judgmental threshold (dominant share >= 0.40). Produces distribution only.',
+ desc:'Classifies each non-converting lead by last reached stage. Returns full stall distribution.'},
+
+{id:'C25',q:'How do leasing agents compare on pipeline velocity and conversion?',status:'unchanged',origin:'LFA-06',tags:['leasing','operations'],
+ facts:['agent_velocity_ratios','agent_concession_dependence','agent_comparison_table'],
+ data:'leasing_conversion_episode',
+ views:['Leasing Effectiveness','Staff Performance'],
+ change:null,
+ desc:'Computes per-agent median pipeline days and concession usage. Normalizes against property baseline.'},
+
+{id:'C26',q:'Do no-shows materially impact leasing outcomes?',status:'reframed',origin:'LFA-07',tags:['leasing'],
+ facts:['noshow_conversion_delta','noshow_pipeline_delta'],
+ data:'tour_fact, leasing_conversion_episode',
+ views:['Leasing Effectiveness'],
+ change:'Removed judgmental thresholds. Produces deltas only.',
+ desc:'Splits leads by no-show occurrence. Compares conversion rates and pipeline velocity between groups.'},
+
+{id:'C27',q:'What is the mystery shop compliance and experience score?',status:'reframed',origin:'MEQ-02',tags:['leasing','experience'],
+ facts:['shop_compliance_scores','low_score_rate','compliance_fail_rate'],
+ data:'mystery_shop_experience_episode',
+ views:['Leasing Effectiveness','Experience Quality'],
+ change:'Reframed: mystery shop data is now a primary measure of leasing execution quality, not siloed in its own family. Removed judgmental threshold (compliance_escalation_score_below=60).',
+ desc:'Scores mystery shop encounters against compliance checklist. Produces score distribution and fail rates.'},
+
+{id:'C28',q:'How does follow-up behavior compare to competitors?',status:'reframed',origin:'MEQ-04',tags:['leasing','experience','competitive'],
+ facts:['followup_presence_rate','followup_delay','followup_vs_competitor_gap'],
+ data:'mystery_shop_experience_episode',
+ views:['Leasing Effectiveness','Experience Quality','Competitive Position'],
+ change:'Reframed: integrated into leasing effectiveness rather than siloed mystery shop family. Removed "contextual" categorization — follow-up is a primary leasing quality measure.',
+ desc:'Compares follow-up presence and timing between subject and competitor shops.'},
+
+// ===== RETENTION & RENEWALS =====
+{id:'C29',q:'Are residents being contacted and offered renewals early enough?',status:'merged',origin:'RAR-01 + RAR-02',tags:['retention','operations'],
+ facts:['median_days_before_contact','late_contact_rate','median_days_before_offer','late_offer_rate','contact_to_offer_gap'],
+ data:'renewal_cycle_episode',
+ views:['Retention Health'],
+ change:'Merged RAR-01 (contact timeliness) and RAR-02 (offer timeliness) — these are two measurements of the same renewal outreach process. Removed judgmental threshold (late_renewal_contact_days=45). Produces timeline data only.',
+ desc:'Measures days before lease expiration for first contact and first offer. Computes gap between contact and offer. Segments by unit type and lease-end month.'},
+
+{id:'C30',q:'What fraction of renewal-eligible residents actually renew?',status:'reframed',origin:'RAR-03',tags:['retention'],
+ facts:['renewal_acceptance_rate','renewal_rate_by_segment','renewal_rate_by_increase_amount'],
+ data:'renewal_cycle_episode',
+ views:['Retention Health'],
+ change:'Reframed: now integrates turnover interview data (field-collected) as co-equal input on WHY residents who decline choose to leave. Removed judgmental threshold (weak_conversion_pct=0.35).',
+ desc:'Computes acceptance rate from renewal offers extended. Segments by unit type, lease term, increase amount. Integrates turnover interview data for decline reasons.'},
+
+{id:'C31',q:'Is lease expiration volume concentrated in specific months?',status:'reframed',origin:'RAR-04',tags:['retention','forward-look'],
+ facts:['expiration_by_month','peak_concentration_pct','expiration_heatmap'],
+ data:'lease_term_fact',
+ views:['Retention Health','Forward Look'],
+ change:'Removed judgmental threshold (expiration_concentration_pct=0.25). Produces distribution only.',
+ desc:'Distributes upcoming lease expirations by month. Identifies peak concentration.'},
+
+{id:'C32',q:'When residents decline renewal, do they actually move out?',status:'unchanged',origin:'RAR-05',tags:['retention'],
+ facts:['decline_to_moveout_rate','decline_paths'],
+ data:'renewal_cycle_episode, notice_pipeline_episode',
+ views:['Retention Health'],
+ change:null,
+ desc:'Tracks declined renewals through to actual move-out vs holdover vs reversal.'},
+
+{id:'C33',q:'Are holdovers caused by late or missing renewal outreach?',status:'unchanged',origin:'RAR-06',tags:['retention','operations'],
+ facts:['holdover_pipeline_failure_rate'],
+ data:'lease_term_fact, renewal_cycle_episode',
+ views:['Retention Health'],
+ change:null,
+ desc:'Links holdover episodes to renewal timeline. Determines if holdover was caused by late or missing renewal outreach.'},
+
+{id:'C34',q:'Does lease-term mix affect retention or create expiration clustering?',status:'unchanged',origin:'RAR-07',tags:['retention'],
+ facts:['retention_by_term_bucket','concentration_by_term_bucket','term_strategy_deltas'],
+ data:'lease_term_fact, renewal_cycle_episode',
+ views:['Retention Health'],
+ change:null,
+ desc:'Groups leases by term length. Compares retention rates and expiration clustering across term buckets.'},
+
+// ===== DELINQUENCY =====
+{id:'C35',q:'How common is delinquency and how is it distributed?',status:'merged',origin:'DAC-01 + DAC-02',tags:['financial','operations'],
+ facts:['delinquency_rate','top10_balance_concentration','delinquent_balance_distribution'],
+ data:'delinquency_balance_fact, lease_term_fact',
+ views:['Financial Health','Operational Performance'],
+ change:'Merged DAC-01 (prevalence) and DAC-02 (concentration) — both describe the shape of delinquency. Removed judgmental thresholds.',
+ desc:'Computes delinquency rate and balance distribution. Identifies whether delinquency is widespread or concentrated in few large balances.'},
+
+{id:'C36',q:'Are delinquent residents persisting for multiple months?',status:'reframed',origin:'DAC-03',tags:['financial','operations'],
+ facts:['persistent_delinquency_rate','persistence_duration_distribution'],
+ data:'delinquency_persistence_episode',
+ views:['Financial Health','Operational Performance'],
+ change:'Removed judgmental thresholds (persistent_delinquency_months=3, weak boundary 0.40). Produces persistence distribution only.',
+ desc:'Tracks consecutive months of delinquency per resident. Returns distribution of persistence durations.'},
+
+{id:'C37',q:'How large are delinquent balances relative to rent?',status:'merged',origin:'DAC-04 + FME-04',tags:['financial'],
+ facts:['delinquency_burden_ratio','balance_to_revenue_ratio'],
+ data:'delinquency_balance_fact, unit_revenue_realization_episode, financial_period_fact',
+ views:['Financial Health'],
+ change:'Merged DAC-04 (balance burden) and FME-04 (delinquency financial burden) — same computation, different families. Removed judgmental thresholds.',
+ desc:'Total delinquent balance / monthly rent roll. Also computes as ratio to total revenue.'},
+
+{id:'C38',q:'How far aged are current delinquent balances?',status:'reframed',origin:'DAC-05',tags:['financial','current-state'],
+ facts:['aging_mix_shares','current_pct','30day_pct','60day_pct','90plus_pct'],
+ data:'delinquency_balance_fact',
+ views:['Financial Health','Current Snapshot'],
+ change:'Removed judgmental threshold (61+ share >= 0.40). Produces aging distribution only.',
+ desc:'Buckets outstanding balances by aging (current, 30, 60, 90+). Computes share in each bucket.'},
+
+// ===== PRICING & REVENUE =====
+{id:'C39',q:'How much does leasing depend on concessions?',status:'reframed',origin:'PRC-01',tags:['pricing','leasing'],
+ facts:['concession_dependence_rate','concession_rate_by_unit_type'],
+ data:'vacancy_cycle_episode, concession_fact',
+ views:['Pricing Health','Leasing Effectiveness'],
+ change:'Removed judgmental threshold (concession_dependence_pct=0.15). Produces rate only.',
+ desc:'Share of signed leases that included a concession. Segments by unit type.'},
+
+{id:'C40',q:'How far below signed rent is the effective rent being realized?',status:'reframed',origin:'PRC-02',tags:['pricing','financial'],
+ facts:['median_effective_rent_pressure_pct','rent_pressure_distribution'],
+ data:'vacancy_cycle_episode, unit_revenue_realization_episode',
+ views:['Pricing Health','Financial Health'],
+ change:'Removed judgmental threshold (effective_rent_pressure_pct=0.05). Produces gap distribution only.',
+ desc:'(Asking rent - effective rent) / asking rent after amortizing concessions.'},
+
+{id:'C41',q:'How often are asking rents reduced during marketing?',status:'reframed',origin:'PRC-03',tags:['pricing','marketing'],
+ facts:['price_compression_rate','compression_magnitude'],
+ data:'pricing_change_episode',
+ views:['Pricing Health','Marketing Effectiveness'],
+ change:'Removed judgmental threshold (price_compression_pct=0.04). Produces rate and magnitude only.',
+ desc:'Tracks asking rent changes during vacancy. Computes rate and magnitude of reductions.'},
+
+{id:'C42',q:'Is rent being lifted on unit turnover?',status:'reframed',origin:'PRC-04',tags:['pricing','financial'],
+ facts:['median_rent_lift_pct','negative_lift_rate','rent_lift_by_unit_type'],
+ data:'lease_term_fact, vacancy_cycle_episode',
+ views:['Pricing Health','Financial Health'],
+ change:'Removed judgmental threshold (median lift <= 0 or negative rate >= 0.30). Produces lift distribution only.',
+ desc:'Compares new lease rent to prior lease rent for same unit. Computes lift percentage and negative lift rate.'},
+
+{id:'C43',q:'How does the property\'s rent compare to competitors?',status:'merged',origin:'PRC-05 + CPE-01',tags:['pricing','competitive'],
+ facts:['rent_gap_by_unit_type','worst_rent_gap','achieved_vs_asking_vs_comp'],
+ data:'rent_position_fact, competitor_pricing_snapshot_episode',
+ views:['Pricing Health','Competitive Position'],
+ change:'MERGED PRC-05 and CPE-01 — these were the same computation in two different families. Also reframed: competitive survey data (field-collected) is now co-equal primary input, not "contextual" reference.',
+ desc:'Compares subject asking and achieved rent by unit type against competitor averages. Identifies worst gap.'},
+
+{id:'C44',q:'Is the property giving more concessions than competitors?',status:'reframed',origin:'CPE-02',tags:['pricing','competitive'],
+ facts:['relative_concession_gap','concession_vs_comp_by_type'],
+ data:'concession_fact, competitor_pricing_snapshot_episode',
+ views:['Pricing Health','Competitive Position'],
+ change:'Reframed: competitive survey data is co-equal primary input.',
+ desc:'Compares subject concession rate and value against competitor average.'},
+
+{id:'C45',q:'Are concessions paired with dead move-in days?',status:'unchanged',origin:'PRC-06',tags:['pricing','leasing','financial'],
+ facts:['conceded_gap_rate','dead_rent_under_concessions'],
+ data:'vacancy_cycle_episode',
+ views:['Pricing Health','Financial Impact'],
+ change:null,
+ desc:'Among concession leases, checks for pre-occupancy gap days. Sums dead rent occurring alongside concession cost.'},
+
+{id:'C46',q:'Do concessions reduce leasing days enough to justify their cost?',status:'unchanged',origin:'PRC-07',tags:['pricing','financial'],
+ facts:['concession_days_saved','concession_tradeoff_margin','concession_roi'],
+ data:'vacancy_cycle_episode',
+ views:['Pricing Health','Financial Impact'],
+ change:null,
+ desc:'Compares median vacancy days for concession vs non-concession leases. Converts saved days to rent value vs concession cost.'},
+
+{id:'C47',q:'Are concessions proactive (planned) or reactive (desperation)?',status:'unchanged',origin:'PRC-08',tags:['pricing','leasing','operations'],
+ facts:['proactive_reactive_mix','concession_strategy_by_season','concession_strategy_by_staff'],
+ data:'concession_fact, leasing_conversion_episode',
+ views:['Pricing Health','Leasing Effectiveness'],
+ change:null,
+ desc:'Classifies concessions as proactive (offered upfront) vs reactive (offered after stall). Computes mix by season and staff.'},
+
+{id:'C48',q:'Which concession types are most cost-effective?',status:'unchanged',origin:'PRC-09',tags:['pricing','financial'],
+ facts:['concession_type_effectiveness','cost_per_day_saved_by_type'],
+ data:'concession_fact, vacancy_cycle_episode',
+ views:['Pricing Health','Financial Impact'],
+ change:null,
+ desc:'Groups concessions by type. Computes cost-per-day-saved for each. Ranks effectiveness.'},
+
+{id:'C49',q:'Do concession recipients stay shorter or renew less?',status:'reframed',origin:'PRC-10',tags:['pricing','retention'],
+ facts:['concession_tenure_delta','concession_renewal_delta'],
+ data:'concession_fact, lease_term_fact, renewal_cycle_episode',
+ views:['Pricing Health','Retention Health'],
+ change:'Removed judgmental thresholds. Produces deltas only.',
+ desc:'Splits residents by concession receipt. Compares tenure length and renewal rate between groups.'},
+
+{id:'C50',q:'Which occupied units are currently below market rent?',status:'unchanged',origin:'PRC-11',tags:['pricing','current-state','financial'],
+ facts:['loss_to_lease_by_unit','loss_to_lease_total','below_market_unit_count'],
+ data:'current_state_snapshot_episode, rent_position_fact',
+ views:['Pricing Health','Current Snapshot','Financial Impact'],
+ change:null,
+ desc:'Compares current in-place rent to market/asking rent for each occupied unit.'},
+
+// ===== MAINTENANCE =====
+{id:'C51',q:'How often do units need repeated maintenance?',status:'reframed',origin:'MMR-02',tags:['maintenance','operations'],
+ facts:['recurrence_rate','recurrence_by_unit_type','recurrence_by_issue_type'],
+ data:'maintenance_burden_episode',
+ views:['Maintenance Accountability'],
+ change:'Removed judgmental threshold (recurrence_rate_pct=0.12). Produces rate and distribution only.',
+ desc:'Counts units with repeat work orders for same issue within window. Computes recurrence rate by segment.'},
+
+{id:'C52',q:'How does maintenance cost compare to rent revenue?',status:'merged',origin:'MMR-03 + FME-03',tags:['maintenance','financial'],
+ facts:['maintenance_cost_burden_ratio','maintenance_to_revenue_ratio'],
+ data:'maintenance_burden_episode, make_ready_episode, unit_revenue_realization_episode, financial_period_fact',
+ views:['Maintenance Accountability','Financial Health'],
+ change:'Merged MMR-03 and FME-03 — same computation, different families. Removed judgmental thresholds.',
+ desc:'Total maintenance + make-ready cost / total rent revenue.'},
+
+{id:'C53',q:'How do vendors compare on speed and cost?',status:'unchanged',origin:'MMR-04',tags:['maintenance','operations'],
+ facts:['vendor_comparison_table','worst_vendor_overrun'],
+ data:'make_ready_episode, maintenance_burden_episode',
+ views:['Maintenance Accountability'],
+ change:null,
+ desc:'Groups work orders by vendor. Compares cost and duration against property baseline.'},
+
+{id:'C54',q:'How often do units show as ready without corresponding work orders?',status:'reframed',origin:'MMR-05',tags:['maintenance','operations'],
+ facts:['no_work_trace_rate','trace_discrepancy_details'],
+ data:'make_ready_episode, vacant_unit_audit_fact',
+ views:['Maintenance Accountability','Data Agreement'],
+ change:'Reframed: field audit observation that a unit appears ready is PRIMARY evidence. The absence of work orders is the discrepancy to investigate, not the field observation. Bidirectional comparison.',
+ desc:'Identifies units where readiness status and work order history disagree. Treats both PM data and field observations as co-equal sources.'},
+
+// ===== MARKETING & LISTINGS =====
+{id:'C55',q:'What fraction of vacancies reached a live listing?',status:'reframed',origin:'MLM-01',tags:['marketing','vacancy'],
+ facts:['listing_coverage_rate'],
+ data:'vacancy_cycle_episode',
+ views:['Marketing Effectiveness'],
+ change:'Removed judgmental threshold (listing_coverage_pct_weak=0.85). Produces rate only.',
+ desc:'Count of vacancies with confirmed listing / total completed vacancies.'},
+
+{id:'C56',q:'How long from vacancy start to listing live?',status:'unchanged',origin:'MLM-02',tags:['marketing','vacancy'],
+ facts:['median_vacancy_to_listing_days','vacancy_to_listing_distribution'],
+ data:'vacancy_cycle_episode',
+ views:['Marketing Effectiveness','Vacancy Health'],
+ change:null,
+ desc:'Computes days from vacancy start to listing publication. Different from C05 (ready-to-list) — this includes the make-ready phase.'},
+
+{id:'C57',q:'What is the quality of current listings?',status:'reframed',origin:'MLM-03',tags:['marketing','experience'],
+ facts:['listing_quality_scores','photo_quality','description_quality','accuracy_score'],
+ data:'listing_marketing_episode, listing_exposure_fact, vacant_unit_audit_fact',
+ views:['Marketing Effectiveness','Experience Quality'],
+ change:'Reframed: listing assessment (field-collected) data IS the primary quality measure. PM listing data confirms a listing exists; field assessment evaluates its quality. Both are co-equal.',
+ desc:'Scores each listing on photo count/quality, description completeness, accuracy against unit specs. Uses field listing assessment as primary quality input.'},
+
+{id:'C58',q:'Are listings needing repeated refreshes or price reductions?',status:'unchanged',origin:'MLM-04',tags:['marketing','pricing'],
+ facts:['refresh_rate','reduction_rate','refresh_reduction_shares'],
+ data:'listing_marketing_episode',
+ views:['Marketing Effectiveness','Pricing Health'],
+ change:null,
+ desc:'Counts listing changes. Classifies as content refresh vs price reduction. Computes rates.'},
+
+{id:'C59',q:'Do weekend/holiday completions cause listing delays?',status:'unchanged',origin:'MLM-06',tags:['marketing','operations'],
+ facts:['day_class_lag_table','weekend_listing_lag_delta'],
+ data:'vacancy_cycle_episode',
+ views:['Marketing Effectiveness'],
+ change:null,
+ desc:'Groups make-ready completions by day-of-week. Compares listing lag for weekday vs weekend/holiday completions.'},
+
+{id:'C60',q:'Is holding ready units off-market financially justified?',status:'unchanged',origin:'MLM-07',tags:['marketing','financial','vacancy'],
+ facts:['held_inventory_count','held_inventory_cost','hold_vs_cannibalization_analysis'],
+ data:'vacancy_cycle_episode, listing_marketing_episode',
+ views:['Marketing Effectiveness','Financial Impact'],
+ change:null,
+ desc:'Identifies ready units not listed. Computes daily hold cost and determines if strategic hold is justified by cannibalization data.'},
+
+{id:'C61',q:'Are upcoming vacancies being pre-marketed before move-out?',status:'unchanged',origin:'MLM-08',tags:['marketing','vacancy','forward-look'],
+ facts:['preleasing_utilization_rate'],
+ data:'notice_pipeline_episode, listing_marketing_episode',
+ views:['Marketing Effectiveness','Forward Look'],
+ change:null,
+ desc:'Checks if listing went live before actual move-out for units with notice. Computes utilization rate.'},
+
+// ===== COMPETITIVE POSITION =====
+{id:'C62',q:'Is asking rent misaligned with product quality versus competitors?',status:'reframed',origin:'CPE-03',tags:['competitive','pricing'],
+ facts:['price_quality_mismatch_flags','overpriced_units','underpriced_units'],
+ data:'competitor_property_fact, vacant_unit_audit_fact',
+ views:['Competitive Position','Pricing Health'],
+ change:'Reframed: uses both competitive survey AND vacant unit audit (field observations) as co-equal inputs. Reclassified from "exploratory" to primary diagnostic.',
+ desc:'Cross-references product quality assessment with rent positioning to detect misalignment.'},
+
+{id:'C63',q:'Is the property\'s vacancy rate worse than competitors?',status:'reframed',origin:'CPE-04',tags:['competitive','vacancy'],
+ facts:['relative_vacancy_gap','vacancy_vs_comp_by_type'],
+ data:'vacancy_cycle_episode, competitor_property_fact',
+ views:['Competitive Position','Vacancy Health'],
+ change:'Reframed: field-collected competitive occupancy data is co-equal primary input.',
+ desc:'Compares subject vacancy rate against competitor average.'},
+
+{id:'C64',q:'Is the property creating vacancies faster than the market absorbs?',status:'reframed',origin:'CPE-05',tags:['competitive','vacancy'],
+ facts:['absorption_mismatch_ratio'],
+ data:'vacancy_cycle_episode, competitor_pricing_snapshot_episode',
+ views:['Competitive Position','Vacancy Health'],
+ change:'Reframed: reclassified from "contextual" to primary diagnostic. Field-collected market data is co-equal input.',
+ desc:'Compares subject turnover rate against market absorption rate.'},
+
+// ===== DATA AGREEMENT (BIDIRECTIONAL) =====
+{id:'C65',q:'Where do field observations and system records disagree?',status:'reframed',origin:'AFV-01 + AFV-02 + AFV-03 + MLM-05',tags:['operations'],
+ facts:['bidirectional_discrepancy_rate','discrepancy_by_domain','discrepancy_direction','system_wrong_rate','field_uncertain_rate'],
+ data:'field_validation_episode, vacancy_cycle_episode, current_state_snapshot_episode',
+ views:['Data Agreement','Every diagnostic view that uses affected data'],
+ change:'MAJOR REFRAME: Merged AFV-01, AFV-02, AFV-03, and MLM-05 into one bidirectional data agreement computation. No longer frames field as "checking" system. Both sources are equally authoritative. Discrepancies are investigated bidirectionally. Results feed back into every affected diagnostic view as a confidence modifier.',
+ desc:'Compares field observations against system records across all observable domains. Produces bidirectional discrepancy data — system may be wrong OR field observation may be uncertain. Segments by domain (marketing, readiness, fees, condition). Output modifies confidence in any diagnostic view that uses the affected data.'},
+
+// ===== FINANCIAL IMPACT =====
+{id:'C66',q:'What is vacancy costing in total and is it material relative to revenue?',status:'merged',origin:'FME-01 + FME-05',tags:['financial','vacancy'],
+ facts:['annualized_vacancy_cost','vacancy_loss_materiality_pct','vacancy_cost_components'],
+ data:'vacancy_cycle_episode, financial_period_fact',
+ views:['Financial Health','Vacancy Health'],
+ change:'Merged FME-01 (materiality) and FME-05 (annualized cost) — same underlying computation.',
+ desc:'Sums vacancy cost (daily rent × vacancy days) across all episodes, annualized. Computes as percentage of total revenue.'},
+
+{id:'C67',q:'What is turnover costing relative to revenue?',status:'reframed',origin:'FME-02',tags:['financial','vacancy'],
+ facts:['turnover_cost_materiality_pct','turnover_cost_total'],
+ data:'turnover_cost_episode, financial_period_fact',
+ views:['Financial Health'],
+ change:'Removed judgmental threshold (materiality_threshold_pct=0.05). Produces ratio only.',
+ desc:'Total turnover costs (make-ready + vacancy loss + concessions) / gross revenue.'},
+
+{id:'C68',q:'How is vacancy cost distributed across segments?',status:'merged',origin:'FME-06 + FME-07 + FME-09 + FME-10 + FME-11',tags:['financial','vacancy','segmentation'],
+ facts:['segment_cost_shares','segment_frequency_ratios','segment_duration_deltas','segment_cost_per_day','worst_segment'],
+ data:'vacancy_cycle_episode, unit_inventory_fact',
+ views:['Financial Health','Vacancy Health','Portfolio Segmentation'],
+ change:'MERGED five patterns (FME-06/07/09/10/11) that all analyzed vacancy cost by segment from different angles. Now one computation producing a complete segment cost profile: share, frequency, duration, and cost-per-day.',
+ desc:'Groups vacancy cost by unit type, building, floor. For each segment: total cost share, event frequency ratio, median duration delta, cost-per-day. Identifies worst-performing segment across all dimensions.'},
+
+{id:'C69',q:'Is vacancy cost trending better or worse?',status:'unchanged',origin:'FME-08',tags:['financial','vacancy'],
+ facts:['monthly_vacancy_cost_series','cost_trend_direction','cost_trend_slope'],
+ data:'vacancy_cycle_episode',
+ views:['Financial Health','Vacancy Health'],
+ change:null,
+ desc:'Monthly vacancy cost time series. Computes linear slope and direction.'},
+
+{id:'C70',q:'What is the all-in cost to place a new tenant vs retaining one?',status:'merged',origin:'FME-12 + FME-13',tags:['financial','retention'],
+ facts:['median_acquisition_cost','median_retention_cost','acquisition_to_retention_ratio'],
+ data:'vacancy_cycle_episode, turnover_cost_episode, renewal_offer_fact',
+ views:['Financial Health','Retention Health'],
+ change:'Merged FME-12 and FME-13 — FME-12 was "finding-only" that fed FME-13. Now one computation.',
+ desc:'Computes all-in new tenant acquisition cost (make-ready + vacancy loss + concession + admin) and renewal retention cost. Returns ratio.'},
+
+{id:'C71',q:'Did renovation/upgrade spend produce enough rent lift?',status:'unchanged',origin:'FME-14',tags:['financial','maintenance'],
+ facts:['payback_months','poor_roi_share','upgrade_vs_standard_comparison'],
+ data:'turnover_cost_episode, vacancy_cycle_episode',
+ views:['Financial Health','Maintenance Accountability'],
+ change:null,
+ desc:'(Upgrade cost premium) / (monthly rent lift). Computes payback period and share with poor ROI.'},
+
+// ===== CURRENT SNAPSHOT =====
+{id:'C72',q:'What is the current unit state mix?',status:'reframed',origin:'CSD-01',tags:['current-state','vacancy'],
+ facts:['state_mix_counts','occupied_count','vacant_count','notice_count','down_count','model_count'],
+ data:'current_state_snapshot_episode',
+ views:['Current Snapshot'],
+ change:'Reframed: integrates vacant unit audit field observations as co-equal evidence of actual unit state. Units PM says "ready" may not be; units marked "down" may be habitable.',
+ desc:'Counts units in each state from current snapshot. Integrates field observations where available.'},
+
+{id:'C73',q:'Which units currently have multiple simultaneous risk factors?',status:'unchanged',origin:'CSD-02',tags:['current-state'],
+ facts:['multi_risk_unit_share','multi_risk_unit_list'],
+ data:'current_state_snapshot_episode, vacancy/delinquency/notice data',
+ views:['Current Snapshot'],
+ change:null,
+ desc:'Cross-references vacancy, delinquency, notice, and maintenance status per unit. Flags units with multiple concurrent issues.'},
+
+{id:'C74',q:'What is the current vacancy snapshot — stages, bleed, and stale units?',status:'merged',origin:'VTP-05 + CSD-03 + CSD-04 + CSD-05',tags:['current-state','vacancy','financial'],
+ facts:['open_vacancy_count','open_by_stage','dominant_open_stage','daily_revenue_bleed','bleed_to_revenue_ratio','stale_unit_rate','stale_unit_list'],
+ data:'vacancy_cycle_episode, current_state_snapshot_episode',
+ views:['Current Snapshot','Vacancy Health','Financial Impact'],
+ change:'MERGED four patterns (VTP-05, CSD-03, CSD-04, CSD-05) that all described the current vacancy situation from different angles. Now one computation producing a complete current vacancy snapshot.',
+ desc:'Counts open vacancies by stage. Computes daily revenue bleed. Identifies stale units (stuck in stage too long). Returns complete current vacancy picture.'},
+
+// ===== LONGITUDINAL =====
+{id:'C75',q:'How have scores and metrics changed since the prior assessment?',status:'merged',origin:'LPR-01 + LPR-02',tags:['vacancy','leasing','retention','financial'],
+ facts:['score_deltas','metric_deltas','improved_share','worsened_share'],
+ data:'prior + current assessment outputs',
+ views:['Longitudinal Change'],
+ change:'Merged LPR-01 (family score change) and LPR-02 (metric change) — both describe assessment-over-assessment change.',
+ desc:'Compares current vs prior assessment scores and key metrics. Classifies each as improved/flat/worsened.'},
+
+{id:'C76',q:'Which weakness flags persist across assessments?',status:'unchanged',origin:'LPR-03',tags:['vacancy','leasing','retention','financial'],
+ facts:['persistent_weakness_share','persistent_weakness_list'],
+ data:'prior + current diagnosis flags',
+ views:['Longitudinal Change'],
+ change:null,
+ desc:'Counts flags present in both prior and current assessment. Computes share of total weaknesses that persisted.'},
+
+// ===== OUTLIER & ANOMALY DETECTION (→ CAPABILITY) =====
+{id:'C77',q:'[CAPABILITY] Which episodes or segments are statistical outliers?',status:'capability',origin:'DHP-01 + DHP-02',tags:['vacancy','leasing','segmentation'],
+ facts:['outlier_episodes','outlier_segments','z_scores'],
+ data:'Any computation output',
+ views:['Any diagnostic view'],
+ change:'CONVERTED TO CAPABILITY: Outlier detection is not a separate computation — it\'s a capability applied to any computation\'s output. DHP-01 (vacancy outliers) and DHP-02 (funnel outliers) become instances of the same outlier detection engine applied to different data.',
+ desc:'Statistical outlier detection (z-score based) that can be applied to any computation\'s output to identify episodes or segments that deviate significantly from the norm.'},
+
+{id:'C78',q:'[CAPABILITY] Are discrepancies clustering by domain, vendor, or staff?',status:'capability',origin:'DHP-03',tags:['operations'],
+ facts:['discrepancy_clusters','cluster_significance'],
+ data:'Data agreement output (C65)',
+ views:['Data Agreement'],
+ change:'CONVERTED TO CAPABILITY: Clustering detection applied to data agreement output. Not a separate computation.',
+ desc:'Groups discrepancies by domain/vendor/staff. Identifies statistically significant clusters.'},
+
+{id:'C79',q:'[CAPABILITY] Which episodes represent the largest recoverable opportunity?',status:'capability',origin:'DHP-04 + DHP-05',tags:['financial','vacancy'],
+ facts:['top_recovery_episodes','recovery_share_of_total'],
+ data:'Vacancy and cost computation outputs',
+ views:['Financial Impact','Vacancy Health'],
+ change:'CONVERTED TO CAPABILITY: Opportunity ranking is a sorting/filtering operation on existing computation outputs, not a separate computation.',
+ desc:'Ranks episodes by avoidable loss and total cost. Returns top opportunities. Applied to vacancy and cost data.'},
+
+{id:'C80',q:'Are units deteriorating turn-over-turn?',status:'unchanged',origin:'DHP-06',tags:['vacancy'],
+ facts:['deteriorated_pair_share','deterioration_by_unit'],
+ data:'vacancy_cycle_episode',
+ views:['Vacancy Health'],
+ change:null,
+ desc:'Compares consecutive vacancy episodes for same unit. Computes share where later episode was slower/costlier.'},
+
+// ===== SEGMENTATION (→ CAPABILITY) =====
+{id:'C81',q:'[CAPABILITY] Which segments (unit type, building, floor, staff) diverge from baseline?',status:'capability',origin:'MSD-01 + MSD-02 + MSD-03',tags:['segmentation'],
+ facts:['segment_delta_tables','divergent_segments','staff_comparison'],
+ data:'Any computation output',
+ views:['Any diagnostic view','Staff Performance','Portfolio Segmentation'],
+ change:'CONVERTED TO CAPABILITY: Segmentation is a property of how you run any computation, not a separate set of computations. Every computation can be segmented by unit type, building, floor, or staff. MSD-01/02/03 become the system\'s segmentation engine.',
+ desc:'Applies segment-level analysis (by unit type, building, floor, staff) to any computation\'s output. Identifies segments that diverge from property baseline by more than a configurable delta.'},
+
+// ===== NEW: UNIT CONDITION AT MOVE-OUT =====
+{id:'C82',q:'What condition are units left in at move-out?',status:'new',origin:'None — gap identified',tags:['vacancy','maintenance'],
+ facts:['moveout_condition_distribution','heavy_damage_rate','cleaning_only_rate'],
+ data:'make_ready_episode, vacant_unit_audit_fact, turnover_cost_episode',
+ views:['Vacancy Health','Maintenance Accountability'],
+ change:'NEW: No pattern assessed move-out condition. This affects make-ready scope, cost, and duration predictions.',
+ desc:'Categorizes unit condition at move-out based on make-ready scope and field walk observations. Identifies patterns in damage/condition by unit type, tenure length, and move-out reason.'},
+
+// ===== NEW: TRENDS IN PROBLEM UNITS =====
+{id:'C83',q:'Are there patterns in which units take longer to get ready, longer to lease, have early move-outs, or don\'t renew?',status:'new',origin:'None — gap identified',tags:['vacancy','maintenance','leasing','retention','segmentation'],
+ facts:['slow_ready_unit_profile','slow_lease_unit_profile','early_moveout_unit_profile','non_renewal_unit_profile'],
+ data:'vacancy_cycle_episode, make_ready_episode, lease_term_fact, renewal_cycle_episode',
+ views:['Vacancy Health','Maintenance Accountability','Leasing Effectiveness','Retention Health','Portfolio Segmentation'],
+ change:'NEW: Identifies cross-cutting unit-level trends. Are the same units showing up in multiple problem lists? What characteristics do problem units share?',
+ desc:'Correlates unit characteristics (type, building, floor, age, condition, rent level) with outcomes (make-ready duration, days-on-market, early move-out, non-renewal). Identifies unit profiles associated with each problem type.'}
+];
+
+const ALL_TAGS = [...new Set(COMPUTATIONS.flatMap(c=>c.tags))].sort();
+const tagFiltersEl = document.getElementById('tagFilters');
+ALL_TAGS.forEach(t => {
+  const btn = document.createElement('button');
+  btn.className = 'tag-btn';
+  btn.textContent = t;
+  btn.dataset.tag = t;
+  btn.onclick = () => { btn.classList.toggle('active'); render(); };
+  tagFiltersEl.appendChild(btn);
+});
+
+const regEl = document.getElementById('registry');
+const statusFilter = document.getElementById('statusFilter');
+const searchBox = document.getElementById('searchBox');
+
+function updateStats(){
+  document.getElementById('totalCount').textContent = COMPUTATIONS.length;
+  document.getElementById('mergedCount').textContent = COMPUTATIONS.filter(c=>c.status==='merged').length;
+  document.getElementById('newCount').textContent = COMPUTATIONS.filter(c=>c.status==='new').length;
+  document.getElementById('reframedCount').textContent = COMPUTATIONS.filter(c=>c.status==='reframed').length;
+  document.getElementById('capCount').textContent = COMPUTATIONS.filter(c=>c.status==='capability').length;
+}
+
+function render(){
+  const sf = statusFilter.value;
+  const search = searchBox.value.toLowerCase();
+  const activeTags = [...document.querySelectorAll('.tag-btn.active')].map(b=>b.dataset.tag);
+
+  regEl.innerHTML = '';
+
+  const filtered = COMPUTATIONS.filter(c => {
+    if(sf !== 'all' && c.status !== sf) return false;
+    if(activeTags.length > 0 && !activeTags.some(t => c.tags.includes(t))) return false;
+    if(search){
+      const hay = (c.id+' '+c.q+' '+c.origin+' '+c.facts.join(' ')+' '+(c.change||'')+' '+c.desc+' '+c.tags.join(' ')).toLowerCase();
+      if(!hay.includes(search)) return false;
+    }
+    return true;
+  });
+
+  filtered.forEach(c => {
+    const div = document.createElement('div');
+    div.className = `comp ${c.status}`;
+
+    div.innerHTML = `
+      <div class="comp-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="comp-id">${c.id}</span>
+        <div class="comp-main">
+          <div class="comp-question">${c.q}</div>
+          <div class="comp-meta">
+            <span class="comp-status status-${c.status}">${c.status === 'capability' ? '→ capability' : c.status}</span>
+            ${c.tags.map(t=>`<span class="comp-tag">${t}</span>`).join('')}
+          </div>
+          <div class="comp-origin">Origin: ${c.origin}</div>
+        </div>
+        <span class="comp-toggle">▼</span>
+      </div>
+      <div class="comp-body">
+        <div class="section">
+          <div class="section-title">What it computes</div>
+          <div>${c.desc}</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Output Facts</div>
+          <div class="fact-list">${c.facts.map(f=>`<span class="fact">${f}</span>`).join('')}</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Data Sources</div>
+          <div class="data-sources"><code>${c.data}</code></div>
+        </div>
+        <div class="section">
+          <div class="section-title">Diagnostic Views That Consume These Facts</div>
+          <div class="diagnostic-views">${c.views.map(v=>`<span class="view-tag">${v}</span>`).join('')}</div>
+        </div>
+        ${c.change ? `<div class="note note-${c.status}"><strong>What changed:</strong> ${c.change}</div>` : ''}
+      </div>
+    `;
+    regEl.appendChild(div);
+  });
+}
+
+document.getElementById('expandAll').onclick = () => document.querySelectorAll('.comp').forEach(c=>c.classList.add('open'));
+document.getElementById('collapseAll').onclick = () => document.querySelectorAll('.comp').forEach(c=>c.classList.remove('open'));
+statusFilter.onchange = render;
+searchBox.oninput = render;
+
+updateStats();
+render();
+</script>
+</body>
+</html>

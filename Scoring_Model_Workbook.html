@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scoring Model Workbook</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #181a22;
+  --surface2: #1e2029;
+  --border: #2a2d3a;
+  --text: #e2e4ea;
+  --text2: #8b8fa3;
+  --accent: #4a9eff;
+  --green: #34d399;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --orange: #fb923c;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); padding:24px; max-width:1200px; margin:0 auto; }
+h1 { font-size:28px; font-weight:700; margin-bottom:8px; letter-spacing:-0.5px; }
+.subtitle { color:var(--text2); font-size:14px; margin-bottom:32px; }
+.area-nav { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:32px; position:sticky; top:0; background:var(--bg); padding:12px 0; z-index:10; border-bottom:1px solid var(--border); }
+.area-nav button { background:var(--surface); border:1px solid var(--border); color:var(--text2); padding:8px 16px; border-radius:6px; cursor:pointer; font-family:inherit; font-size:13px; transition:all 0.2s; }
+.area-nav button:hover { border-color:var(--accent); color:var(--text); }
+.area-nav button.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+.area-nav button .status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-left:6px; }
+.area-nav button .status-dot.complete { background:var(--green); }
+.area-nav button .status-dot.partial { background:var(--yellow); }
+.area-nav button .status-dot.empty { background:var(--border); }
+.area-section { display:none; }
+.area-section.active { display:block; }
+.area-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding:16px 20px; background:var(--surface); border-radius:10px; border:1px solid var(--border); }
+.area-title { font-size:20px; font-weight:700; }
+.area-weight-box { display:flex; align-items:center; gap:12px; }
+.area-weight-box label { font-size:13px; color:var(--text2); }
+.area-weight-box input { width:70px; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:6px 10px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:14px; text-align:right; }
+.area-weight-box input:focus { outline:none; border-color:var(--accent); }
+.overall-status { font-family:'JetBrains Mono',monospace; font-size:13px; padding:4px 10px; border-radius:4px; }
+.item-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:16px; overflow:hidden; }
+.item-header { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; cursor:pointer; user-select:none; }
+.item-header:hover { background:var(--surface2); }
+.item-name { font-size:15px; font-weight:500; }
+.item-type-badge { font-size:11px; font-family:'JetBrains Mono',monospace; padding:3px 8px; border-radius:4px; text-transform:uppercase; }
+.item-type-badge.data { background:#1a3a2a; color:var(--green); }
+.item-type-badge.checklist { background:#1a2a3a; color:var(--accent); }
+.item-type-badge.comparative { background:#3a2a1a; color:var(--orange); }
+.item-right { display:flex; align-items:center; gap:12px; }
+.item-weight-input { width:60px; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:5px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:13px; text-align:right; }
+.item-weight-input:focus { outline:none; border-color:var(--accent); }
+.weight-label { font-size:11px; color:var(--text2); }
+.item-status { font-size:12px; font-family:'JetBrains Mono',monospace; min-width:50px; text-align:right; }
+.sub-items { display:none; border-top:1px solid var(--border); padding:12px 20px; }
+.sub-items.open { display:block; }
+.sub-items table { width:100%; border-collapse:collapse; }
+.sub-items th { text-align:left; font-size:11px; color:var(--text2); font-weight:500; padding:6px 8px; border-bottom:1px solid var(--border); text-transform:uppercase; letter-spacing:0.5px; }
+.sub-items td { padding:8px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:top; }
+.sub-items tr:last-child td { border-bottom:none; }
+.sub-items .si-name { font-weight:400; max-width:280px; }
+.sub-items .si-type { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text2); }
+.sub-items .si-tiers { font-size:11px; color:var(--text2); max-width:300px; line-height:1.5; }
+.sub-items .si-v6 { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text2); text-align:right; }
+.sub-items .si-pts input { width:50px; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:12px; text-align:right; }
+.sub-items .si-pts input:focus { outline:none; border-color:var(--accent); }
+.sub-total-row { background:var(--surface2); border-radius:6px; margin-top:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+.sub-total-row .total-label { color:var(--text2); }
+.sub-total-row .total-value { font-family:'JetBrains Mono',monospace; font-weight:700; }
+.item-weight-total { display:flex; justify-content:flex-end; align-items:center; gap:8px; padding:12px 20px; margin-top:8px; font-size:13px; }
+.item-weight-total .label { color:var(--text2); }
+.item-weight-total .value { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; }
+.expand-icon { color:var(--text2); font-size:16px; margin-right:8px; transition:transform 0.2s; }
+.expand-icon.rotated { transform:rotate(90deg); }
+.tbd-notice { padding:16px; color:var(--yellow); font-size:13px; font-style:italic; }
+.export-bar { position:fixed; bottom:20px; right:20px; display:flex; gap:8px; align-items:center; z-index:100; }
+.export-bar button { background:var(--accent); color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-family:inherit; font-size:13px; font-weight:500; box-shadow:0 4px 20px rgba(74,158,255,0.3); }
+.export-bar button:hover { filter:brightness(1.1); }
+.save-status { font-size:11px; color:var(--green); font-family:'JetBrains Mono',monospace; background:var(--surface); padding:6px 10px; border-radius:6px; border:1px solid var(--border); opacity:0; transition:opacity 0.3s; }
+.save-status.visible { opacity:1; }
+.save-status.error { color:var(--red); }
+</style>
+</head>
+<body>
+<h1>Scoring Model Workbook</h1>
+<p class="subtitle">Work through each area. Fill in weights (must sum to 100% per level) and sub-item points (must sum to 100 per checklist item).</p>
+<div class="area-nav" id="areaNav"></div>
+<div id="areaSections"></div>
+<div class="export-bar">
+  <span class="save-status" id="saveStatus"></span>
+  <button onclick="exportCSV()">Export CSV</button>
+  <button onclick="saveToFile()">Save to File</button>
+  <label style="background:var(--accent);color:#fff;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(74,158,255,0.3)">Load File<input type="file" accept=".json" onchange="loadFromFile(event)" style="display:none"></label>
+</div>
+
+<script>
+const DATA = [
+  { area:"1. Vacancy/Occupancy", question:"Are units generating revenue?", items:[
+    {name:"Occupancy Rate",type:"Data"},{name:"Average Vacant Days",type:"Data"},
+    {name:"Aged Vacancy",type:"Data"}
+  ]},
+  { area:"2. Marketing", question:"Is the property generating demand?", items:[
+    {name:"Online Reputation",type:"Checklist",subs:[
+      {name:"Avg Review Score",type:"Tiered",tiers:"Formula: AVG/5 x max; max 50",v6:"40"},
+      {name:"Review Volume",type:"Tiered",tiers:"<50→5; 50-99→10; 100-199→15; 200-499→20; 500+→25",v6:"20"},
+      {name:"Review Recency (last 90d)",type:"Tiered",tiers:"0-5→0; 6-10→5; 11-20→10; 21+→15",v6:"15"},
+      {name:"Platform Coverage",type:"Tiered",tiers:"1→2; 2→5; 3→7; 4→10",v6:"10"},
+      {name:"GMB Claimed",type:"Y/N",v6:"10"},
+      {name:"GMB Optimized",type:"Y/N",v6:"5"}
+    ]},
+    {name:"Digital/Social Presence",type:"Checklist",subs:[
+      {name:"Social - Facebook",type:"Y/N",v6:"10"},
+      {name:"Social - Instagram",type:"Y/N",v6:"10"},{name:"Social - TikTok",type:"Y/N",v6:"10"},
+      {name:"Social - LinkedIn",type:"Y/N",v6:"10"},
+      {name:"Audience Size",type:"Tiered",tiers:"<500→3; 500-2K→7; 2K-5K→12; 5K-10K→18; 10K+→25",v6:"30"},
+      {name:"Post Consistency",type:"Tiered",tiers:"0→0; 1→5; 2→10; 3→15; 4+→20",v6:"30"}
+    ]},
+    {name:"Website Quality",type:"Checklist",subs:[
+      {name:"Website Exists",type:"Y/N",v6:"30"},{name:"Mobile Responsive",type:"Y/N",v6:"10"},
+      {name:"Live Chat",type:"Y/N",v6:"10"},{name:"Contact Form",type:"Y/N",v6:"10"},
+      {name:"Floor Plans",type:"Y/N",v6:"10"},{name:"Photo Gallery",type:"Y/N",v6:"10"},
+      {name:"Unit Availability",type:"Y/N",v6:"10"},{name:"Virtual Tours",type:"Y/N",v6:"10"}
+    ]},
+    {name:"Digital Marketing",type:"Checklist",subs:[
+      {name:"Social Media Paid Ads",type:"Y/N",v6:"33"},
+      {name:"Google Adwords",type:"Y/N",v6:"34"},
+      {name:"Email/SMS Marketing",type:"Y/N",v6:"33"}
+    ]},
+    {name:"Referral Program",type:"Checklist",subs:[
+      {name:"Referral Program Exists",type:"Y/N",v6:"50"},{name:"Referral Incentive Offered",type:"Y/N",v6:"10"},
+      {name:"Referral Tracking System",type:"Y/N",v6:"10"},
+      {name:"Local Business Partnerships",type:"Y/N",v6:"10"},
+      {name:"Influencer/Creator Collaborations",type:"Y/N",v6:"10"},{name:"Co-Branded Content or Events",type:"Y/N",v6:"10"}
+    ]},
+    {name:"Corporate Relocation Program",type:"Checklist",subs:[
+      {name:"Corp Relocation Program Exists",type:"Y/N",v6:"50"},{name:"RMC Partnerships",type:"Y/N",v6:"20"},
+      {name:"Corporate Rates/Packages",type:"Y/N",v6:"10"},{name:"Furnished/Short-Term Options",type:"Y/N",v6:"10"},
+      {name:"Dedicated Relocation Contact",type:"Y/N",v6:"10"}
+    ]},
+    {name:"Broker/Locator Program",type:"Checklist",subs:[
+      {name:"Broker Program Exists",type:"Y/N",v6:"50"},
+      {name:"Broker Portal",type:"Y/N",v6:"10"},{name:"Broker Materials",type:"Y/N",v6:"10"},
+      {name:"Direct Broker Contact",type:"Y/N",v6:"10"},{name:"Broker Lead Tracking",type:"Y/N",v6:"10"},
+      {name:"Broker Events/Outreach",type:"Y/N",v6:"10"}
+    ]},
+    {name:"Cost per Lead",type:"Data"}
+  ]},
+  { area:"3. Leasing Performance", question:"Is the team converting demand into leases?", items:[
+    {name:"Conversion Metrics",type:"Checklist",subs:[
+      {name:"Lead-to-Tour %",type:"Tiered",tiers:"≥50%→25; 35-49→20; 25-34→15; 15-24→8; <15→3",v6:"15"},
+      {name:"Tour-to-App %",type:"Tiered",tiers:"≥55%→25; 40-54→20; 30-39→15; 20-29→8; <20→3",v6:"15"},
+      {name:"App-to-Lease %",type:"Tiered",tiers:"≥85%→20; 75-84→16; 60-74→12; 50-59→6; <50→2",v6:"10"},
+      {name:"Tour-to-Lease %",type:"Tiered",tiers:"≥45%→15; 30-44→12; 18-29→8; 10-17→4; <10→0",v6:"20"},
+      {name:"Lead-to-Lease %",type:"Tiered",tiers:"≥30%→15; 20-29→12; 10-19→8; 5-9→4; <5→0",v6:"20"},
+      {name:"Cancel Rate",type:"Tiered",tiers:"<10%→15; 10-19→12; 20-29→8; 30-39→4; ≥40→0",v6:"10"},
+      {name:"Ghost Rate",type:"Tiered",tiers:"<10%→15; 10-19→12; 20-29→8; 30-39→4; ≥40→0",v6:"10"},
+    ]},
+    {name:"Tour Observation",type:"Checklist",subs:[
+      {name:"Greeting: Prompt Acknowledgment",type:"Y/N",v6:"3.5"},
+      {name:"Greeting: Eye Contact & Smile",type:"Y/N",v6:"3.5"},
+      {name:"Greeting: Handshake / Introduced by Name",type:"Y/N",v6:"3.5"},
+      {name:"Greeting: Asked Prospect's Name",type:"Y/N",v6:"3.5"},
+      {name:"Greeting: Built Rapport",type:"Y/N",v6:"4"},
+      {name:"Greeting: Offered Refreshments",type:"Y/N",v6:"3.5"},
+      {name:"Needs: Asked Move-In Timeline",type:"Y/N",v6:"3.5"},
+      {name:"Needs: Asked Floor Plan / Size",type:"Y/N",v6:"3.5"},
+      {name:"Needs: Asked Budget / Price Range",type:"Y/N",v6:"3.5"},
+      {name:"Needs: Asked Lifestyle Needs",type:"Y/N",v6:"3.5"},
+      {name:"Needs: Asked What's Most Important",type:"Y/N",v6:"3.5"},
+      {name:"Needs: Actively Listened",type:"Y/N",v6:"4"},
+      {name:"Wait Time",type:"Tiered",tiers:"<5m; <10m; <15m; ≥15m",v6:"4"},
+      {name:"Tour: Showed Model or Available Unit",type:"Y/N",v6:"3.5"},
+      {name:"Tour: Highlighted Features & Benefits",type:"Y/N",v6:"3.5"},
+      {name:"Tour: Pointed Out Amenities",type:"Y/N",v6:"3.5"},
+      {name:"Tour: Tailored to Prospect Needs",type:"Y/N",v6:"3.5"},
+      {name:"Tour: Demonstrated Product Knowledge",type:"Y/N",v6:"3.5"},
+      {name:"Tour: Competitive Landscape Knowledge",type:"Y/N",v6:"4"},
+      {name:"Tour: Submarket/Neighborhood Knowledge",type:"Y/N",v6:"4"},
+      {name:"Tour: Discussed Lease Terms & Costs",type:"Y/N",v6:"3.5"},
+      {name:"Tour: Fair Housing Compliance Observed",type:"Y/N",v6:"3.5"},
+      {name:"Tour Duration",type:"Tiered",tiers:"<30m; <45m; <60m; ≥60m",v6:"3"},
+      {name:"Close: Asked for the Lease",type:"Y/N",v6:"3.5"},
+      {name:"Close: Overcame Objections",type:"Y/N",v6:"3.5"},
+      {name:"Close: Discussed Next Steps",type:"Y/N",v6:"3.5"},
+      {name:"Close: Created Urgency",type:"Y/N",v6:"3.5"},
+      {name:"Close: Provided Pricing & App Info",type:"Y/N",v6:"3.5"}
+    ]},
+    {name:"Mystery Shop Score",type:"Checklist",subs:[
+      {name:"Phone: Friendly Professional Greeting",type:"Y/N",v6:"2.5"},
+      {name:"Phone: Answered Within 3 Rings",type:"Y/N",v6:"2"},
+      {name:"Phone: Enthusiasm & Positive Attitude",type:"Y/N",v6:"2.5"},
+      {name:"Phone: Described Community & Features",type:"Y/N",v6:"2"},
+      {name:"Phone: Asked Qualifying Questions",type:"Y/N",v6:"2.5"},
+      {name:"Phone: Offered Incentives/Specials",type:"Y/N",v6:"2.5"},
+      {name:"Phone: Matched Apartment to Needs",type:"Y/N",v6:"2"},
+      {name:"Phone: Attempted to Schedule Tour",type:"Y/N",v6:"2.5"},
+      {name:"Phone: Collected Contact Info",type:"Y/N",v6:"2.5"},
+      {name:"Greeting: Prompt Acknowledgment",type:"Y/N",v6:"2.5"},
+      {name:"Greeting: Eye Contact & Smile",type:"Y/N",v6:"2.5"},
+      {name:"Greeting: Handshake / Introduced by Name",type:"Y/N",v6:"2.5"},
+      {name:"Greeting: Asked Prospect's Name",type:"Y/N",v6:"2.5"},
+      {name:"Greeting: Built Rapport",type:"Y/N",v6:"3"},
+      {name:"Greeting: Offered Refreshments",type:"Y/N",v6:"2.5"},
+      {name:"Needs: Asked Move-In Timeline",type:"Y/N",v6:"2.5"},
+      {name:"Needs: Asked Floor Plan / Size",type:"Y/N",v6:"2"},
+      {name:"Needs: Asked Budget / Price Range",type:"Y/N",v6:"2.5"},
+      {name:"Needs: Asked Lifestyle Needs",type:"Y/N",v6:"2.5"},
+      {name:"Needs: Asked What's Most Important",type:"Y/N",v6:"2.5"},
+      {name:"Needs: Actively Listened",type:"Y/N",v6:"2.5"},
+      {name:"Wait Time",type:"Tiered",tiers:"<5m; <10m; <15m; ≥15m",v6:"2.5"},
+      {name:"Tour: Showed Model or Available Unit",type:"Y/N",v6:"2.5"},
+      {name:"Tour: Highlighted Features & Benefits",type:"Y/N",v6:"2.5"},
+      {name:"Tour: Pointed Out Amenities",type:"Y/N",v6:"2.5"},
+      {name:"Tour: Tailored to Prospect Needs",type:"Y/N",v6:"2.5"},
+      {name:"Tour: Demonstrated Product Knowledge",type:"Y/N",v6:"2.5"},
+      {name:"Tour: Competitive Landscape Knowledge",type:"Y/N",v6:"2.5"},
+      {name:"Tour: Submarket/Neighborhood Knowledge",type:"Y/N",v6:"2.5"},
+      {name:"Tour: Discussed Lease Terms & Costs",type:"Y/N",v6:"2.5"},
+      {name:"Tour: Property Curb Appeal Observed",type:"Y/N",v6:"2"},
+      {name:"Tour: Fair Housing Compliance Observed",type:"Y/N",v6:"2"},
+      {name:"Tour Duration",type:"Tiered",tiers:"<30m; <45m; <60m; ≥60m",v6:"2"},
+      {name:"Close: Asked for the Lease",type:"Y/N",v6:"2.5"},
+      {name:"Close: Overcame Objections",type:"Y/N",v6:"2.5"},
+      {name:"Close: Discussed Next Steps",type:"Y/N",v6:"2.5"},
+      {name:"Close: Created Urgency",type:"Y/N",v6:"2.5"},
+      {name:"Close: Provided Pricing & App Info",type:"Y/N",v6:"2.5"},
+      {name:"Follow-Up: Contact Received",type:"Y/N",v6:"2"},
+      {name:"Follow-Up: Was Personalized",type:"Y/N",v6:"2"},
+      {name:"Follow-Up: Referenced Visit Details",type:"Y/N",v6:"2"},
+      {name:"Follow-Up: Made Another Close Attempt",type:"Y/N",v6:"2"}
+    ]},
+    {name:"Lead Management Quality",type:"Checklist",subs:[
+      {name:"Email Response Time",type:"Tiered",tiers:"<30m→20; 30-60m→17; 1-2h→14; 2-4h→10; 4-8h→5; >8h→0",v6:"20"},
+      {name:"Phone Response Time",type:"Tiered",tiers:"<15m→20; 15-30→17; 30-60→14; 1-2h→10; 2-4h→5; >4h→0",v6:"20"},
+      {name:"Follow-Up System",type:"Tiered",tiers:"Doc+Auto→20; Doc only→12; Neither→0",v6:"15"},
+      {name:"Follow-Up Volume",type:"Tiered",tiers:"8+→15; 5-7→12; 3-4→8; 1-2→3; 0→0",v6:"15"},
+      {name:"After-Hours Handling",type:"Tiered",tiers:"Auto→10; Answering→8; VM→3; None→0",v6:"10"},
+      {name:"Weekend Handling",type:"Tiered",tiers:"In-person→10; Auto→5; Answering→3; VM→2; None→0",v6:"10"},
+      {name:"Advanced Programs",type:"Tiered",tiers:"Nurture+Re-engage→15; One→8; Neither→0",v6:"10"}
+    ]},
+    {name:"Leasing Process Quality",type:"Checklist",subs:[
+      {name:"Expectations Communicated",type:"Y/N",v6:"4"},
+      {name:"Online Application Available",type:"Y/N",v6:"4"},
+      {name:"Mobile-Friendly Application",type:"Y/N",v6:"4"},
+      {name:"Application Status Communication",type:"Y/N",v6:"3.5"},
+      {name:"Credit Check Performed",type:"Y/N",v6:"4"},
+      {name:"Background Check Performed",type:"Y/N",v6:"3.5"},
+      {name:"Income Verification Performed",type:"Y/N",v6:"3.5"},
+      {name:"Rental History Verification",type:"Y/N",v6:"3.5"},
+      {name:"Employment Verification",type:"Y/N",v6:"3.5"},
+      {name:"Electronic Lease Signing",type:"Y/N",v6:"4"},
+      {name:"Clear Move-In Cost Breakdown",type:"Y/N",v6:"3.5"},
+      {name:"Deposit/Fee Payment Online",type:"Y/N",v6:"3.5"},
+      {name:"Move-In Date Scheduling Process",type:"Y/N",v6:"3.5"},
+      {name:"Pre-Move-In Unit Inspection",type:"Y/N",v6:"3.5"},
+      {name:"Move-In Checklist Provided",type:"Y/N",v6:"3.5"},
+      {name:"Utility Setup Guidance",type:"Y/N",v6:"3.5"},
+      {name:"Key/Access Handoff Process",type:"Y/N",v6:"3.5"},
+      {name:"Welcome Package Provided",type:"Y/N",v6:"4"},
+      {name:"New Resident Orientation",type:"Y/N",v6:"4"},
+      {name:"Resident Portal Setup Assistance",type:"Y/N",v6:"3.5"},
+      {name:"Community Rules & Policies Reviewed",type:"Y/N",v6:"3.5"},
+      {name:"Emergency Procedures Communicated",type:"Y/N",v6:"3.5"},
+      {name:"Amenity Walkthrough During Onboarding",type:"Y/N",v6:"3.5"},
+      {name:"App Processing Speed",type:"Tiered",tiers:"Same day→8; 1-2d→6; 3-5d→3; 5+→0",v6:"4"},
+      {name:"Screening Processing Speed",type:"Tiered",tiers:"Same day→8; 1-2d→6; 3-5d→3; 5+→0",v6:"4"},
+      {name:"Approval Speed",type:"Tiered",tiers:"Same day→8; 1-2d→4; 3+→0",v6:"4"},
+      {name:"Lease Turnaround",type:"Tiered",tiers:"Same day→8; 1-3d→6; 3-5d→3; 5+→0",v6:"4"}
+    ]},
+    {name:"Training & Development",type:"Checklist",subs:[
+      {name:"Formal Program Exists",type:"Y/N",v6:"40"},
+      {name:"Onboarding Duration",type:"Tiered",tiers:"<3d→0; 3-5→5; 6-10→10; 11-15→12; 16+→15",v6:"5"},
+      {name:"Ongoing Frequency",type:"Tiered",tiers:"Weekly→15; Monthly→12; Quarterly→8; Annual→3; Never→0",v6:"5"},
+      {name:"Coaching Frequency",type:"Tiered",tiers:"Weekly→10; Monthly→7; Quarterly→4; Never→0",v6:"3"},
+      {name:"Certifications Required",type:"Y/N",v6:"2"},
+      {name:"Product Knowledge Training",type:"Y/N",v6:"10"},
+      {name:"Sales/Closing Training",type:"Y/N",v6:"20"},
+      {name:"Fair Housing Training",type:"Y/N",v6:"5"},
+      {name:"CRM/Systems Training",type:"Y/N",v6:"5"},
+      {name:"Other Training Programs",type:"Y/N",v6:"5"}
+    ]},
+    {name:"Tour Scheduling Quality",type:"Checklist",subs:[
+      {name:"Scheduling Methods",type:"Tiered",tiers:"All 4→20; 3→15; 2→10; 1→5",v6:"40"},
+      {name:"Online Self-Booking",type:"Y/N",v6:"15"},
+      {name:"Availability (Weekend/Evening)",type:"Tiered",tiers:"Both→20; One→10; Neither→0",v6:"15"},
+      {name:"Broker Scheduling Access",type:"Y/N",v6:"15"},
+      {name:"Flexibility (Same-day/Walk-ins)",type:"Tiered",tiers:"Both→20; One→10; Neither→0",v6:"15"}
+    ]},
+    {name:"Office Environment",type:"Checklist",subs:[
+      {name:"Accessibility",type:"Tiered",tiers:"Parking+Signage→15; One→8",v6:"15"},
+      {name:"Hours Coverage",type:"Tiered",tiers:"7d→20; 6→15; 5→10; <5→5",v6:"20"},
+      {name:"Seating Available",type:"Y/N",v6:"10"},{name:"Refreshments",type:"Y/N",v6:"15"},
+      {name:"WiFi",type:"Y/N",v6:"10"},{name:"Restroom",type:"Y/N",v6:"10"},
+      {name:"Professional Setup",type:"Tiered",tiers:"Materials+Tech→15; One→8",v6:"10"},
+      {name:"Wayfinding Signage",type:"Y/N",v6:"10"}
+    ]},
+    {name:"Model Unit Quality",type:"Checklist",subs:[
+      {name:"Model Available",type:"Y/N",v6:"70"},
+      {name:"Model Quality",type:"Tiered",tiers:"Fully furnished→15; Partial→8; None→0",v6:"15"},
+      {name:"Model Positioning",type:"Tiered",tiers:"Typical→15; Best-case→10; Aspirational→5",v6:"15"}
+    ]},
+  ]},
+  { area:"4. Listings", question:"Is the product positioned correctly?", items:[
+    {name:"Platform Coverage",type:"Checklist",subs:[
+      {name:"Platform Count",type:"Tiered",tiers:"0-2→0; 3→10; 4→15; 5→20; 6→25; 7→30",v6:"35"},
+      {name:"ILS Coverage",type:"Tiered",tiers:"Both Apts+Zillow→20; One→10; Neither→0",v6:"25"},
+      {name:"Update Frequency",type:"Tiered",tiers:"Real-time→15; Daily→12; Weekly→8; Manual→3",v6:"15"},
+      {name:"Management Quality",type:"Tiered",tiers:"In-house→10; PM→7; External→10; Mix→5",v6:"10"},
+      {name:"Syndication Method",type:"Tiered",tiers:"Centralized→15; Partial→8; Manual→3",v6:"15"}
+    ]},
+    {name:"Photo Quality",type:"Checklist",subs:[
+      {name:"Hero Image Present",type:"Y/N",v6:"10"},{name:"Exterior Coverage (5+)",type:"Y/N",v6:"10"},
+      {name:"Unit Interior (all rooms/types)",type:"Y/N",v6:"20"},
+      {name:"Amenity Coverage",type:"Tiered",tiers:"100%→20; 75-99→15; 50-74→10; <50→5",v6:"15"},
+      {name:"Lifestyle Shots (5+)",type:"Y/N",v6:"10"},{name:"Professional Photographer",type:"Y/N",v6:"25"},
+      {name:"Photo Recency",type:"Tiered",tiers:"<3mo→5; 3-6→3; 6-12→1; >12→0",v6:"10"}
+    ]},
+    {name:"Content Quality",type:"Checklist",subs:[
+      {name:"Unique Selling Points Mentioned",type:"Y/N",v6:"15"},
+      {name:"Neighborhood Context Included",type:"Y/N",v6:"10"},
+      {name:"Call-to-Action Included",type:"Y/N",v6:"10"},
+      {name:"Contact Info Clear",type:"Y/N",v6:"15"},
+      {name:"Floor Plans Available",type:"Y/N",v6:"10"},
+      {name:"Unit Specs Accurate",type:"Y/N",v6:"10"},
+      {name:"Amenities Fully Listed",type:"Y/N",v6:"10"},
+      {name:"Pet Policy Stated",type:"Y/N",v6:"10"},
+      {name:"Lease Terms Mentioned",type:"Y/N",v6:"10"}
+    ]},
+    {name:"Listing Accuracy",type:"Checklist",subs:[
+      {name:"Pricing Accurate Across Platforms",type:"Y/N",v6:"15"},
+      {name:"Availability Accurate",type:"Y/N",v6:"15"},
+      {name:"Unit Types/Sizes Correct",type:"Y/N",v6:"15"},
+      {name:"Amenities List Accurate",type:"Y/N",v6:"15"},
+      {name:"Photos Match Property Condition",type:"Y/N",v6:"15"},
+      {name:"Specials Updated",type:"Y/N",v6:"15"},
+      {name:"Contact Info Current",type:"Y/N",v6:"10"}
+    ]},
+  ]},
+  { area:"5. Pricing", question:"Is the property priced correctly?", items:[
+    {name:"Relative to Market",type:"Checklist",subs:[
+      {name:"Loss-to-Lease %",type:"Data",v6:"50"},
+      {name:"New Leases (12mo) — Avg PPSF vs Market Avg PPSF",type:"Comparative",v6:"50"}
+    ]},
+    {name:"Concession % of GPR",type:"Data"},
+    {name:"Rent Lift on Turnover",type:"Data"},{name:"Net Effective vs Asking Gap",type:"Data"},
+    {name:"Renewal Rent Increase",type:"Data"}
+  ]},
+  { area:"6. Retention & Renewal", question:"Are residents staying?", items:[
+    {name:"Renewal Rate",type:"Data"},{name:"Average Resident Tenure",type:"Data"},
+    {name:"Month-to-Month %",type:"Data"},{name:"Controllable Turnover Rate",type:"Data"},
+    {name:"DNR Rate",type:"Data"},
+    {name:"Renewal & Retention Process",type:"Checklist",subs:[
+      {name:"Defined Renewal Process Exists",type:"Y/N",v6:"5"},
+      {name:"Renewal Offer Communicated in Writing",type:"Y/N",v6:"5"},
+      {name:"Renewal Pricing Strategy Defined",type:"Y/N",v6:"5"},
+      {name:"Resident Satisfaction Assessed Before Renewal",type:"Y/N",v6:"5"},
+      {name:"Renewal Negotiation Flexibility",type:"Y/N",v6:"5"},
+      {name:"Electronic Renewal Signing Available",type:"Y/N",v6:"5"},
+      {name:"Proactive Retention Outreach Program",type:"Y/N",v6:"5"},
+      {name:"Retention Incentives Offered",type:"Y/N",v6:"5"},
+      {name:"Resident Feedback/Survey Program",type:"Y/N",v6:"5"},
+      {name:"Exit Interview / Move-Out Survey",type:"Y/N",v6:"5"},
+      {name:"DNR Review Process Exists",type:"Y/N",v6:"5"},
+      {name:"DNR Criteria Documented",type:"Y/N",v6:"5"},
+      {name:"DNR Decisions Reviewed by Management",type:"Y/N",v6:"5"},
+      {name:"DNR Communication Timeline Defined",type:"Y/N",v6:"5"},
+      {name:"Occupied Apartment Program Exists",type:"Y/N",v6:"5"},
+      {name:"Non-Renewal Triggers Showing Communication",type:"Y/N",v6:"5"},
+      {name:"Pre-Move-Out Unit Assessment",type:"Y/N",v6:"5"},
+      {name:"Move-Out Checklist Provided",type:"Y/N",v6:"5"},
+      {name:"Outreach Timeline",type:"Tiered",tiers:"120+d→10; 90d→7; 60d→4; 30d→0",v6:"5"},
+      {name:"NTV Response Speed",type:"Tiered",tiers:"Same day→10; 1-3d→7; 3-5d→3; 5+→0",v6:"5"}
+    ]}
+  ]},
+  { area:"7. Operations", question:"Is the property staffed and equipped to perform?", items:[
+    {name:"Units per Leasing Agent",type:"Data"},{name:"Units per Maintenance Tech",type:"Data"},
+    {name:"Staffing Stability",type:"Checklist",subs:[
+      {name:"Staff Turnover Rate",type:"Data",v6:"25"},
+      {name:"Average Staff Tenure",type:"Data",v6:"25"},
+      {name:"PM Tenure",type:"Data",v6:"25"},
+      {name:"Open Position Rate",type:"Data",v6:"25"}
+    ]},
+    {name:"Technology Effectiveness",type:"Checklist",subs:[
+      {name:"Coverage Breadth",type:"Tiered",tiers:"13-16→20; 9-12→15; 5-8→10; 1-4→5",v6:"15"},
+      {name:"Capability Depth",type:"Tiered",tiers:"≥80%→20; 60-79→15; 40-59→10; 20-39→5",v6:"15"},
+      {name:"Integration Quality",type:"Tiered",tiers:"8+→25; 5-7→20; 3-4→12; 1-2→5",v6:"15"},
+      {name:"Staff Mobile Access",type:"Y/N",v6:"10"},{name:"Resident Mobile Access",type:"Y/N",v6:"10"},
+      {name:"Automation Level",type:"Tiered",tiers:"High→20; Moderate→12; Low→5; Minimal→0",v6:"15"},
+      {name:"System Efficiency",type:"Tiered",tiers:"No redundancy→10; Some→5; Many→0",v6:"10"},
+      {name:"Tech Spend ROI",type:"Tiered",tiers:"<$100/unit→10; $100-200→7; $200-300→4; >$300→0",v6:"10"}
+    ]},
+    {name:"Compliance",type:"Checklist",subs:[
+      {name:"Fire/Safety Inspection Current",type:"Y/N",v6:"25"},
+      {name:"No Open Code Violations",type:"Y/N",v6:"25"},
+      {name:"ADA Compliance Met",type:"Y/N",v6:"25"},
+      {name:"Insurance Current",type:"Y/N",v6:"25"}
+    ]}
+  ]},
+  { area:"8. Financials", question:"Is the property hitting its financial targets? (scored against owner-reported benchmarks)", items:[
+    {name:"Revenue",type:"Checklist",subs:[
+      {name:"Gross Potential Rent",type:"Data",v6:"20"},
+      {name:"Vacancy Loss",type:"Data",v6:"20"},
+      {name:"Concessions / Loss-to-Lease",type:"Data",v6:"20"},
+      {name:"Other Income",type:"Data",v6:"20"},
+      {name:"Effective Gross Income",type:"Data",v6:"20"}
+    ]},
+    {name:"Expenses",type:"Checklist",subs:[
+      {name:"Payroll & Benefits",type:"Data",v6:"11"},
+      {name:"Repairs & Maintenance",type:"Data",v6:"12"},
+      {name:"Utilities",type:"Data",v6:"11"},
+      {name:"Marketing & Advertising",type:"Data",v6:"11"},
+      {name:"Insurance",type:"Data",v6:"11"},
+      {name:"Real Estate Taxes",type:"Data",v6:"11"},
+      {name:"Admin / G&A",type:"Data",v6:"11"},
+      {name:"Contract Services",type:"Data",v6:"11"},
+      {name:"Management Fee",type:"Data",v6:"11"}
+    ]},
+    {name:"Bottom Line",type:"Checklist",subs:[
+      {name:"Total Operating Expenses",type:"Data",v6:"50"},
+      {name:"Net Operating Income",type:"Data",v6:"50"}
+    ]},
+    {name:"Capital",type:"Checklist",subs:[
+      {name:"Capital Expenditures",type:"Data",v6:"50"},
+      {name:"Capital Reserves",type:"Data",v6:"50"}
+    ]}
+  ]},
+  { area:"9. Maintenance & Turnovers", question:"Are units maintained and turned efficiently?", items:[
+    {name:"Maintenance Performance",type:"Checklist",subs:[
+      {name:"Emergency Response Time",type:"Tiered",tiers:"<2h→25; 2-4→20; 4-8→12; 8-24→5; >24→0",v6:"20"},
+      {name:"Routine Response Time",type:"Tiered",tiers:"<4h→20; 4-24→15; 24-48→10; 48-72→5; >72→0",v6:"20"},
+      {name:"Work Order Completion Rate",type:"Data",v6:"15"},
+      {name:"Avg Work Order Completion Duration",type:"Data",v6:"15"},
+      {name:"Callback / Repeat Work Order Rate",type:"Data",v6:"15"},
+      {name:"Preventive vs Reactive Ratio",type:"Data",v6:"15"}
+    ]},
+    {name:"Maintenance Operations Systems",type:"Checklist",subs:[
+      {name:"Formal Request System",type:"Y/N",v6:"50"},
+      {name:"Maintenance Process Documentation",type:"Y/N",v6:"25"},
+      {name:"Parts Inventory System",type:"Y/N",v6:"25"}
+    ]},
+    {name:"Turnover Performance",type:"Checklist",subs:[
+      {name:"Make-Ready Duration",type:"Data",v6:"70"},
+      {name:"Make-Ready Cost",type:"Data",v6:"30"}
+    ]}
+  ]},
+  { area:"10. Property Condition", question:"What shape is the asset in?", items:[
+    {name:"Overall Property Condition",type:"Checklist",subs:[
+      {name:"Overall Condition Rating",type:"Tiered",tiers:"Excellent→25; Good→20; Fair→12; Poor→5; Critical→0",v6:"20"},
+      {name:"Common Areas Rating",type:"Tiered",tiers:"Excellent→20; Good→15; Fair→9; Poor→3; Critical→0",v6:"20"},
+      {name:"Exterior Presentation",type:"Tiered",tiers:"Excellent→20; Good→15; Fair→9; Poor→3; Critical→0",v6:"20"},
+      {name:"Amenities Condition Rating",type:"Tiered",tiers:"Excellent→20; Good→15; Fair→9; Poor→3; Critical→0",v6:"20"},
+      {name:"Issues Count",type:"Tiered",tiers:"0→15; 1-2→12; 3-5→8; 6-10→3; >10→0",v6:"20"}
+    ]},
+    {name:"Capital Asset Condition",type:"Checklist",subs:[
+      {name:"Roof",type:"Tiered",tiers:"Good; Fair; Poor; Critical",v6:"10"},
+      {name:"HVAC Systems",type:"Tiered",tiers:"Good; Fair; Poor; Critical",v6:"10"},
+      {name:"Plumbing",type:"Tiered",tiers:"Good; Fair; Poor; Critical",v6:"10"},
+      {name:"Electrical",type:"Tiered",tiers:"Good; Fair; Poor; Critical",v6:"10"},
+      {name:"Siding / Facade",type:"Tiered",tiers:"Good; Fair; Poor; Critical",v6:"10"},
+      {name:"Windows",type:"Tiered",tiers:"Good; Fair; Poor; Critical",v6:"10"},
+      {name:"Parking Surfaces",type:"Tiered",tiers:"Good; Fair; Poor; Critical",v6:"10"},
+      {name:"Elevators",type:"Tiered",tiers:"Good; Fair; Poor; Critical; N/A",v6:"10"},
+      {name:"Water Heaters",type:"Tiered",tiers:"Good; Fair; Poor; Critical",v6:"10"},
+      {name:"Fire/Life Safety Systems",type:"Tiered",tiers:"Good; Fair; Poor; Critical",v6:"10"}
+    ]},
+    {name:"Deferred Maintenance",type:"Checklist",subs:[
+      {name:"Number of Deferred Items",type:"Tiered",tiers:"0→best; 1-2; 3-5; 6-10; >10→worst",v6:"50"},
+      {name:"Critical Systems Affected",type:"Y/N",v6:"25"},
+      {name:"Safety Hazards Present",type:"Y/N",v6:"25"}
+    ]},
+    {name:"Unit Condition — Vacant Walks",type:"Checklist",subs:[
+      {name:"Flooring",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"Walls / Paint",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"Kitchen Cabinets & Countertops",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"Kitchen Appliances",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"Bathroom Fixtures & Tile",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"Windows & Blinds",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"Doors & Hardware",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"Lighting Fixtures",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"HVAC (in-unit)",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"Overall Cleanliness",type:"Tiered",tiers:"Excellent; Good; Fair; Poor",v6:"9"},
+      {name:"General Finish Level",type:"Tiered",tiers:"Dated; Acceptable; Updated; Modern",v6:"10"}
+    ]}
+  ]},
+  { area:"11. Competitive Position", question:"How does this property stack up?", items:[
+    {name:"Pricing vs Comps",type:"Checklist",subs:[
+      {name:"Studio — Avg Price vs Comps",type:"Comparative",v6:"16.66"},
+      {name:"Studio — PPSF vs Comps",type:"Comparative",v6:"16.66"},
+      {name:"1-Bed — Avg Price vs Comps",type:"Comparative",v6:"16.66"},
+      {name:"1-Bed — PPSF vs Comps",type:"Comparative",v6:"16.66"},
+      {name:"2-Bed — Avg Price vs Comps",type:"Comparative",v6:"16.66"},
+      {name:"2-Bed — PPSF vs Comps",type:"Comparative",v6:"16.7"}
+    ]},
+    {name:"Amenity Count vs Comps",type:"Comparative"},
+    {name:"Reputation Score vs Comps",type:"Comparative"},
+    {name:"Mystery Shop Score vs Comps",type:"Comparative"},
+    {name:"Occupancy vs Comps",type:"Comparative"},
+    {name:"Resident Services vs Comps",type:"Comparative"},
+    {name:"Resident Events vs Comps",type:"Comparative"},
+    {name:"Resident Mobile App vs Comps",type:"Comparative"}
+  ]},
+  { area:"12. Collections & Screening", question:"Screening well and collecting what it's owed?", items:[
+    {name:"Delinquency Rate",type:"Data"},{name:"Bad Debt Write-Off Rate",type:"Data"},
+    {name:"Eviction Rate",type:"Data"},
+    {name:"Application Denial Rate",type:"Data"},
+    {name:"Short-Tenure Turnover Rate",type:"Data"},
+    {name:"Screening Process Quality",type:"Checklist",subs:[
+      {name:"Defined Screening Criteria Documented",type:"Y/N",v6:"12.5"},
+      {name:"Credit Check Required",type:"Y/N",v6:"12.5"},
+      {name:"Background Check Required",type:"Y/N",v6:"12.5"},
+      {name:"Income Verification Required",type:"Y/N",v6:"12.5"},
+      {name:"Rental History Verification Required",type:"Y/N",v6:"12.5"},
+      {name:"Employment Verification Required",type:"Y/N",v6:"12.5"},
+      {name:"Consistent Application of Criteria",type:"Y/N",v6:"12.5"},
+      {name:"Adverse Action Notice Process",type:"Y/N",v6:"12.5"}
+    ]}
+  ]}
+];
+
+function slug(s) { return s.replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_|_$/g,'').toLowerCase(); }
+
+function init() {
+  const nav = document.getElementById('areaNav');
+  const sections = document.getElementById('areaSections');
+  DATA.forEach((a, ai) => {
+    const aSlug = slug(a.area);
+    const btn = document.createElement('button');
+    btn.textContent = a.area.replace(/^\d+\.\s*/,'');
+    btn.innerHTML += '<span class="status-dot empty"></span>';
+    btn.onclick = () => showArea(ai);
+    btn.dataset.ai = ai;
+    nav.appendChild(btn);
+
+    const sec = document.createElement('div');
+    sec.className = 'area-section';
+    sec.id = 'area-'+ai;
+    sec.innerHTML = buildAreaHTML(a, ai, aSlug);
+    sections.appendChild(sec);
+  });
+  showArea(0);
+  loadFromLocal();
+  if (!_lsWorks) {
+    document.getElementById('saveStatus').textContent = 'AUTO-SAVE UNAVAILABLE — use Save to File!';
+    document.getElementById('saveStatus').className = 'save-status visible error';
+  }
+}
+
+function buildAreaHTML(a, ai, aSlug) {
+  let h = `<div class="area-header">
+    <div><div class="area-title">${a.area}</div><div style="color:var(--text2);font-size:13px;margin-top:4px">${a.question}</div></div>
+    <div class="area-weight-box">
+      <label>Area Weight %</label>
+      <input type="number" min="0" max="100" step="0.5" id="aw__${aSlug}" oninput="updateAreaWeight()" placeholder="—">
+      <span class="overall-status" id="aw-status-${ai}"></span>
+    </div>
+  </div>`;
+
+  a.items.forEach((item, ii) => {
+    const iSlug = slug(item.name);
+    const key = aSlug+'__'+iSlug;
+    const badge = item.type.toLowerCase();
+    const hasSubs = item.subs && item.subs.length > 0 && item.subs[0].type !== 'TBD';
+    const isTBD = item.subs && item.subs.length > 0 && item.subs[0].type === 'TBD';
+
+    h += `<div class="item-card">
+      <div class="item-header" onclick="toggleSubs('${key}')">
+        <div style="display:flex;align-items:center">
+          ${item.subs ? '<span class="expand-icon" id="exp-'+key+'">▶</span>' : '<span style="width:24px;display:inline-block"></span>'}
+          <span class="item-name">${item.name}</span>
+          ${item.v6Ref ? '<span style="font-size:11px;color:var(--text2);margin-left:12px">'+item.v6Ref+'</span>' : ''}
+        </div>
+        <div class="item-right">
+          <span class="item-type-badge ${badge}">${item.type}</span>
+          <div><input class="item-weight-input" type="number" min="0" max="100" step="0.5" id="iw__${key}" oninput="updateItemWeight(${ai})" placeholder="—" onclick="event.stopPropagation()"><div class="weight-label">weight %</div></div>
+          ${hasSubs ? '<span class="item-status" id="is-'+key+'"></span>' : ''}
+        </div>
+      </div>`;
+
+    if (hasSubs) {
+      h += `<div class="sub-items" id="subs-${key}"><table>
+        <tr><th style="width:35%">Sub-item</th><th style="width:8%">Type</th><th style="width:32%">Tiers / Details</th><th style="width:10%">V6 Pts</th><th style="width:15%">Your Points</th></tr>`;
+      item.subs.forEach((s, si) => {
+        const sSlug = slug(s.name);
+        h += `<tr>
+          <td class="si-name">${s.name}</td>
+          <td class="si-type">${s.type}</td>
+          <td class="si-tiers">${s.tiers||'—'}</td>
+          <td class="si-v6">${s.v6||'—'}</td>
+          <td class="si-pts"><input type="number" min="0" max="100" step="1" id="sp__${key}__${sSlug}" oninput="updateSubPoints('${key}',${ai},${ii})" placeholder="—"></td>
+        </tr>`;
+      });
+      h += `</table><div class="sub-total-row"><span class="total-label">Points Total (must = 100)</span><span class="total-value" id="st-${key}">0 / 100</span></div></div>`;
+    } else if (isTBD) {
+      h += `<div class="sub-items" id="subs-${key}"><div class="tbd-notice">⚠ Sub-items need to be defined for this checklist item</div></div>`;
+    }
+    h += '</div>';
+  });
+
+  h += `<div class="item-weight-total"><span class="label">Item Weights Total (must = 100%)</span><span class="value" id="iwt-${ai}">0%</span></div>`;
+  return h;
+}
+
+function showArea(ai) {
+  document.querySelectorAll('.area-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.area-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('area-'+ai).classList.add('active');
+  document.querySelector(`[data-ai="${ai}"]`).classList.add('active');
+}
+
+function toggleSubs(key) {
+  const el = document.getElementById('subs-'+key);
+  const icon = document.getElementById('exp-'+key);
+  if (!el) return;
+  el.classList.toggle('open');
+  if (icon) icon.classList.toggle('rotated');
+}
+
+function updateAreaWeight() {
+  let total = 0;
+  DATA.forEach((a) => {
+    const v = parseFloat(document.getElementById('aw__'+slug(a.area))?.value) || 0;
+    total += v;
+  });
+  DATA.forEach((_, i) => {
+    const el = document.getElementById('aw-status-'+i);
+    if (el) {
+      el.textContent = total.toFixed(1) + '%';
+      el.style.color = Math.abs(total - 100) < 0.01 ? 'var(--green)' : total > 100 ? 'var(--red)' : 'var(--yellow)';
+    }
+  });
+  updateNavDots();
+  autoSave();
+}
+
+function updateItemWeight(ai) {
+  const aSlug = slug(DATA[ai].area);
+  let total = 0;
+  DATA[ai].items.forEach((item) => {
+    total += parseFloat(document.getElementById('iw__'+aSlug+'__'+slug(item.name))?.value) || 0;
+  });
+  const el = document.getElementById('iwt-'+ai);
+  if (el) {
+    el.textContent = total.toFixed(1) + '%';
+    el.style.color = Math.abs(total - 100) < 0.01 ? 'var(--green)' : total > 100 ? 'var(--red)' : 'var(--yellow)';
+  }
+  updateNavDots();
+  autoSave();
+}
+
+function updateSubPoints(key, ai, ii) {
+  const item = DATA[ai].items[ii];
+  if (!item.subs) return;
+  let total = 0;
+  item.subs.forEach((s) => {
+    total += parseFloat(document.getElementById('sp__'+key+'__'+slug(s.name))?.value) || 0;
+  });
+  const el = document.getElementById('st-'+key);
+  if (el) {
+    el.textContent = total + ' / 100';
+    el.style.color = total === 100 ? 'var(--green)' : total > 100 ? 'var(--red)' : 'var(--yellow)';
+  }
+  const status = document.getElementById('is-'+key);
+  if (status) {
+    status.textContent = total === 100 ? '✓' : total + '/100';
+    status.style.color = total === 100 ? 'var(--green)' : 'var(--yellow)';
+  }
+  updateNavDots();
+  autoSave();
+}
+
+function updateNavDots() {
+  DATA.forEach((a, ai) => {
+    const aSlug = slug(a.area);
+    const btn = document.querySelector(`[data-ai="${ai}"]`);
+    const dot = btn?.querySelector('.status-dot');
+    if (!dot) return;
+    const aw = parseFloat(document.getElementById('aw__'+aSlug)?.value) || 0;
+    let iwTotal = 0;
+    let iwFilled = 0;
+    a.items.forEach((item) => {
+      const v = parseFloat(document.getElementById('iw__'+aSlug+'__'+slug(item.name))?.value) || 0;
+      iwTotal += v;
+      if (v > 0) iwFilled++;
+    });
+    dot.className = 'status-dot';
+    if (aw > 0 && Math.abs(iwTotal - 100) < 0.01) dot.classList.add('complete');
+    else if (aw > 0 || iwFilled > 0) dot.classList.add('partial');
+    else dot.classList.add('empty');
+  });
+}
+
+let _dirty = false;
+let _lsWorks = false;
+
+window.addEventListener('beforeunload', function(e) {
+  if (_dirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+(function testLS() {
+  try { localStorage.setItem('_test','1'); localStorage.removeItem('_test'); _lsWorks = true; } catch(e) { _lsWorks = false; }
+})();
+
+function getState() {
+  const state = {};
+  document.querySelectorAll('input[type="number"]').forEach(inp => {
+    if (inp.value) state[inp.id] = inp.value;
+  });
+  return state;
+}
+
+function showSaveStatus(msg, isError) {
+  const el = document.getElementById('saveStatus');
+  el.textContent = msg;
+  el.className = 'save-status visible' + (isError ? ' error' : '');
+  clearTimeout(el._timer);
+  if (!isError) el._timer = setTimeout(() => el.classList.remove('visible'), 3000);
+}
+
+function autoSave() {
+  _dirty = true;
+  if (_lsWorks) {
+    try {
+      localStorage.setItem('scoringWorkbook', JSON.stringify(getState()));
+      showSaveStatus('auto-saved');
+    } catch(e) {
+      showSaveStatus('SAVE TO FILE — localStorage broken', true);
+    }
+  } else {
+    showSaveStatus('localStorage unavailable — SAVE TO FILE regularly!', true);
+  }
+}
+
+function saveToFile() {
+  const blob = new Blob([JSON.stringify(getState(), null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Scoring_Workbook_Progress.json';
+  a.click();
+  _dirty = false;
+  showSaveStatus('file downloaded');
+}
+
+function loadFromFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const state = JSON.parse(e.target.result);
+      applyState(state);
+      _dirty = false;
+      showSaveStatus('loaded from file');
+    } catch(err) { alert('Invalid file.'); }
+  };
+  reader.readAsText(file);
+}
+
+function applyState(state) {
+  Object.entries(state).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  });
+  updateAreaWeight();
+  DATA.forEach((_, ai) => { updateItemWeight(ai); });
+  DATA.forEach((a, ai) => a.items.forEach((item, ii) => {
+    const aSlug = slug(a.area);
+    const key = aSlug+'__'+slug(item.name);
+    if (item.subs && item.subs[0]?.type !== 'TBD') updateSubPoints(key, ai, ii);
+  }));
+}
+
+function loadFromLocal() {
+  if (!_lsWorks) return;
+  try {
+    const raw = localStorage.getItem('scoringWorkbook');
+    if (raw) applyState(JSON.parse(raw));
+  } catch(e) {}
+}
+
+function exportCSV() {
+  let csv = 'Area,Item,Sub-item,Input Type,Area Weight %,Item Weight %,Sub-item Points,Tier Definition,V6 Reference\n';
+  DATA.forEach((a) => {
+    const aSlug = slug(a.area);
+    const aw = document.getElementById('aw__'+aSlug)?.value || '';
+    a.items.forEach((item) => {
+      const iSlug = slug(item.name);
+      const key = aSlug+'__'+iSlug;
+      const iw = document.getElementById('iw__'+key)?.value || '';
+      if (!item.subs || item.subs[0]?.type === 'TBD') {
+        csv += `"${a.area}","${item.name}","","${item.type}","${aw}","${iw}","","",""\n`;
+      } else {
+        item.subs.forEach((s) => {
+          const sp = document.getElementById('sp__'+key+'__'+slug(s.name))?.value || '';
+          csv += `"${a.area}","${item.name}","${s.name}","${s.type}","${aw}","${iw}","${sp}","${(s.tiers||'').replace(/"/g,'""')}","${s.v6||''}"\n`;
+        });
+      }
+    });
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const dl = document.createElement('a');
+  dl.href = URL.createObjectURL(blob);
+  dl.download = 'Scoring_Model_Workbook.csv';
+  dl.click();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,2028 @@
+================================================================================
+MODEL GENERATION VERIFICATION REPORT
+================================================================================
+Tables processed: 125
+Total columns:    1394
+
+  source_system → SourceSystem
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  source_system_id               uuid                 UUID                   NOT
+  tenant_id                      uuid                 UUID                   NOT
+  system_name                    text                 str                    NOT
+  system_type                    text                 str                    NOT
+  vendor_name                    text                 str                   NULL
+  api_base_url                   text                 str                   NULL
+  adapter_type                   text                 str                    NOT
+  configuration                  jsonb                dict[str, Any]         NOT
+  is_active                      boolean              bool                   NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  source_ingestion → SourceIngestion
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  ingestion_id                   uuid                 UUID                   NOT
+  source_system_id               uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  ingestion_type                 text                 str                    NOT
+  status                         text                 str                    NOT
+  file_count                     int                  int                    NOT
+  record_count                   int                  int                   NULL
+  idempotency_key                text                 str                   NULL
+  started_at                     timestamptz          datetime.datetime     NULL
+  completed_at                   timestamptz          datetime.datetime     NULL
+  error_detail                   jsonb                dict[str, Any]        NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+  created_by                     uuid                 UUID                  NULL
+
+  source_asset → SourceAsset
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  asset_id                       uuid                 UUID                   NOT
+  ingestion_id                   uuid                 UUID                   NOT
+  asset_type                     text                 str                    NOT
+  original_filename              text                 str                   NULL
+  mime_type                      text                 str                   NULL
+  file_size_bytes                bigint               int                   NULL
+  content_hash                   text                 str                    NOT
+  storage_path                   text                 str                    NOT
+  metadata                       jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  source_record_raw → SourceRecordRaw
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  record_id                      uuid                 UUID                   NOT
+  asset_id                       uuid                 UUID                   NOT
+  ingestion_id                   uuid                 UUID                   NOT
+  record_type                    text                 str                    NOT
+  source_row_number              int                  int                   NULL
+  raw_data                       jsonb                dict[str, Any]         NOT
+  mapping_status                 text                 str                    NOT
+  mapping_confidence             decimal(5, 4)        Decimal               NULL
+  canonical_entity               text                 str                   NULL
+  canonical_id                   uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  mapping_rule → MappingRule
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  rule_id                        uuid                 UUID                   NOT
+  source_system_id               uuid                 UUID                   NOT
+  source_record_type             text                 str                    NOT
+  source_column                  text                 str                    NOT
+  target_table                   text                 str                    NOT
+  target_column                  text                 str                    NOT
+  transform_expr                 text                 str                   NULL
+  is_active                      boolean              bool                   NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+  created_by                     uuid                 UUID                  NULL
+
+  mapping_review_queue → MappingReviewQueue
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  review_id                      uuid                 UUID                   NOT
+  ingestion_id                   uuid                 UUID                   NOT
+  record_id                      uuid                 UUID                  NULL
+  review_type                    text                 str                    NOT
+  description                    text                 str                    NOT
+  suggested_mapping              jsonb                dict[str, Any]        NULL
+  resolution                     text                 str                   NULL
+  resolved_by                    uuid                 UUID                  NULL
+  resolved_at                    timestamptz          datetime.datetime     NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  tenant → Tenant
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  tenant_id                      uuid                 UUID                   NOT
+  org_name                       text                 str                    NOT
+  slug                           text                 str                    NOT
+  settings                       jsonb                dict[str, Any]         NOT
+  is_active                      boolean              bool                   NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  user_account → UserAccount
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  user_id                        uuid                 UUID                   NOT
+  tenant_id                      uuid                 UUID                   NOT
+  email                          text                 str                    NOT
+  display_name                   text                 str                    NOT
+  role                           text                 str                    NOT
+  auth_provider_id               text                 str                   NULL
+  is_active                      boolean              bool                   NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  audit_log → AuditLog
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  log_id                         uuid                 UUID                   NOT
+  tenant_id                      uuid                 UUID                   NOT
+  user_id                        uuid                 UUID                  NULL
+  action                         text                 str                    NOT
+  entity_type                    text                 str                    NOT
+  entity_id                      uuid                 UUID                   NOT
+  before_value                   jsonb                dict[str, Any]        NULL
+  after_value                    jsonb                dict[str, Any]        NULL
+  reason                         text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  client → Client
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  client_id                      uuid                 UUID                   NOT
+  tenant_id                      uuid                 UUID                   NOT
+  client_name                    text                 str                    NOT
+  contact_name                   text                 str                   NULL
+  contact_phone                  text                 str                   NULL
+  contact_email                  text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  is_active                      boolean              bool                   NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  portfolio → Portfolio
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  portfolio_id                   uuid                 UUID                   NOT
+  client_id                      uuid                 UUID                   NOT
+  portfolio_name                 text                 str                    NOT
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  property → Property
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  tenant_id                      uuid                 UUID                   NOT
+  client_id                      uuid                 UUID                  NULL
+  portfolio_id                   uuid                 UUID                  NULL
+  property_name                  text                 str                    NOT
+  street_address                 text                 str                    NOT
+  city                           text                 str                    NOT
+  state                          text                 str                    NOT
+  zip_code                       text                 str                    NOT
+  total_units                    int                  int                   NULL
+  year_built                     int                  int                   NULL
+  property_class                 text                 str                   NULL
+  building_type                  text                 str                   NULL
+  buildings_count                int                  int                   NULL
+  stories                        int                  int                   NULL
+  total_sqft                     int                  int                   NULL
+  lot_size                       text                 str                   NULL
+  parking_spaces                 int                  int                   NULL
+  parking_type                   text                 str                   NULL
+  is_subject                     boolean              bool                   NOT
+  latitude                       decimal(10, 7)       Decimal               NULL
+  longitude                      decimal(10, 7)       Decimal               NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  building → Building
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  building_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  parent_building_id             uuid                 UUID                  NULL
+  building_label                 text                 str                    NOT
+  building_type                  text                 str                   NULL
+  stories                        int                  int                   NULL
+  unit_count                     int                  int                   NULL
+  has_elevator                   boolean              bool                  NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  floor_plan → FloorPlan
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  floor_plan_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  plan_code                      text                 str                    NOT
+  plan_name                      text                 str                   NULL
+  bedrooms                       decimal(4, 1)        Decimal                NOT
+  bathrooms                      decimal(4, 1)        Decimal                NOT
+  sqft                           int                  int                   NULL
+  base_market_rent               decimal(12, 2)       Decimal               NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  unit → Unit
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  unit_id                        uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  unit_natural_key               text                 str                    NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+  retired_at                     timestamptz          datetime.datetime     NULL
+
+  unit_version → UnitVersion
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  unit_version_id                uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  valid_from                     date                 datetime.date          NOT
+  valid_to                       date                 datetime.date         NULL
+  building_id                    uuid                 UUID                  NULL
+  floor_plan_id                  uuid                 UUID                  NULL
+  floor_label                    text                 str                   NULL
+  unit_label                     text                 str                    NOT
+  floorplan_code                 text                 str                   NULL
+  bedrooms                       decimal(4, 1)        Decimal               NULL
+  bathrooms                      decimal(4, 1)        Decimal               NULL
+  sqft                           int                  int                   NULL
+  finish_package                 text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  recorded_from                  timestamptz          datetime.datetime      NOT
+  recorded_to                    timestamptz          datetime.datetime     NULL
+
+  unit_existence_interval → UnitExistenceInterval
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  interval_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  valid_from                     date                 datetime.date          NOT
+  valid_to                       date                 datetime.date         NULL
+  existence_status               text                 str                    NOT
+  rentable_flag                  boolean              bool                   NOT
+  reason_code                    text                 str                   NULL
+  recorded_from                  timestamptz          datetime.datetime      NOT
+  recorded_to                    timestamptz          datetime.datetime     NULL
+
+  unit_alias → UnitAlias
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  alias_id                       uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  source_system_id               uuid                 UUID                  NULL
+  alias_key                      text                 str                    NOT
+  alias_type                     text                 str                    NOT
+  valid_from                     date                 datetime.date         NULL
+  valid_to                       date                 datetime.date         NULL
+  match_method                   text                 str                   NULL
+  match_confidence               decimal(5, 4)        Decimal               NULL
+  reviewer_override              boolean              bool                   NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  calendar_day → CalendarDay
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  day_date                       date                 datetime.date          NOT
+  day_of_week                    smallint             int                    NOT
+  day_of_month                   smallint             int                    NOT
+  day_of_year                    smallint             int                    NOT
+  week_of_year                   smallint             int                    NOT
+  month                          smallint             int                    NOT
+  quarter                        smallint             int                    NOT
+  year                           smallint             int                    NOT
+  is_weekend                     boolean              bool                   NOT
+  is_month_end                   boolean              bool                   NOT
+
+  property_amenity → PropertyAmenity
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  amenity_id                     uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  amenity_category               text                 str                    NOT
+  amenity_name                   text                 str                    NOT
+  is_present                     boolean              bool                  NULL
+  source                         text                 str                   NULL
+  verification                   text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  unit_amenity → UnitAmenity
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  amenity_id                     uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  amenity_category               text                 str                    NOT
+  amenity_name                   text                 str                    NOT
+  is_present                     boolean              bool                  NULL
+  source                         text                 str                   NULL
+  verification                   text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  market_context → MarketContext
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  context_id                     uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  submarket_name                 text                 str                   NULL
+  submarket_vacancy_pct          decimal(6, 3)        Decimal               NULL
+  submarket_avg_rent_psf         decimal(10, 2)       Decimal               NULL
+  yoy_rent_growth_pct            decimal(6, 3)        Decimal               NULL
+  new_supply_units               int                  int                   NULL
+  employment_growth_pct          decimal(6, 3)        Decimal               NULL
+  population_growth_pct          decimal(6, 3)        Decimal               NULL
+  median_household_income        decimal(12, 2)       Decimal               NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  resident → Resident
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  resident_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  resident_name                  text                 str                   NULL
+  household_id                   uuid                 UUID                  NULL
+  contact_email                  text                 str                   NULL
+  contact_phone                  text                 str                   NULL
+  source_system_id               uuid                 UUID                  NULL
+  source_key                     text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  lease → Lease
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  lease_id                       uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  resident_id                    uuid                 UUID                  NULL
+  lease_type                     text                 str                   NULL
+  lease_start                    date                 datetime.date          NOT
+  lease_end                      date                 datetime.date         NULL
+  lease_term_months              int                  int                   NULL
+  execution_date                 date                 datetime.date         NULL
+  monthly_rent                   decimal(12, 2)       Decimal               NULL
+  market_rent                    decimal(12, 2)       Decimal               NULL
+  security_deposit               decimal(12, 2)       Decimal               NULL
+  concession_type                text                 str                   NULL
+  concession_monthly             decimal(12, 2)       Decimal               NULL
+  concession_start               date                 datetime.date         NULL
+  concession_end                 date                 datetime.date         NULL
+  leasing_agent                  text                 str                   NULL
+  move_in_date                   date                 datetime.date         NULL
+  notice_date                    date                 datetime.date         NULL
+  expected_move_out              date                 datetime.date         NULL
+  actual_move_out                date                 datetime.date         NULL
+  move_out_reason                text                 str                   NULL
+  occupancy_status               text                 str                   NULL
+  source_ingestion_id            uuid                 UUID                  NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  recorded_from                  timestamptz          datetime.datetime      NOT
+  recorded_to                    timestamptz          datetime.datetime     NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  lease_interval → LeaseInterval
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  interval_id                    uuid                 UUID                   NOT
+  lease_id                       uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  valid_from                     date                 datetime.date          NOT
+  valid_to                       date                 datetime.date         NULL
+  monthly_rent                   decimal(12, 2)       Decimal               NULL
+  effective_rent                 decimal(12, 2)       Decimal               NULL
+  concession_value               decimal(12, 2)       Decimal               NULL
+  interval_status                text                 str                    NOT
+  recorded_from                  timestamptz          datetime.datetime      NOT
+  recorded_to                    timestamptz          datetime.datetime     NULL
+
+  lease_charge → LeaseCharge
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  charge_id                      uuid                 UUID                   NOT
+  lease_id                       uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  charge_code                    text                 str                    NOT
+  charge_description             text                 str                   NULL
+  monthly_amount                 decimal(12, 2)       Decimal                NOT
+  effective_from                 date                 datetime.date         NULL
+  effective_to                   date                 datetime.date         NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  lease_event → LeaseEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  event_id                       uuid                 UUID                   NOT
+  lease_id                       uuid                 UUID                   NOT
+  event_type                     text                 str                    NOT
+  event_date                     date                 datetime.date          NOT
+  details                        jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  notice_event → NoticeEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  event_id                       uuid                 UUID                   NOT
+  lease_id                       uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  notice_date                    date                 datetime.date          NOT
+  expected_move_out              date                 datetime.date         NULL
+  notice_type                    text                 str                   NULL
+  reason                         text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  move_event → MoveEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  event_id                       uuid                 UUID                   NOT
+  lease_id                       uuid                 UUID                  NULL
+  unit_id                        uuid                 UUID                   NOT
+  resident_id                    uuid                 UUID                  NULL
+  event_type                     text                 str                    NOT
+  event_date                     date                 datetime.date          NOT
+  rent_amount                    decimal(12, 2)       Decimal               NULL
+  reason                         text                 str                   NULL
+  source_ingestion_id            uuid                 UUID                  NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  renewal_offer → RenewalOffer
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  offer_id                       uuid                 UUID                   NOT
+  lease_id                       uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  resident_id                    uuid                 UUID                  NULL
+  offer_date                     date                 datetime.date          NOT
+  current_rent                   decimal(12, 2)       Decimal               NULL
+  offered_rent                   decimal(12, 2)       Decimal               NULL
+  offered_term                   text                 str                   NULL
+  outcome                        text                 str                   NULL
+  accepted_date                  date                 datetime.date         NULL
+  incentive_offered              text                 str                   NULL
+  incentive_value                decimal(12, 2)       Decimal               NULL
+  competitor_offer               decimal(12, 2)       Decimal               NULL
+  resident_sentiment             text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  payment_event → PaymentEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  event_id                       uuid                 UUID                   NOT
+  lease_id                       uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  payment_date                   date                 datetime.date          NOT
+  amount                         decimal(12, 2)       Decimal                NOT
+  payment_type                   text                 str                    NOT
+  payment_method                 text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  delinquency_snapshot → DelinquencySnapshot
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  snapshot_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  resident_id                    uuid                 UUID                  NULL
+  snapshot_date                  date                 datetime.date          NOT
+  current_balance                decimal(12, 2)       Decimal               NULL
+  bucket_0_30                    decimal(12, 2)       Decimal               NULL
+  bucket_31_60                   decimal(12, 2)       Decimal               NULL
+  bucket_61_90                   decimal(12, 2)       Decimal               NULL
+  bucket_90_plus                 decimal(12, 2)       Decimal               NULL
+  last_payment_date              date                 datetime.date         NULL
+  collections_status             text                 str                   NULL
+  eviction_filed                 boolean              bool                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  staff_member → StaffMember
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  staff_id                       uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  staff_name                     text                 str                    NOT
+  role                           text                 str                   NULL
+  tenure_months                  int                  int                   NULL
+  certifications                 text                 str                   NULL
+  is_active                      boolean              bool                   NOT
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  vendor → Vendor
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  vendor_id                      uuid                 UUID                   NOT
+  tenant_id                      uuid                 UUID                   NOT
+  vendor_name                    text                 str                    NOT
+  vendor_type                    text                 str                   NULL
+  contact_info                   jsonb                dict[str, Any]         NOT
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  work_order → WorkOrder
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  work_order_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                  NULL
+  work_order_number              text                 str                   NULL
+  category                       text                 str                    NOT
+  sub_category                   text                 str                   NULL
+  description                    text                 str                   NULL
+  priority                       text                 str                   NULL
+  status                         text                 str                    NOT
+  assigned_to                    text                 str                   NULL
+  vendor_id                      uuid                 UUID                  NULL
+  cost                           decimal(12, 2)       Decimal               NULL
+  date_created                   date                 datetime.date          NOT
+  date_completed                 date                 datetime.date         NULL
+  is_make_ready                  boolean              bool                   NOT
+  source_ingestion_id            uuid                 UUID                  NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  work_order_line_item → WorkOrderLineItem
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  line_item_id                   uuid                 UUID                   NOT
+  work_order_id                  uuid                 UUID                   NOT
+  cost_category                  text                 str                    NOT
+  description                    text                 str                   NULL
+  amount                         decimal(12, 2)       Decimal                NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  work_order_status_event → WorkOrderStatusEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  event_id                       uuid                 UUID                   NOT
+  work_order_id                  uuid                 UUID                   NOT
+  status                         text                 str                    NOT
+  event_date                     timestamptz          datetime.datetime      NOT
+  notes                          text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  make_ready_cycle → MakeReadyCycle
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  cycle_id                       uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  move_out_date                  date                 datetime.date         NULL
+  notice_date                    date                 datetime.date         NULL
+  make_ready_start               date                 datetime.date         NULL
+  make_ready_complete            date                 datetime.date         NULL
+  ready_observed                 date                 datetime.date         NULL
+  first_listing_date             date                 datetime.date         NULL
+  first_tour_date                date                 datetime.date         NULL
+  first_showing_date             date                 datetime.date         NULL
+  application_date               date                 datetime.date         NULL
+  lease_signed_date              date                 datetime.date         NULL
+  move_in_date                   date                 datetime.date         NULL
+  prior_lease_id                 uuid                 UUID                  NULL
+  new_lease_id                   uuid                 UUID                  NULL
+  total_turn_days                int                  int                   NULL
+  make_ready_scope               text                 str                   NULL
+  total_cost                     decimal(12, 2)       Decimal               NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  vacancy_cycle → VacancyCycle
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  cycle_id                       uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  vacancy_start                  date                 datetime.date          NOT
+  vacancy_end                    date                 datetime.date         NULL
+  days_vacant                    int                  int                   NULL
+  prior_rent                     decimal(12, 2)       Decimal               NULL
+  new_rent                       decimal(12, 2)       Decimal               NULL
+  vacancy_cost                   decimal(12, 2)       Decimal               NULL
+  make_ready_cycle_id            uuid                 UUID                  NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  unit_condition_observation → UnitConditionObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  observation_date               date                 datetime.date          NOT
+  observer_id                    uuid                 UUID                  NULL
+  flooring                       text                 str                   NULL
+  walls_paint                    text                 str                   NULL
+  kitchen_cabinets               text                 str                   NULL
+  kitchen_appliances             text                 str                   NULL
+  bathroom_fixtures              text                 str                   NULL
+  windows_blinds                 text                 str                   NULL
+  doors_hardware                 text                 str                   NULL
+  lighting_fixtures              text                 str                   NULL
+  hvac_in_unit                   text                 str                   NULL
+  overall_cleanliness            text                 str                   NULL
+  general_finish                 text                 str                   NULL
+  cleanliness_acceptable         boolean              bool                  NULL
+  odor_present                   boolean              bool                  NULL
+  pest_evidence                  boolean              bool                  NULL
+  water_damage                   boolean              bool                  NULL
+  appliances_functional          boolean              bool                  NULL
+  windows_blinds_intact          boolean              bool                  NULL
+  hvac_operational               boolean              bool                  NULL
+  ready_to_show                  boolean              bool                  NULL
+  condition_notes                text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  field_validation → FieldValidation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  validation_id                  uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  entity_type                    text                 str                    NOT
+  entity_id                      uuid                 UUID                   NOT
+  field_name                     text                 str                    NOT
+  pm_value                       text                 str                   NULL
+  field_value                    text                 str                   NULL
+  is_match                       boolean              bool                  NULL
+  severity                       text                 str                   NULL
+  notes                          text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  budget_actual_line → BudgetActualLine
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  line_id                        uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  line_category                  text                 str                    NOT
+  line_item                      text                 str                    NOT
+  period_month                   date                 datetime.date          NOT
+  budget_amount                  decimal(14, 2)       Decimal               NULL
+  actual_amount                  decimal(14, 2)       Decimal               NULL
+  per_unit_amount                decimal(12, 2)       Decimal               NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  property_condition_observation → PropertyConditionObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  observation_date               date                 datetime.date          NOT
+  overall_condition              text                 str                   NULL
+  common_areas                   text                 str                   NULL
+  exterior_presentation          text                 str                   NULL
+  amenities_condition            text                 str                   NULL
+  issues_count                   int                  int                   NULL
+  issues_detail                  text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  capital_asset_observation → CapitalAssetObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  system_name                    text                 str                    NOT
+  system_type                    text                 str                   NULL
+  condition_rating               text                 str                   NULL
+  install_year                   int                  int                   NULL
+  last_service_date              date                 datetime.date         NULL
+  age_years                      int                  int                   NULL
+  observation_notes              text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  deferred_maintenance_item → DeferredMaintenanceItem
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  item_id                        uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  location                       text                 str                   NULL
+  description                    text                 str                    NOT
+  affected_system                text                 str                   NULL
+  severity                       text                 str                   NULL
+  estimated_cost                 decimal(12, 2)       Decimal               NULL
+  is_safety_hazard               boolean              bool                   NOT
+  photo_asset_id                 uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  fire_safety_observation → FireSafetyObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  fire_inspection_current        boolean              bool                  NULL
+  last_fire_inspection           date                 datetime.date         NULL
+  open_violations                boolean              bool                  NULL
+  violation_count                int                  int                   NULL
+  violation_details              text                 str                   NULL
+  no_open_code_violations        boolean              bool                  NULL
+  ada_compliance_met             boolean              bool                  NULL
+  insurance_current              boolean              bool                  NULL
+  reac_nspire_score              decimal(5, 1)        Decimal               NULL
+  elevator_inspection_current    boolean              bool                  NULL
+  last_elevator_inspection       date                 datetime.date         NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  back_of_house_observation → BackOfHouseObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  shop_organized                 boolean              bool                  NULL
+  parts_inventory_labeled        boolean              bool                  NULL
+  safety_equipment_present       boolean              bool                  NULL
+  fire_extinguisher_current      boolean              bool                  NULL
+  chemical_storage_compliant     boolean              bool                  NULL
+  vehicle_cart_condition         text                 str                   NULL
+  cleanliness                    text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  lead → Lead
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  lead_id                        uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  prospect_id                    text                 str                   NULL
+  lead_created_date              date                 datetime.date         NULL
+  lead_source_id                 uuid                 UUID                  NULL
+  agent_id                       uuid                 UUID                  NULL
+  unit_type_interest             text                 str                   NULL
+  status                         text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  source_ingestion_id            uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  lead_source → LeadSource
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  source_id                      uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  source_name                    text                 str                    NOT
+  source_category                text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  lead_event → LeadEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  event_id                       uuid                 UUID                   NOT
+  lead_id                        uuid                 UUID                   NOT
+  event_type                     text                 str                    NOT
+  event_date                     date                 datetime.date          NOT
+  agent_id                       uuid                 UUID                  NULL
+  response_time_min              int                  int                   NULL
+  outcome                        text                 str                   NULL
+  reason_lost                    text                 str                   NULL
+  notes                          text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  communication_event → CommunicationEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  event_id                       uuid                 UUID                   NOT
+  lead_id                        uuid                 UUID                  NULL
+  resident_id                    uuid                 UUID                  NULL
+  property_id                    uuid                 UUID                   NOT
+  channel                        text                 str                    NOT
+  direction                      text                 str                    NOT
+  event_date                     timestamptz          datetime.datetime      NOT
+  notes                          text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  tour_event → TourEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  event_id                       uuid                 UUID                   NOT
+  lead_id                        uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  agent_id                       uuid                 UUID                  NULL
+  tour_date                      date                 datetime.date          NOT
+  tour_type                      text                 str                   NULL
+  outcome                        text                 str                   NULL
+  duration_minutes               int                  int                   NULL
+  units_shown                    jsonb                dict[str, Any]        NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  application_event → ApplicationEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  event_id                       uuid                 UUID                   NOT
+  lead_id                        uuid                 UUID                  NULL
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                  NULL
+  application_date               date                 datetime.date          NOT
+  status                         text                 str                    NOT
+  screening_score                text                 str                   NULL
+  decision_date                  date                 datetime.date         NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  agent → Agent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  agent_id                       uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  agent_name                     text                 str                    NOT
+  agent_type                     text                 str                   NULL
+  is_active                      boolean              bool                   NOT
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  crm_assignment_interval → CrmAssignmentInterval
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  interval_id                    uuid                 UUID                   NOT
+  lead_id                        uuid                 UUID                   NOT
+  agent_id                       uuid                 UUID                   NOT
+  assigned_from                  date                 datetime.date          NOT
+  assigned_to                    date                 datetime.date         NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  conversion_metric_snapshot → ConversionMetricSnapshot
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  snapshot_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  period_label                   text                 str                    NOT
+  total_leads                    int                  int                   NULL
+  total_tours                    int                  int                   NULL
+  total_no_shows                 int                  int                   NULL
+  total_applications             int                  int                   NULL
+  total_leases                   int                  int                   NULL
+  avg_days_lead_tour             decimal(8, 2)        Decimal               NULL
+  avg_days_tour_app              decimal(8, 2)        Decimal               NULL
+  avg_days_app_lease             decimal(8, 2)        Decimal               NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  marketing_channel → MarketingChannel
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  channel_id                     uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  channel_name                   text                 str                    NOT
+  channel_type                   text                 str                    NOT
+  platform_url                   text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  campaign → Campaign
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  campaign_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  channel_id                     uuid                 UUID                  NULL
+  campaign_name                  text                 str                    NOT
+  start_date                     date                 datetime.date         NULL
+  end_date                       date                 datetime.date         NULL
+  budget                         decimal(12, 2)       Decimal               NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  campaign_spend → CampaignSpend
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  spend_id                       uuid                 UUID                   NOT
+  campaign_id                    uuid                 UUID                   NOT
+  period_month                   date                 datetime.date          NOT
+  amount                         decimal(12, 2)       Decimal                NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  website_observation → WebsiteObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  observation_date               date                 datetime.date          NOT
+  website_url                    text                 str                   NULL
+  website_exists                 boolean              bool                  NULL
+  mobile_responsive              boolean              bool                  NULL
+  live_chat                      boolean              bool                  NULL
+  contact_form                   boolean              bool                  NULL
+  floor_plans                    boolean              bool                  NULL
+  photo_gallery                  boolean              bool                  NULL
+  unit_availability              boolean              bool                  NULL
+  virtual_tours                  boolean              bool                  NULL
+  online_application             boolean              bool                  NULL
+  tour_scheduling                boolean              bool                  NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  social_observation → SocialObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  platform                       text                 str                    NOT
+  profile_url                    text                 str                   NULL
+  is_active                      boolean              bool                  NULL
+  follower_count                 int                  int                   NULL
+  post_frequency                 text                 str                   NULL
+  observation_date               date                 datetime.date          NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  reputation_observation → ReputationObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  platform                       text                 str                    NOT
+  platform_url                   text                 str                   NULL
+  profile_exists                 boolean              bool                  NULL
+  review_score                   decimal(3, 1)        Decimal               NULL
+  review_count                   int                  int                   NULL
+  reviews_last_90d               int                  int                   NULL
+  observation_date               date                 datetime.date          NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  google_business_observation → GoogleBusinessObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  gmb_claimed                    boolean              bool                  NULL
+  gmb_optimized                  boolean              bool                  NULL
+  observation_date               date                 datetime.date          NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  listing → Listing
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  listing_id                     uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                  NULL
+  floor_plan_id                  uuid                 UUID                  NULL
+  channel_id                     uuid                 UUID                  NULL
+  platform                       text                 str                    NOT
+  listing_url                    text                 str                   NULL
+  first_listed_date              date                 datetime.date         NULL
+  delisted_date                  date                 datetime.date         NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  listing_observation → ListingObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  listing_id                     uuid                 UUID                  NULL
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                  NULL
+  assessment_id                  uuid                 UUID                  NULL
+  platform                       text                 str                    NOT
+  observation_date               date                 datetime.date          NOT
+  asking_rent                    decimal(12, 2)       Decimal               NULL
+  concession_displayed           boolean              bool                  NULL
+  concession_amount              decimal(12, 2)       Decimal               NULL
+  photo_count                    int                  int                   NULL
+  photo_quality                  decimal(4, 1)        Decimal               NULL
+  description_quality            decimal(4, 1)        Decimal               NULL
+  description_word_count         int                  int                   NULL
+  floor_plan_available           boolean              bool                  NULL
+  virtual_tour_available         boolean              bool                  NULL
+  amenities_listed               boolean              bool                  NULL
+  pricing_accurate               boolean              bool                  NULL
+  matches_availability           boolean              bool                  NULL
+  contact_info_accurate          boolean              bool                  NULL
+  listing_url                    text                 str                   NULL
+  notes                          text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  listing_photo_assessment → ListingPhotoAssessment
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  assessment_photo_id            uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  hero_image_present             boolean              bool                  NULL
+  exterior_shots_count           int                  int                   NULL
+  living_room_shown              boolean              bool                  NULL
+  kitchen_shown                  boolean              bool                  NULL
+  bedrooms_shown                 boolean              bool                  NULL
+  bathrooms_shown                boolean              bool                  NULL
+  features_shown                 boolean              bool                  NULL
+  pool_photo                     boolean              bool                  NULL
+  fitness_photo                  boolean              bool                  NULL
+  clubhouse_photo                boolean              bool                  NULL
+  other_amenity_count            int                  int                   NULL
+  total_amenities                int                  int                   NULL
+  amenities_photographed         int                  int                   NULL
+  lifestyle_photos               int                  int                   NULL
+  professional_photographer      boolean              bool                  NULL
+  last_photo_update              date                 datetime.date         NULL
+  shows_actual_units             text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  listing_content_assessment → ListingContentAssessment
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  content_id                     uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  platform_count                 int                  int                   NULL
+  ils_coverage                   text                 str                   NULL
+  posting_method                 text                 str                   NULL
+  syndication_tool               text                 str                   NULL
+  update_frequency               text                 str                   NULL
+  usp_mentioned                  boolean              bool                  NULL
+  neighborhood_context           boolean              bool                  NULL
+  call_to_action                 boolean              bool                  NULL
+  contact_info_clear             boolean              bool                  NULL
+  floor_plans_on_listing         boolean              bool                  NULL
+  unit_specs_accurate            boolean              bool                  NULL
+  amenities_fully_listed         boolean              bool                  NULL
+  pet_policy_stated              boolean              bool                  NULL
+  lease_terms_mentioned          boolean              bool                  NULL
+  pricing_consistent             boolean              bool                  NULL
+  availability_accurate          boolean              bool                  NULL
+  photos_match_condition         boolean              bool                  NULL
+  specials_updated               boolean              bool                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  listing_asset → ListingAsset
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  asset_id                       uuid                 UUID                   NOT
+  listing_id                     uuid                 UUID                   NOT
+  asset_type                     text                 str                    NOT
+  storage_path                   text                 str                   NULL
+  quality_score                  decimal(4, 1)        Decimal               NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  marketing_observation → MarketingObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  observation_date               date                 datetime.date          NOT
+  observation_type               text                 str                    NOT
+  data                           jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  competitive_set → CompetitiveSet
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  comp_set_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  set_name                       text                 str                    NOT
+  valid_from                     date                 datetime.date         NULL
+  valid_to                       date                 datetime.date         NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  competitive_set_member → CompetitiveSetMember
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  member_id                      uuid                 UUID                   NOT
+  comp_set_id                    uuid                 UUID                   NOT
+  competitor_property_id         uuid                 UUID                   NOT
+  distance_miles                 decimal(6, 2)        Decimal               NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  comp_floorplan → CompFloorplan
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  comp_floorplan_id              uuid                 UUID                   NOT
+  competitor_property_id         uuid                 UUID                   NOT
+  unit_type                      text                 str                   NULL
+  bedrooms                       decimal(4, 1)        Decimal               NULL
+  bathrooms                      decimal(4, 1)        Decimal               NULL
+  sqft                           int                  int                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  comp_listing_observation → CompListingObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  competitor_property_id         uuid                 UUID                   NOT
+  comp_floorplan_id              uuid                 UUID                  NULL
+  assessment_id                  uuid                 UUID                  NULL
+  observation_date               date                 datetime.date          NOT
+  bedrooms                       decimal(4, 1)        Decimal               NULL
+  bathrooms                      decimal(4, 1)        Decimal               NULL
+  unit_type                      text                 str                   NULL
+  sqft                           int                  int                   NULL
+  asking_rent                    decimal(12, 2)       Decimal               NULL
+  rent_per_sqft                  decimal(8, 2)        Decimal               NULL
+  floor                          text                 str                   NULL
+  is_available                   boolean              bool                  NULL
+  private_outdoor                boolean              bool                  NULL
+  concession_amount              decimal(12, 2)       Decimal               NULL
+  days_listed                    int                  int                   NULL
+  confidence_score               decimal(5, 4)        Decimal               NULL
+  notes                          text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  comp_property_observation → CompPropertyObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  competitor_property_id         uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  observation_date               date                 datetime.date          NOT
+  occupancy_rate_pct             decimal(6, 3)        Decimal               NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  comp_marketing_assessment → CompMarketingAssessment
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  assessment_score_id            uuid                 UUID                   NOT
+  competitor_property_id         uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  platform_coverage              decimal(4, 1)        Decimal               NULL
+  photo_quality                  decimal(4, 1)        Decimal               NULL
+  content_quality                decimal(4, 1)        Decimal               NULL
+  listing_accuracy               decimal(4, 1)        Decimal               NULL
+  website_quality                decimal(4, 1)        Decimal               NULL
+  social_marketing               decimal(4, 1)        Decimal               NULL
+  partnership_referral           decimal(4, 1)        Decimal               NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  mystery_shop → MysteryShop
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  shop_id                        uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  shop_date                      date                 datetime.date          NOT
+  agent_name                     text                 str                   NULL
+  is_subject                     boolean              bool                   NOT
+  phone_friendly_greeting        boolean              bool                  NULL
+  phone_answered_timely          boolean              bool                  NULL
+  phone_enthusiasm               boolean              bool                  NULL
+  phone_described_community      boolean              bool                  NULL
+  phone_qualifying_questions     boolean              bool                  NULL
+  phone_offered_incentives       boolean              bool                  NULL
+  phone_matched_needs            boolean              bool                  NULL
+  phone_scheduled_tour           boolean              bool                  NULL
+  phone_collected_info           boolean              bool                  NULL
+  phone_impression               decimal(4, 1)        Decimal               NULL
+  phone_response_time            decimal(8, 2)        Decimal               NULL
+  phone_response_unit            text                 str                   NULL
+  email_response_time            decimal(8, 2)        Decimal               NULL
+  email_response_unit            text                 str                   NULL
+  greeting_prompt                boolean              bool                  NULL
+  greeting_eye_contact           boolean              bool                  NULL
+  greeting_handshake             boolean              bool                  NULL
+  greeting_asked_name            boolean              bool                  NULL
+  greeting_rapport               boolean              bool                  NULL
+  greeting_refreshments          boolean              bool                  NULL
+  greeting_impression            decimal(4, 1)        Decimal               NULL
+  needs_move_timeline            boolean              bool                  NULL
+  needs_floor_plan               boolean              bool                  NULL
+  needs_budget                   boolean              bool                  NULL
+  needs_lifestyle                boolean              bool                  NULL
+  needs_most_important           boolean              bool                  NULL
+  needs_active_listening         boolean              bool                  NULL
+  needs_impression               decimal(4, 1)        Decimal               NULL
+  wait_time_minutes              decimal(6, 1)        Decimal               NULL
+  tour_duration_minutes          decimal(6, 1)        Decimal               NULL
+  tour_showed_unit               boolean              bool                  NULL
+  tour_highlighted_features      boolean              bool                  NULL
+  tour_amenities                 boolean              bool                  NULL
+  tour_tailored                  boolean              bool                  NULL
+  tour_product_knowledge         boolean              bool                  NULL
+  tour_competitive_knowledge     boolean              bool                  NULL
+  tour_submarket_knowledge       boolean              bool                  NULL
+  tour_lease_terms               boolean              bool                  NULL
+  tour_curb_appeal               boolean              bool                  NULL
+  tour_fair_housing              boolean              bool                  NULL
+  presentation_impression        decimal(4, 1)        Decimal               NULL
+  close_asked_lease              boolean              bool                  NULL
+  close_overcame_objections      boolean              bool                  NULL
+  close_next_steps               boolean              bool                  NULL
+  close_urgency                  boolean              bool                  NULL
+  close_pricing_info             boolean              bool                  NULL
+  closing_impression             decimal(4, 1)        Decimal               NULL
+  followup_received              boolean              bool                  NULL
+  followup_personalized          boolean              bool                  NULL
+  followup_referenced_visit      boolean              bool                  NULL
+  followup_close_attempt         boolean              bool                  NULL
+  followup_impression            decimal(4, 1)        Decimal               NULL
+  followup_timing                text                 str                   NULL
+  followup_method                text                 str                   NULL
+  fair_housing_no_discrimination boolean              bool                  NULL
+  fair_housing_consistent        boolean              bool                  NULL
+  fair_housing_accommodations    boolean              bool                  NULL
+  fair_housing_impression        decimal(4, 1)        Decimal               NULL
+  condition_grounds              boolean              bool                  NULL
+  condition_office               boolean              bool                  NULL
+  condition_show_unit            boolean              bool                  NULL
+  condition_common_areas         boolean              bool                  NULL
+  condition_signage              boolean              bool                  NULL
+  condition_impression           decimal(4, 1)        Decimal               NULL
+  overall_experience             decimal(4, 1)        Decimal               NULL
+  strengths                      text                 str                   NULL
+  gaps                           text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  vacant_unit_audit → VacantUnitAudit
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  audit_id                       uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  observation_date               date                 datetime.date          NOT
+  marketed                       boolean              bool                  NULL
+  like_kind_listing_date         date                 datetime.date         NULL
+  marketed_date                  date                 datetime.date         NULL
+  listing_platform               text                 str                   NULL
+  listing_type                   text                 str                   NULL
+  representative_unit            boolean              bool                  NULL
+  last_refresh_date              date                 datetime.date         NULL
+  leasing_agent                  text                 str                   NULL
+  tours_scheduled                int                  int                   NULL
+  tours_completed                int                  int                   NULL
+  applications_received          int                  int                   NULL
+  showing_method                 text                 str                   NULL
+  why_still_vacant               text                 str                   NULL
+  concession_type                text                 str                   NULL
+  concession_proactive           boolean              bool                  NULL
+  notes                          text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  resident_interview → ResidentInterview
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  interview_id                   uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  interview_type                 text                 str                    NOT
+  interview_date                 date                 datetime.date          NOT
+  resident_id                    uuid                 UUID                  NULL
+  data                           jsonb                dict[str, Any]         NOT
+  notes                          text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  tour_observation → TourObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  observation_id                 uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  observation_date               date                 datetime.date          NOT
+  data                           jsonb                dict[str, Any]         NOT
+  notes                          text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  tech_platform → TechPlatform
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  platform_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  platform_name                  text                 str                    NOT
+  annual_cost                    decimal(12, 2)       Decimal               NULL
+  staff_mobile_access            boolean              bool                  NULL
+  functions_handled              jsonb                dict[str, Any]         NOT
+  capabilities                   jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  tech_summary → TechSummary
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  summary_id                     uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  total_annual_spend             decimal(12, 2)       Decimal               NULL
+  spend_per_unit                 decimal(12, 2)       Decimal               NULL
+  active_integrations            int                  int                   NULL
+  staff_mobile_access            boolean              bool                  NULL
+  resident_app                   boolean              bool                  NULL
+  automation_level               text                 str                   NULL
+  redundant_systems              text                 str                   NULL
+  gaps_pain_points               text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  assessment → Assessment
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  assessment_id                  uuid                 UUID                   NOT
+  tenant_id                      uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  client_id                      uuid                 UUID                  NULL
+  assessment_type                text                 str                    NOT
+  status                         text                 str                    NOT
+  date_range_start               date                 datetime.date         NULL
+  date_range_end                 date                 datetime.date         NULL
+  site_visit_date                date                 datetime.date         NULL
+  comp_set_id                    uuid                 UUID                  NULL
+  created_by                     uuid                 UUID                  NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  assessment_data_coverage → AssessmentDataCoverage
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  coverage_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  domain                         text                 str                    NOT
+  source_system_id               uuid                 UUID                  NULL
+  coverage_status                text                 str                    NOT
+  coverage_pct                   decimal(5, 2)        Decimal               NULL
+  notes                          text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  analysis_run → AnalysisRun
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  run_id                         uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  rule_package_version           text                 str                    NOT
+  benchmark_version              text                 str                   NULL
+  transformation_version         text                 str                   NULL
+  status                         text                 str                    NOT
+  started_at                     timestamptz          datetime.datetime     NULL
+  completed_at                   timestamptz          datetime.datetime     NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  scorecard → Scorecard
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  scorecard_id                   uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  analysis_run_id                uuid                 UUID                  NULL
+  scorecard_type                 text                 str                    NOT
+  overall_score                  decimal(6, 2)        Decimal               NULL
+  overall_grade                  text                 str                   NULL
+  version                        text                 str                    NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  score_result → ScoreResult
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  result_id                      uuid                 UUID                   NOT
+  scorecard_id                   uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  analysis_run_id                uuid                 UUID                  NULL
+  scoring_level                  text                 str                    NOT
+  area_number                    int                  int                   NULL
+  area_name                      text                 str                   NULL
+  item_name                      text                 str                   NULL
+  sub_item_name                  text                 str                   NULL
+  input_type                     text                 str                   NULL
+  metric_value                   decimal(14, 4)       Decimal               NULL
+  normalized_score               decimal(6, 2)        Decimal               NULL
+  weight                         decimal(8, 4)        Decimal               NULL
+  weighted_score                 decimal(8, 4)        Decimal               NULL
+  benchmark_type                 text                 str                   NULL
+  benchmark_reference            text                 str                   NULL
+  confidence_score               decimal(5, 2)        Decimal               NULL
+  coverage_score                 decimal(5, 2)        Decimal               NULL
+  grade_letter                   text                 str                   NULL
+  scope_status                   text                 str                   NULL
+  evidence_count                 int                  int                   NULL
+  version                        text                 str                    NOT
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  finding → Finding
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  finding_id                     uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  analysis_run_id                uuid                 UUID                  NULL
+  finding_type                   text                 str                    NOT
+  domain                         text                 str                    NOT
+  severity                       text                 str                    NOT
+  title                          text                 str                    NOT
+  description                    text                 str                    NOT
+  entity_type                    text                 str                   NULL
+  entity_id                      uuid                 UUID                  NULL
+  evidence_refs                  jsonb                dict[str, Any]         NOT
+  contributing_causes            jsonb                dict[str, Any]         NOT
+  confidence                     decimal(5, 2)        Decimal               NULL
+  rule_package_version           text                 str                   NULL
+  attributes                     jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  impact_estimate → ImpactEstimate
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  estimate_id                    uuid                 UUID                   NOT
+  finding_id                     uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  impact_model                   text                 str                    NOT
+  impact_family_id               uuid                 UUID                  NULL
+  primary_driver_share           decimal(5, 4)        Decimal               NULL
+  contributing_share             decimal(5, 4)        Decimal               NULL
+  low_estimate                   decimal(14, 2)       Decimal               NULL
+  base_estimate                  decimal(14, 2)       Decimal               NULL
+  high_estimate                  decimal(14, 2)       Decimal               NULL
+  annualized_amount              decimal(14, 2)       Decimal               NULL
+  per_unit_amount                decimal(12, 2)       Decimal               NULL
+  formula_trace                  jsonb                dict[str, Any]         NOT
+  assumption_trace               jsonb                dict[str, Any]         NOT
+  confidence                     decimal(5, 2)        Decimal               NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  contradiction → Contradiction
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  contradiction_id               uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  source_a_type                  text                 str                    NOT
+  source_a_ref                   uuid                 UUID                  NULL
+  source_b_type                  text                 str                    NOT
+  source_b_ref                   uuid                 UUID                  NULL
+  matching_rule                  text                 str                    NOT
+  contradiction_type             text                 str                    NOT
+  severity                       text                 str                    NOT
+  affected_domains               jsonb                dict[str, Any]         NOT
+  trust_penalty                  decimal(5, 4)        Decimal               NULL
+  evidence_links                 jsonb                dict[str, Any]         NOT
+  notes                          text                 str                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  recommendation → Recommendation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  recommendation_id              uuid                 UUID                   NOT
+  finding_id                     uuid                 UUID                  NULL
+  assessment_id                  uuid                 UUID                   NOT
+  domain                         text                 str                    NOT
+  target_entity_type             text                 str                   NULL
+  target_entity_id               uuid                 UUID                  NULL
+  priority                       text                 str                    NOT
+  title                          text                 str                    NOT
+  description                    text                 str                    NOT
+  expected_impact                jsonb                dict[str, Any]        NULL
+  owner                          text                 str                   NULL
+  due_date                       date                 datetime.date         NULL
+  status                         text                 str                    NOT
+  verification_evidence          jsonb                dict[str, Any]        NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  study → Study
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  study_id                       uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  study_name                     text                 str                    NOT
+  description                    text                 str                   NULL
+  created_by                     uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  saved_query → SavedQuery
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  query_id                       uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  study_id                       uuid                 UUID                  NULL
+  query_name                     text                 str                    NOT
+  query_definition               jsonb                dict[str, Any]         NOT
+  parameters                     jsonb                dict[str, Any]         NOT
+  filters                        jsonb                dict[str, Any]         NOT
+  chart_spec                     jsonb                dict[str, Any]        NULL
+  created_by                     uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  result_snapshot → ResultSnapshot
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  snapshot_id                    uuid                 UUID                   NOT
+  saved_query_id                 uuid                 UUID                  NULL
+  assessment_id                  uuid                 UUID                  NULL
+  study_id                       uuid                 UUID                  NULL
+  source_data_version            text                 str                   NULL
+  transformation_version         text                 str                   NULL
+  rule_package_version           text                 str                   NULL
+  benchmark_version              text                 str                   NULL
+  result_payload                 jsonb                dict[str, Any]         NOT
+  chart_spec                     jsonb                dict[str, Any]        NULL
+  sql_definition                 text                 str                   NULL
+  filters                        jsonb                dict[str, Any]         NOT
+  data_hash                      text                 str                   NULL
+  created_by                     uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  study_item → StudyItem
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  item_id                        uuid                 UUID                   NOT
+  study_id                       uuid                 UUID                   NOT
+  item_type                      text                 str                    NOT
+  ref_id                         uuid                 UUID                   NOT
+  sort_order                     int                  int                   NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  comparison_board → ComparisonBoard
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  board_id                       uuid                 UUID                   NOT
+  study_id                       uuid                 UUID                  NULL
+  assessment_id                  uuid                 UUID                  NULL
+  board_name                     text                 str                    NOT
+  layout                         jsonb                dict[str, Any]         NOT
+  created_by                     uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  annotation → Annotation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  annotation_id                  uuid                 UUID                   NOT
+  entity_type                    text                 str                    NOT
+  entity_id                      uuid                 UUID                   NOT
+  note_text                      text                 str                    NOT
+  created_by                     uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  evidence_bundle → EvidenceBundle
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  bundle_id                      uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  bundle_name                    text                 str                    NOT
+  item_refs                      jsonb                dict[str, Any]         NOT
+  created_by                     uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  report → Report
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  report_id                      uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  template_name                  text                 str                    NOT
+  report_type                    text                 str                    NOT
+  status                         text                 str                    NOT
+  created_by                     uuid                 UUID                  NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+  updated_at                     timestamptz          datetime.datetime      NOT
+
+  report_section → ReportSection
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  section_id                     uuid                 UUID                   NOT
+  report_id                      uuid                 UUID                   NOT
+  section_type                   text                 str                    NOT
+  sort_order                     int                  int                    NOT
+  title                          text                 str                   NULL
+  content                        jsonb                dict[str, Any]         NOT
+  data_bindings                  jsonb                dict[str, Any]         NOT
+  narrative                      text                 str                   NULL
+  chart_spec                     jsonb                dict[str, Any]        NULL
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  report_render → ReportRender
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  render_id                      uuid                 UUID                   NOT
+  report_id                      uuid                 UUID                   NOT
+  format                         text                 str                    NOT
+  storage_path                   text                 str                    NOT
+  section_manifest               jsonb                dict[str, Any]         NOT
+  rendered_at                    timestamptz          datetime.datetime      NOT
+  rendered_by                    uuid                 UUID                  NULL
+
+  staffing_snapshot → StaffingSnapshot
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  snapshot_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  data                           jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  leasing_model_snapshot → LeasingModelSnapshot
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  snapshot_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  data                           jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  resident_event_program → ResidentEventProgram
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  program_id                     uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  data                           jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  renewal_retention_snapshot → RenewalRetentionSnapshot
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  snapshot_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  data                           jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  partnership_referral_snapshot → PartnershipReferralSnapshot
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  snapshot_id                    uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                  NULL
+  data                           jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  scoring_rubric_version → ScoringRubricVersion
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  version_id                     uuid                 UUID                   NOT
+  version_label                  text                 str                    NOT
+  is_active                      boolean              bool                   NOT
+  config                         jsonb                dict[str, Any]         NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  benchmark_version → BenchmarkVersion
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  version_id                     uuid                 UUID                   NOT
+  version_label                  text                 str                    NOT
+  benchmark_type                 text                 str                    NOT
+  data                           jsonb                dict[str, Any]         NOT
+  is_active                      boolean              bool                   NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  metric_registry → MetricRegistry
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  metric_id                      uuid                 UUID                   NOT
+  metric_name                    text                 str                    NOT
+  domain                         text                 str                    NOT
+  grain                          text                 str                    NOT
+  description                    text                 str                   NULL
+  formula                        text                 str                   NULL
+  required_inputs                jsonb                dict[str, Any]         NOT
+  output_type                    text                 str                    NOT
+  version                        text                 str                    NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  diagnostic_package → DiagnosticPackage
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  package_id                     uuid                 UUID                   NOT
+  package_name                   text                 str                    NOT
+  domain                         text                 str                    NOT
+  version                        text                 str                    NOT
+  required_inputs                jsonb                dict[str, Any]         NOT
+  optional_inputs                jsonb                dict[str, Any]         NOT
+  grain                          text                 str                   NULL
+  description                    text                 str                   NULL
+  is_active                      boolean              bool                   NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  impact_model_catalog → ImpactModelCatalog
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  model_id                       uuid                 UUID                   NOT
+  model_name                     text                 str                    NOT
+  formula                        text                 str                    NOT
+  required_inputs                jsonb                dict[str, Any]         NOT
+  optional_refinements           jsonb                dict[str, Any]         NOT
+  low_high_params                jsonb                dict[str, Any]         NOT
+  double_count_rules             jsonb                dict[str, Any]         NOT
+  narrative                      text                 str                   NULL
+  version                        text                 str                    NOT
+  created_at                     timestamptz          datetime.datetime      NOT
+
+  fact_unit_day → FactUnitDay
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  day_date                       date                 datetime.date          NOT
+  unit_version_id                uuid                 UUID                   NOT
+  existence_status               lowcardinality(string) str                    NOT
+  rentable_flag                  uint8                int                    NOT
+  occupancy_state                lowcardinality(string) str                    NOT
+  readiness_state                lowcardinality(string) str                    NOT
+  marketing_state                lowcardinality(string) str                    NOT
+  active_lease_id                nullable(uuid)       UUID                  NULL
+  active_listing_id              nullable(uuid)       UUID                  NULL
+  days_vacant                    nullable(int32)      int                   NULL
+  asking_rent                    nullable(decimal(12,2)) Decimal               NULL
+  effective_rent                 nullable(decimal(12,2)) Decimal               NULL
+  concession_value               nullable(decimal(12,2)) Decimal               NULL
+  condition_score                nullable(decimal(5,2)) Decimal               NULL
+  contradiction_flags            string               str                    NOT
+  evidence_coverage              string               str                    NOT
+
+  fact_lease_interval → FactLeaseInterval
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  lease_id                       uuid                 UUID                   NOT
+  interval_start                 date                 datetime.date          NOT
+  interval_end                   nullable(date)       datetime.date         NULL
+  monthly_rent                   nullable(decimal(12,2)) Decimal               NULL
+  effective_rent                 nullable(decimal(12,2)) Decimal               NULL
+  concession_value               nullable(decimal(12,2)) Decimal               NULL
+  lease_type                     lowcardinality(string) str                    NOT
+  resident_id                    nullable(uuid)       UUID                  NULL
+  bedrooms                       nullable(decimal(4,1)) Decimal               NULL
+  sqft                           nullable(int32)      int                   NULL
+
+  fact_vacancy_cycle → FactVacancyCycle
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  cycle_id                       uuid                 UUID                   NOT
+  vacancy_start                  date                 datetime.date          NOT
+  vacancy_end                    nullable(date)       datetime.date         NULL
+  days_vacant                    nullable(int32)      int                   NULL
+  prior_rent                     nullable(decimal(12,2)) Decimal               NULL
+  new_rent                       nullable(decimal(12,2)) Decimal               NULL
+  vacancy_cost                   nullable(decimal(12,2)) Decimal               NULL
+  make_ready_days                nullable(int32)      int                   NULL
+  make_ready_cost                nullable(decimal(12,2)) Decimal               NULL
+
+  fact_work_order → FactWorkOrder
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        nullable(uuid)       UUID                  NULL
+  work_order_id                  uuid                 UUID                   NOT
+  category                       lowcardinality(string) str                    NOT
+  is_make_ready                  uint8                int                    NOT
+  date_created                   date                 datetime.date          NOT
+  date_completed                 nullable(date)       datetime.date         NULL
+  days_to_complete               nullable(int32)      int                   NULL
+  cost                           nullable(decimal(12,2)) Decimal               NULL
+  vendor_id                      nullable(uuid)       UUID                  NULL
+
+  fact_lead_funnel_event → FactLeadFunnelEvent
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  lead_id                        uuid                 UUID                   NOT
+  event_type                     lowcardinality(string) str                    NOT
+  event_date                     date                 datetime.date          NOT
+  agent_id                       nullable(uuid)       UUID                  NULL
+  lead_source                    nullable(string)     str                   NULL
+  response_time_min              nullable(int32)      int                   NULL
+  outcome                        nullable(string)     str                   NULL
+
+  fact_listing_observation → FactListingObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        nullable(uuid)       UUID                  NULL
+  observation_id                 uuid                 UUID                   NOT
+  platform                       lowcardinality(string) str                    NOT
+  observation_date               date                 datetime.date          NOT
+  asking_rent                    nullable(decimal(12,2)) Decimal               NULL
+  photo_quality                  nullable(decimal(4,1)) Decimal               NULL
+  description_quality            nullable(decimal(4,1)) Decimal               NULL
+  days_on_market                 nullable(int32)      int                   NULL
+
+  fact_marketing_presence_day → FactMarketingPresenceDay
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  channel_id                     uuid                 UUID                   NOT
+  day_date                       date                 datetime.date          NOT
+  is_active                      uint8                int                    NOT
+  platform                       lowcardinality(string) str                    NOT
+  spend_daily                    nullable(decimal(12,2)) Decimal               NULL
+
+  fact_comp_listing_observation → FactCompListingObservation
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  competitor_property_id         uuid                 UUID                   NOT
+  observation_id                 uuid                 UUID                   NOT
+  observation_date               date                 datetime.date          NOT
+  bedrooms                       nullable(decimal(4,1)) Decimal               NULL
+  sqft                           nullable(int32)      int                   NULL
+  asking_rent                    nullable(decimal(12,2)) Decimal               NULL
+  rent_per_sqft                  nullable(decimal(8,2)) Decimal               NULL
+  is_available                   nullable(uint8)      int                   NULL
+  concession_amount              nullable(decimal(12,2)) Decimal               NULL
+
+  fact_score_result → FactScoreResult
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  assessment_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  scorecard_id                   uuid                 UUID                   NOT
+  scoring_level                  lowcardinality(string) str                    NOT
+  area_number                    nullable(int32)      int                   NULL
+  area_name                      nullable(string)     str                   NULL
+  item_name                      nullable(string)     str                   NULL
+  normalized_score               nullable(decimal(6,2)) Decimal               NULL
+  weighted_score                 nullable(decimal(8,4)) Decimal               NULL
+  confidence_score               nullable(decimal(5,2)) Decimal               NULL
+  grade_letter                   nullable(string)     str                   NULL
+  version                        string               str                    NOT
+
+  fact_finding_impact → FactFindingImpact
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  assessment_id                  uuid                 UUID                   NOT
+  property_id                    uuid                 UUID                   NOT
+  finding_id                     uuid                 UUID                   NOT
+  finding_type                   lowcardinality(string) str                    NOT
+  domain                         lowcardinality(string) str                    NOT
+  severity                       lowcardinality(string) str                    NOT
+  impact_model                   nullable(string)     str                   NULL
+  base_estimate                  nullable(decimal(14,2)) Decimal               NULL
+  annualized_amount              nullable(decimal(14,2)) Decimal               NULL
+  confidence                     nullable(decimal(5,2)) Decimal               NULL
+
+  fact_assessment_score → FactAssessmentScore
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  assessment_date                date                 datetime.date          NOT
+  area_number                    nullable(int32)      int                   NULL
+  area_name                      nullable(string)     str                   NULL
+  overall_score                  nullable(decimal(6,2)) Decimal               NULL
+  grade_letter                   nullable(string)     str                   NULL
+  version                        string               str                    NOT
+
+  fact_assessment_finding → FactAssessmentFinding
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  assessment_date                date                 datetime.date          NOT
+  finding_id                     uuid                 UUID                   NOT
+  domain                         lowcardinality(string) str                    NOT
+  severity                       lowcardinality(string) str                    NOT
+  is_recurring                   uint8                int                    NOT
+  prior_finding_id               nullable(uuid)       UUID                  NULL
+
+  fact_recommendation_status → FactRecommendationStatus
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  recommendation_id              uuid                 UUID                   NOT
+  domain                         lowcardinality(string) str                    NOT
+  priority                       lowcardinality(string) str                    NOT
+  status                         lowcardinality(string) str                    NOT
+  status_date                    date                 datetime.date          NOT
+
+  fact_property_kpi_period → FactPropertyKpiPeriod
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  period_start                   date                 datetime.date          NOT
+  period_end                     date                 datetime.date          NOT
+  kpi_name                       lowcardinality(string) str                    NOT
+  kpi_value                      nullable(decimal(14,4)) Decimal               NULL
+  kpi_unit                       lowcardinality(string) str                    NOT
+
+  fact_unit_chronicity → FactUnitChronicity
+  ──────────────────────────────────────────────────────────────────────
+  DDL Column                     SQL Type             Python Type           Null
+  ──────────────────────────────────────────────────────────────────────
+  property_id                    uuid                 UUID                   NOT
+  unit_id                        uuid                 UUID                   NOT
+  assessment_id                  uuid                 UUID                   NOT
+  chronic_type                   lowcardinality(string) str                    NOT
+  duration_days                  nullable(int32)      int                   NULL
+  cycle_count                    nullable(int32)      int                   NULL
+  total_cost                     nullable(decimal(14,2)) Decimal               NULL
+
+================================================================================
+END OF VERIFICATION REPORT
+================================================================================

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pattern Audit — 96 Patterns × 15 Families</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e17;--surface:#111827;--surface2:#1a2234;--surface3:#1e2a3f;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --border:#1e293b;--border2:#334155;
+  --accent:#60a5fa;--warning:#f59e0b;--danger:#ef4444;--success:#34d399;
+  --flag-bg:rgba(245,158,11,0.12);--flag-border:rgba(245,158,11,0.35);
+}
+html{font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;line-height:1.5;min-height:100vh}
+h1,h2,h3{font-family:'DM Serif Display',serif;font-weight:400}
+code,.mono{font-family:'IBM Plex Mono',monospace}
+
+.container{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
+
+header{text-align:center;padding:3rem 0 2rem;animation:fadeIn .6s ease}
+header h1{font-size:2.4rem;color:var(--text);margin-bottom:.5rem;letter-spacing:-.02em}
+header p{color:var(--text2);font-size:1rem;max-width:700px;margin:0 auto}
+
+.stats-bar{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin:2rem 0;animation:fadeIn .8s ease}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.5rem;text-align:center;min-width:120px}
+.stat .num{font-family:'DM Serif Display',serif;font-size:2rem;display:block}
+.stat .label{color:var(--text2);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-top:.25rem}
+.stat.flagged .num{color:var(--warning)}
+
+.controls{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin:1.5rem 0 2rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;animation:fadeIn 1s ease}
+.controls label{color:var(--text2);font-size:.85rem;font-weight:500}
+.controls select,.controls input[type=text]{background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:.5rem .75rem;font-size:.85rem;font-family:inherit}
+.controls select{min-width:220px}
+.controls input[type=text]{flex:1;min-width:200px}
+.controls .cb-group{display:flex;align-items:center;gap:.4rem}
+.controls input[type=checkbox]{accent-color:var(--accent)}
+.btn{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);border-radius:6px;padding:.45rem 1rem;font-size:.8rem;cursor:pointer;transition:all .2s}
+.btn:hover{background:var(--surface3);color:var(--text)}
+.btn.active{background:var(--accent);color:#0a0e17;border-color:var(--accent)}
+
+.legend{display:flex;gap:1.5rem;flex-wrap:wrap;margin:0 0 2rem;padding:.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:.8rem;color:var(--text2)}
+.legend-item{display:flex;align-items:center;gap:.4rem}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+.family{margin-bottom:1.5rem;border:1px solid var(--border);border-radius:12px;overflow:hidden;animation:slideUp .5s ease;background:var(--surface)}
+.family-header{padding:1rem 1.25rem;cursor:pointer;display:flex;align-items:center;gap:1rem;transition:background .2s;user-select:none}
+.family-header:hover{background:var(--surface2)}
+.family-color{width:6px;height:40px;border-radius:3px;flex-shrink:0}
+.family-info{flex:1}
+.family-info h2{font-size:1.15rem;color:var(--text)}
+.family-info .meta{color:var(--text2);font-size:.8rem;margin-top:.15rem}
+.family-info .meta span{margin-right:1rem}
+.family-toggle{color:var(--text3);font-size:1.2rem;transition:transform .3s}
+.family.open .family-toggle{transform:rotate(180deg)}
+.flag-count{background:var(--flag-bg);border:1px solid var(--flag-border);color:var(--warning);font-size:.7rem;padding:.15rem .5rem;border-radius:10px;font-weight:600}
+
+.family-body{display:none;border-top:1px solid var(--border)}
+.family.open .family-body{display:block}
+
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead{background:var(--surface2)}
+thead th{padding:.6rem .75rem;text-align:left;color:var(--text2);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+tbody tr:hover{background:var(--surface2)}
+tbody tr.flagged{background:var(--flag-bg)}
+tbody tr.flagged:hover{background:rgba(245,158,11,0.18)}
+tbody td{padding:.6rem .75rem;vertical-align:top}
+td.id{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:.8rem;white-space:nowrap;color:var(--accent)}
+td.question{max-width:280px}
+td.category .badge{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.72rem;font-weight:600}
+td.scoring{font-size:.8rem}
+td.scoring .finding-only{color:var(--warning);font-style:italic}
+td.scoring .scored{color:var(--success)}
+td.flag-cell{text-align:center}
+.flag-icon{display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;background:var(--flag-bg);border:1px solid var(--flag-border);color:var(--warning);font-size:.75rem;font-weight:700}
+
+.detail-row{display:none;background:var(--surface2)}
+.detail-row.open{display:table-row}
+.detail-content{padding:1rem 1.5rem;font-size:.82rem;color:var(--text2)}
+.detail-content .dl{display:grid;grid-template-columns:140px 1fr;gap:.3rem .75rem}
+.detail-content .dl dt{font-weight:600;color:var(--text3);text-transform:uppercase;font-size:.72rem;letter-spacing:.05em}
+.detail-content .dl dd{color:var(--text)}
+.detail-content .flag-note{margin-top:.75rem;padding:.6rem .75rem;background:var(--flag-bg);border:1px solid var(--flag-border);border-radius:6px;color:var(--warning);font-size:.8rem}
+
+.cat-diagnosis{background:#1e3a5f;color:#60a5fa}
+.cat-contextual{background:#2d2b1e;color:#facc15}
+.cat-exploratory{background:#1e2d2b;color:#34d399}
+.cat-contradiction{background:#3b1e1e;color:#f87171}
+.cat-progress{background:#2b1e3b;color:#c084fc}
+.cat-current{background:#1e2a3b;color:#67e8f9}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:900px){
+  .controls{flex-direction:column}
+  table{font-size:.75rem}
+  thead th,tbody td{padding:.4rem .5rem}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>Pattern Audit: 96 Patterns × 15 Families</h1>
+  <p>Review each pattern's question, computation, data requirements, thresholds, and scoring role. Patterns where field/audit data is treated as subordinate rather than co-equal are flagged.</p>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><span class="num">96</span><span class="label">Total Patterns</span></div>
+  <div class="stat"><span class="num">89</span><span class="label">Scored</span></div>
+  <div class="stat"><span class="num">7</span><span class="label">Finding-Only</span></div>
+  <div class="stat"><span class="num">15</span><span class="label">Families</span></div>
+  <div class="stat flagged"><span class="num" id="flagCountStat">—</span><span class="label">Data Equality Flags</span></div>
+</div>
+
+<div class="controls">
+  <label>Family:</label>
+  <select id="familyFilter"><option value="all">All 15 Families</option></select>
+  <label>Category:</label>
+  <select id="categoryFilter">
+    <option value="all">All Categories</option>
+    <option value="diagnosis-grade">Diagnosis-Grade</option>
+    <option value="contextual">Contextual</option>
+    <option value="exploratory">Exploratory</option>
+    <option value="contradiction">Contradiction</option>
+    <option value="progress">Progress</option>
+    <option value="current-state">Current-State</option>
+  </select>
+  <div class="cb-group"><input type="checkbox" id="flagOnly"><label for="flagOnly">Flagged only</label></div>
+  <div class="cb-group"><input type="checkbox" id="findingOnly"><label for="findingOnly">Finding-only</label></div>
+  <input type="text" id="searchBox" placeholder="Search patterns…">
+  <button class="btn" id="expandAll">Expand All</button>
+  <button class="btn" id="collapseAll">Collapse All</button>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot cat-diagnosis"></div>Diagnosis-Grade</div>
+  <div class="legend-item"><div class="legend-dot cat-contextual"></div>Contextual</div>
+  <div class="legend-item"><div class="legend-dot cat-exploratory"></div>Exploratory</div>
+  <div class="legend-item"><div class="legend-dot cat-contradiction"></div>Contradiction</div>
+  <div class="legend-item"><div class="legend-dot cat-progress"></div>Progress</div>
+  <div class="legend-item"><div class="legend-dot cat-current"></div>Current-State</div>
+  <div class="legend-item"><span class="flag-icon">⚑</span>&nbsp;Data Equality Flag</div>
+</div>
+
+<div id="families"></div>
+</div>
+
+<script>
+const FAMILY_COLORS = [
+  '#3b82f6','#8b5cf6','#ec4899','#ef4444','#f97316',
+  '#f59e0b','#84cc16','#22c55e','#14b8a6','#06b6d4',
+  '#6366f1','#a855f7','#e879f9','#fb923c','#4ade80'
+];
+
+const DATA = [
+{
+  id:'F1',name:'Vacancy & Turn Performance',key:'vacancy_turn_performance',count:14,
+  desc:'Measures how quickly and efficiently vacant units are turned, marketed, and re-occupied.',
+  patterns:[
+    {id:'VTP-01',q:'How long are completed vacancy cycles taking?',produces:'Median/p75/p90 vacancy days, slow rate, segment flags',data:'vacancy_cycle_episode',threshold:'slow_duration_days = 21',cat:'diagnosis-grade',scoring:'turn_duration (F1, wt 0.30)',scored:true,min:'5 episodes',flag:false,flagNote:'',computation:'Groups completed vacancy episodes; computes median, p75, p90 vacancy days; flags episodes exceeding slow_duration_days threshold; segments by unit type.'},
+    {id:'VTP-02',q:'Which phase contributes most to vacancy duration?',produces:'Phase share table, bottleneck phase flag',data:'vacancy_cycle_episode',threshold:'dominant_phase_rate ≥ 0.4, mean share +0.10',cat:'diagnosis-grade',scoring:'Finding-only (would double-count delay)',scored:false,min:'8 episodes',flag:false,flagNote:'',computation:'Decomposes each vacancy into phases (make-ready, listing, leasing, pre-occupancy); computes share of total days per phase; flags dominant phase.'},
+    {id:'VTP-03',q:'Are units sitting ready but unlisted too long?',produces:'Median listing lag days, late rate',data:'vacancy_cycle_episode',threshold:'listing_lag_days = 3',cat:'diagnosis-grade',scoring:'listing_efficiency (F1, wt 0.20)',scored:true,min:'5 episodes',flag:false,flagNote:'',computation:'Measures days between make-ready completion and listing going live; computes late rate against threshold.'},
+    {id:'VTP-04',q:'Is pre-work delay after move-out extending vacancies?',produces:'Median wait-to-start days, late rate',data:'vacancy_cycle_episode, make_ready_episode',threshold:'make_ready_lag_days = 7',cat:'diagnosis-grade',scoring:'make_ready_efficiency (F1, wt 0.25)',scored:true,min:'5 episodes',flag:false,flagNote:'',computation:'Measures days between move-out date and first make-ready work order; computes late rate against threshold.'},
+    {id:'VTP-05',q:'How much current vacancy exposure is unresolved?',produces:'Open vacancy counts, over-threshold rate',data:'vacancy_cycle_episode',threshold:'slow_duration_days = 21',cat:'current-state',scoring:'Finding-only (scored in F13 instead)',scored:false,min:'open count > 0',flag:false,flagNote:'',computation:'Counts currently open vacancies; segments by duration buckets; computes share exceeding slow threshold.'},
+    {id:'VTP-06',q:'Are units listing quickly but still leasing slowly?',produces:'Rate of fast-to-list but slow-to-lease units',data:'vacancy_cycle_episode',threshold:'rate ≥ 0.25',cat:'diagnosis-grade',scoring:'marketing_conversion_velocity (F1, wt 0.15)',scored:true,min:'8 episodes',flag:false,flagNote:'',computation:'Identifies episodes where listing lag was acceptable but total vacancy still exceeded threshold; measures rate of marketing-phase bottleneck.'},
+    {id:'VTP-07',q:'Are there dead days between lease signing and move-in?',produces:'Median pre-occupancy gap, dead rent total',data:'vacancy_cycle_episode',threshold:'gap > 3 days, share ≥ 0.30',cat:'diagnosis-grade',scoring:'pre_occupancy_efficiency (F1, wt 0.10)',scored:true,min:'5 episodes',flag:false,flagNote:'',computation:'Calculates gap between lease execution date and actual move-in date; sums dead rent for gap periods.'},
+    {id:'VTP-08',q:'How often do residents leave before lease expiration?',produces:'Early move-out rate, median surrendered days',data:'lease_term_fact, lease_move_out_fact',threshold:'rate > portfolio + 0.10 by segment',cat:'diagnosis-grade',scoring:'turn_duration composite (F1)',scored:true,min:'8 pairs',flag:false,flagNote:'',computation:'Compares actual move-out date vs lease expiration; computes early departure rate and surrendered lease days by segment.'},
+    {id:'VTP-09',q:'How often do residents stay past lease expiration?',produces:'Holdover rate, median holdover days, conversion paths',data:'lease_term_fact, lease_move_out_fact, renewal_cycle_episode',threshold:'holdover rate ≥ 0.15 or median > 3 days',cat:'diagnosis-grade',scoring:'holdover_pipeline_health (F3)',scored:true,min:'8 pairs',flag:false,flagNote:'',computation:'Identifies residents occupying past lease end without signed renewal; tracks holdover duration and whether holdover eventually converts.'},
+    {id:'VTP-10',q:'Are there months where turnover overwhelms maintenance?',produces:'Bottleneck month flags, throughput gaps',data:'make_ready_episode, vacancy_cycle_episode',threshold:'throughput gap > 0 and month median exceeds overall by 20%',cat:'diagnosis-grade',scoring:'make_ready_cycle (F6)',scored:true,min:'8 episodes, 3+ months',flag:false,flagNote:'',computation:'Groups episodes by month; compares incoming turns vs maintenance throughput capacity; flags months where demand exceeds capacity.'},
+    {id:'VTP-11',q:'Does listing multiple same-type units slow leasing?',produces:'Cannibalization slowdown deltas',data:'vacancy_cycle_episode, listing_marketing_episode',threshold:'delta_2plus / median_bucket0 ≥ 0.10',cat:'diagnosis-grade',scoring:'inventory_hold_strategy (F7)',scored:true,min:'10 episodes',flag:false,flagNote:'',computation:'Buckets episodes by concurrent same-type listings; compares median leasing days across buckets to detect cannibalization.'},
+    {id:'VTP-12',q:'Which units turn over repeatedly within 12 months?',produces:'Repeat/chronic turnover lists, cumulative loss',data:'vacancy_cycle_episode',threshold:'rolling 365-day count ≥ 2',cat:'diagnosis-grade',scoring:'turn_duration composite (F1)',scored:true,min:'5 episodes',flag:false,flagNote:'',computation:'Rolling 12-month window per unit; flags units with 2+ vacancy episodes; sums cumulative vacancy loss.'},
+    {id:'VTP-13',q:'Are slow turns from underspending or overspending?',produces:'Quadrant distribution (fast/slow × cheap/expensive)',data:'make_ready_episode',threshold:'slow_cheap or slow_expensive share ≥ 0.25',cat:'diagnosis-grade',scoring:'cost_burden (F6)',scored:true,min:'8 episodes',flag:false,flagNote:'',computation:'Creates 2×2 matrix using median duration and median cost as cutpoints; analyzes distribution across quadrants.'},
+    {id:'VTP-14',q:'Are new residents failing within 90 days?',produces:'Back-to-back vacancy rate',data:'vacancy_cycle_episode, lease_term_fact',threshold:'rate ≥ 0.10',cat:'diagnosis-grade',scoring:'turn_duration composite (F1)',scored:true,min:'5 pairs',flag:false,flagNote:'',computation:'Identifies units where new lease ended within 90 days of move-in, creating immediate re-vacancy.'}
+  ]
+},
+{
+  id:'F2',name:'Leasing Funnel & Lease Acquisition',key:'leasing_funnel_and_lease_acquisition',count:7,
+  desc:'Measures lead response speed, conversion rates through the funnel, and leasing agent effectiveness.',
+  patterns:[
+    {id:'LFA-01',q:'How fast is the property responding to leads?',produces:'Median response minutes, slow rate by source/staff',data:'leasing_conversion_episode',threshold:'slow_response_minutes = 30',cat:'diagnosis-grade',scoring:'response_speed (F2, wt 0.20)',scored:true,min:'10 episodes',flag:true,flagNote:'Uses CRM data only. Mystery shop response data (MEQ-01) measures the same thing independently but is siloed in F9. These should be co-equal inputs.',computation:'Measures time from lead creation to first staff response; segments by source and staff.'},
+    {id:'LFA-02',q:'Are inquiries converting into tours?',produces:'Lead-to-tour conversion rate by source/staff',data:'leasing_conversion_episode',threshold:'weak_conversion_pct = 0.10',cat:'diagnosis-grade',scoring:'lead_to_tour (F2, wt 0.15)',scored:true,min:'15 leads',flag:false,flagNote:'',computation:'Groups leads with tour outcome; computes conversion rate by source and staff member.'},
+    {id:'LFA-03',q:'Are tours generating applications?',produces:'Tour-to-app conversion by staff/source',data:'leasing_conversion_episode',threshold:'weak_conversion_pct = 0.10',cat:'diagnosis-grade',scoring:'tour_to_application (F2, wt 0.15)',scored:true,min:'10 tours',flag:false,flagNote:'',computation:'Of leads reaching tour stage, computes rate that advance to application.'},
+    {id:'LFA-04',q:'How often do applications become signed leases?',produces:'App-to-sign conversion, loss reasons',data:'leasing_conversion_episode',threshold:'weak_conversion_pct = 0.10',cat:'diagnosis-grade',scoring:'application_to_sign (F2, wt 0.20)',scored:true,min:'10 apps',flag:false,flagNote:'',computation:'Of applications submitted, computes conversion to signed lease; categorizes loss reasons.'},
+    {id:'LFA-05',q:'At which stage do most prospects drop out?',produces:'Stall stage distribution, dominant stage',data:'leasing_conversion_episode',threshold:'dominant share ≥ 0.40',cat:'diagnosis-grade',scoring:'stall_penalty (F2, wt 0.15)',scored:true,min:'10 non-signed',flag:false,flagNote:'',computation:'Classifies each non-converting lead by last reached stage; identifies dominant dropout point.'},
+    {id:'LFA-06',q:'Which agents move leads to lease fastest?',produces:'Per-agent velocity ratio, concession dependence',data:'leasing_conversion_episode',threshold:'median ratio ≥ 1.20',cat:'diagnosis-grade',scoring:'response_speed composite (F2)',scored:true,min:'staff minimum sample',flag:false,flagNote:'',computation:'Computes per-agent median pipeline days and concession usage; normalizes against property baseline.'},
+    {id:'LFA-07',q:'Do no-shows materially slow leasing?',produces:'Conversion delta for no-show vs non-no-show leads',data:'tour_fact, leasing_conversion_episode',threshold:'signed rate lower by 0.10 or pipeline days higher by 20%',cat:'diagnosis-grade',scoring:'ghost_no_show_penalty (F2, wt 0.15)',scored:true,min:'10 scheduled tours',flag:false,flagNote:'',computation:'Splits leads by no-show occurrence; compares conversion rates and pipeline velocity between groups.'}
+  ]
+},
+{
+  id:'F3',name:'Renewal & Retention',key:'renewal_and_retention',count:7,
+  desc:'Measures renewal outreach timeliness, retention rates, lease expiration management, and holdover handling.',
+  patterns:[
+    {id:'RAR-01',q:'Are residents contacted early enough before expiration?',produces:'Late contact rate',data:'renewal_cycle_episode',threshold:'late_renewal_contact_days = 45',cat:'diagnosis-grade',scoring:'contact_timeliness (F3, wt 0.15)',scored:true,min:'10 episodes',flag:false,flagNote:'',computation:'Computes days between first renewal outreach and lease expiration; flags contacts initiated after threshold.'},
+    {id:'RAR-02',q:'Are renewal offers issued early enough?',produces:'Late offer rate, contact-to-offer gap',data:'renewal_cycle_episode',threshold:'Same as RAR-01',cat:'diagnosis-grade',scoring:'offer_timeliness (F3, wt 0.15)',scored:true,min:'8 episodes',flag:false,flagNote:'',computation:'Measures time from first contact to formal offer issuance; flags late offers.'},
+    {id:'RAR-03',q:'What fraction of renewals are retained?',produces:'Renewal acceptance rate by segment',data:'renewal_cycle_episode',threshold:'weak_conversion_pct = 0.35',cat:'diagnosis-grade',scoring:'retention_close_rate (F3, wt 0.35)',scored:true,min:'10 episodes',flag:true,flagNote:'Uses PM renewal data only. Turnover interview data (why residents left) provides co-equal insight into retention failures but is not integrated here.',computation:'Computes acceptance rate from renewal offers extended; segments by unit type, lease term, increase amount.'},
+    {id:'RAR-04',q:'Is lease expiration volume concentrated in one month?',produces:'Peak month concentration %',data:'lease_term_fact',threshold:'expiration_concentration_pct = 0.25',cat:'contextual',scoring:'expiration_risk (F3, wt 0.10)',scored:true,min:'10 future leases',flag:false,flagNote:'',computation:'Distributes upcoming lease expirations by month; identifies peak concentration.'},
+    {id:'RAR-05',q:'When residents decline, do they actually move out?',produces:'Decline-to-move-out rate',data:'renewal_cycle_episode, notice_pipeline_episode',threshold:'None specific',cat:'exploratory',scoring:'Finding-only (doesn\'t independently measure renewal health)',scored:false,min:'5 decline episodes',flag:false,flagNote:'',computation:'Tracks declined renewals through to actual move-out vs holdover vs reversal.'},
+    {id:'RAR-06',q:'Are holdovers leaving because renewal outreach was late?',produces:'Holdover pipeline failure rate',data:'lease_term_fact, renewal_cycle_episode',threshold:'rate ≥ 0.20',cat:'diagnosis-grade',scoring:'holdover_pipeline_health (F3, wt 0.15)',scored:true,min:'5 holdover residents',flag:false,flagNote:'',computation:'Links holdover episodes to renewal timeline; determines if holdover was caused by late or missing renewal outreach.'},
+    {id:'RAR-07',q:'Does lease-term mix hurt retention or clustering?',produces:'Term bucket retention/concentration deltas',data:'lease_term_fact, renewal_cycle_episode',threshold:'retention delta ≤ -0.10 or concentration delta ≥ 0.10',cat:'diagnosis-grade',scoring:'term_strategy_health (F3, wt 0.10)',scored:true,min:'8 per bucket',flag:false,flagNote:'',computation:'Groups leases by term length; compares retention rates and expiration clustering across term buckets.'}
+  ]
+},
+{
+  id:'F4',name:'Delinquency & Collections',key:'delinquency_and_collections',count:5,
+  desc:'Measures delinquency prevalence, concentration, persistence, financial burden, and aging profiles.',
+  patterns:[
+    {id:'DAC-01',q:'How common is delinquency among residents?',produces:'Delinquency rate',data:'delinquency_balance_fact, lease_term_fact',threshold:'weak boundary 0.15',cat:'diagnosis-grade',scoring:'delinquency_prevalence (F4, wt 0.20)',scored:true,min:'10 active residents',flag:false,flagNote:'',computation:'Count of residents with outstanding balance / total active residents.'},
+    {id:'DAC-02',q:'Is delinquency concentrated in few big balances?',produces:'Top-10% balance concentration',data:'delinquency_balance_fact',threshold:'high_balance_concentration_pct = 0.30',cat:'diagnosis-grade',scoring:'balance_concentration (F4, wt 0.15)',scored:true,min:'10 delinquent residents',flag:false,flagNote:'',computation:'Sorts delinquent balances descending; computes share of total owed by top 10% of delinquent residents.'},
+    {id:'DAC-03',q:'Are delinquent residents persisting for months?',produces:'Persistent delinquency rate',data:'delinquency_persistence_episode',threshold:'persistent_delinquency_months = 3, weak boundary 0.40',cat:'diagnosis-grade',scoring:'persistence (F4, wt 0.25)',scored:true,min:'5 episodes',flag:false,flagNote:'',computation:'Tracks consecutive months of delinquency per resident; flags those exceeding threshold.'},
+    {id:'DAC-04',q:'Are outstanding balances large relative to rent?',produces:'Burden ratio',data:'delinquency_balance_fact, unit_revenue_realization_episode',threshold:'burden_ratio_high = 0.08',cat:'diagnosis-grade',scoring:'financial_burden (F4, wt 0.25)',scored:true,min:'rent basis non-null',flag:false,flagNote:'',computation:'Total delinquent balance / total monthly rent roll; measures portfolio-level financial exposure.'},
+    {id:'DAC-05',q:'How far aged are current balances?',produces:'Aging mix shares (current through 90+)',data:'delinquency_balance_fact',threshold:'61+ share ≥ 0.40',cat:'contextual',scoring:'aging_mix (F4, wt 0.15)',scored:true,min:'5 delinquent residents',flag:false,flagNote:'',computation:'Buckets outstanding balances by aging (current, 30, 60, 90+); computes share in each bucket.'}
+  ]
+},
+{
+  id:'F5',name:'Pricing, Rent & Concessions',key:'pricing_rent_and_concessions',count:11,
+  desc:'Measures rent capture, concession dependence, pricing stability, market positioning, and concession effectiveness.',
+  patterns:[
+    {id:'PRC-01',q:'How much leasing depends on concessions?',produces:'Concession dependence %',data:'vacancy_cycle_episode, concession_fact',threshold:'concession_dependence_pct = 0.15',cat:'diagnosis-grade',scoring:'concession_dependence (F5, wt 0.15)',scored:true,min:'8 vacancies',flag:false,flagNote:'',computation:'Share of signed leases that included a concession.'},
+    {id:'PRC-02',q:'How far below signed rent is effective rent?',produces:'Median effective rent pressure %',data:'vacancy_cycle_episode, unit_revenue_realization_episode',threshold:'effective_rent_pressure_pct = 0.05',cat:'diagnosis-grade',scoring:'effective_rent_capture (F5, wt 0.20)',scored:true,min:'8 leases',flag:false,flagNote:'',computation:'(Asking rent - effective rent) / asking rent after amortizing concessions.'},
+    {id:'PRC-03',q:'How often are asking rents reduced during marketing?',produces:'Price compression rate',data:'pricing_change_episode',threshold:'price_compression_pct = 0.04',cat:'diagnosis-grade',scoring:'pricing_stability (F5, wt 0.10)',scored:true,min:'5 episodes',flag:false,flagNote:'',computation:'Tracks asking rent changes during vacancy; computes rate and magnitude of reductions.'},
+    {id:'PRC-04',q:'Is rent being lifted on turnover?',produces:'Median rent lift %, negative lift rate',data:'lease_term_fact, vacancy_cycle_episode',threshold:'median lift ≤ 0 or negative rate ≥ 0.30',cat:'diagnosis-grade',scoring:'turnover_repricing (F5, wt 0.15)',scored:true,min:'5 comparable pairs',flag:false,flagNote:'',computation:'Compares new lease rent to prior lease rent for same unit; computes lift percentage and negative lift rate.'},
+    {id:'PRC-05',q:'How does asking/achieved rent compare to competitors?',produces:'Unit-type market gap table',data:'rent_position_fact, competitor_pricing_snapshot_episode',threshold:'relative_disadvantage_pct = 0.10',cat:'contextual',scoring:'market_position (F5, wt 0.20)',scored:true,min:'competitor set met',flag:true,flagNote:'Relies on competitive survey data (field-collected observation) but treats it as "contextual" rather than primary diagnostic. Competitive position is a primary analytical input, not context.',computation:'Compares subject rent by unit type against competitor average; flags disadvantaged types.'},
+    {id:'PRC-06',q:'Are concessions paired with dead move-in days?',produces:'Conceded gap rate, dead rent under concessions',data:'vacancy_cycle_episode',threshold:'conceded_gap_rate ≥ 0.25',cat:'diagnosis-grade',scoring:'concession_efficiency composite (F5)',scored:true,min:'5 concession episodes',flag:false,flagNote:'',computation:'Among concession leases, checks for pre-occupancy gap days; sums dead rent occurring alongside concession cost.'},
+    {id:'PRC-07',q:'Do concessions reduce leasing days enough to justify cost?',produces:'Days saved, tradeoff margin',data:'vacancy_cycle_episode',threshold:'tradeoff_margin ≤ 0',cat:'diagnosis-grade',scoring:'concession_efficiency (F5, wt 0.10)',scored:true,min:'5 per group',flag:false,flagNote:'',computation:'Compares median vacancy days for concession vs non-concession leases; converts saved days to rent value vs concession cost.'},
+    {id:'PRC-08',q:'Are concessions proactive or reactive?',produces:'Proactive/reactive mix by season/staff',data:'concession_fact, leasing_conversion_episode',threshold:'reactive share ≥ 0.60',cat:'exploratory',scoring:'Finding-only (not directionally good/bad in isolation)',scored:false,min:'5 per slice',flag:false,flagNote:'',computation:'Classifies concessions as proactive (offered upfront) vs reactive (offered after stall); computes mix by season and staff.'},
+    {id:'PRC-09',q:'Which concession types are most effective?',produces:'Cost-per-day-saved ranking by type',data:'concession_fact, vacancy_cycle_episode',threshold:'days_saved ≤ 0 flags poor type',cat:'diagnosis-grade',scoring:'concession_efficiency composite (F5)',scored:true,min:'5 per type',flag:false,flagNote:'',computation:'Groups concessions by type; computes cost-per-day-saved for each; ranks effectiveness.'},
+    {id:'PRC-10',q:'Do concession recipients stay shorter or renew less?',produces:'Tenure and renewal deltas',data:'concession_fact, lease_term_fact, renewal_cycle_episode',threshold:'tenure delta < -30 days or renewal delta < -0.10',cat:'exploratory',scoring:'tenure_penalty (F5, wt 0.10)',scored:true,min:'8 per group',flag:false,flagNote:'',computation:'Splits residents by concession receipt; compares tenure length and renewal rate between groups.'},
+    {id:'PRC-11',q:'Which occupied units are below market rent?',produces:'Unit-level loss-to-lease table',data:'current_state_snapshot_episode, rent_position_fact',threshold:'loss-to-lease pct ≥ 0.05',cat:'current-state',scoring:'unit_pricing_capture (F13, wt 0.10)',scored:true,min:'10 eligible units',flag:false,flagNote:'',computation:'Compares current in-place rent to market/asking rent for each occupied unit.'}
+  ]
+},
+{
+  id:'F6',name:'Maintenance & Make-Ready',key:'maintenance_and_make_ready',count:5,
+  desc:'Measures make-ready cycle time, maintenance recurrence, cost burden, vendor efficiency, and work order integrity.',
+  patterns:[
+    {id:'MMR-01',q:'How long is active make-ready work taking?',produces:'Median make-ready days, weak rate',data:'make_ready_episode',threshold:'cycle_time_days_weak = 7',cat:'diagnosis-grade',scoring:'make_ready_cycle (F6, wt 0.30)',scored:true,min:'5 episodes',flag:true,flagNote:'Uses work order data only. Vacant unit audit observations provide co-equal evidence of actual unit condition and readiness timeline but are not integrated as primary input.',computation:'Computes median active make-ready days from work order start to completion; flags weak rate.'},
+    {id:'MMR-02',q:'How often do units need repeated maintenance?',produces:'Recurrence rate',data:'maintenance_burden_episode',threshold:'recurrence_rate_pct = 0.12',cat:'diagnosis-grade',scoring:'recurrence_burden (F6, wt 0.20)',scored:true,min:'8 episodes',flag:false,flagNote:'',computation:'Counts units with repeat work orders for same issue within window; computes recurrence rate.'},
+    {id:'MMR-03',q:'Is maintenance cost high relative to rent?',produces:'Cost burden ratio',data:'maintenance_burden_episode, make_ready_episode, unit_revenue_realization_episode',threshold:'cost_burden_ratio_high = 0.06',cat:'diagnosis-grade',scoring:'cost_burden (F6, wt 0.20)',scored:true,min:'5 episodes + rent basis',flag:false,flagNote:'',computation:'Total maintenance + make-ready cost / total rent revenue.'},
+    {id:'MMR-04',q:'Are some vendors slower or more expensive?',produces:'Vendor comparison table, worst overrun %',data:'make_ready_episode, maintenance_burden_episode',threshold:'vendor exceeds portfolio by 20%',cat:'exploratory',scoring:'vendor_efficiency (F6, wt 0.15)',scored:true,min:'5 per vendor',flag:false,flagNote:'',computation:'Groups work orders by vendor; compares cost and duration against property baseline.'},
+    {id:'MMR-05',q:'How often do ready states appear without work orders?',produces:'No-work-trace rate',data:'make_ready_episode',threshold:'rate ≥ 0.15',cat:'contradiction',scoring:'trace_integrity (F6, wt 0.15)',scored:true,min:'5 episodes',flag:true,flagNote:'Frames field audit data as contradiction-checking against PM system. The audit observation that a unit appears ready is primary evidence; the absence of work orders is the discrepancy, not the other way around.',computation:'Identifies units marked ready in system but with no associated make-ready work orders.'}
+  ]
+},
+{
+  id:'F7',name:'Marketing, Listing & Marketability',key:'marketing_listing_and_marketability',count:8,
+  desc:'Measures listing coverage, speed-to-list, listing quality, refresh dependence, and inventory strategy.',
+  patterns:[
+    {id:'MLM-01',q:'What fraction of vacancies reached a live listing?',produces:'Listing coverage %',data:'vacancy_cycle_episode',threshold:'listing_coverage_pct_weak = 0.85',cat:'diagnosis-grade',scoring:'listing_coverage (F7, wt 0.20)',scored:true,min:'10 episodes',flag:false,flagNote:'',computation:'Count of vacancies with confirmed listing / total completed vacancies.'},
+    {id:'MLM-02',q:'How long from vacancy open to listing live?',produces:'Median vacancy-to-listing lag',data:'vacancy_cycle_episode',threshold:'listing_lag_days = 2',cat:'diagnosis-grade',scoring:'listing_lag (F7, wt 0.20)',scored:true,min:'8 listed vacancies',flag:false,flagNote:'',computation:'Computes days from vacancy start to listing publication for each episode.'},
+    {id:'MLM-03',q:'Are listings weak on photos/descriptions/quality?',produces:'0-100 listing quality score',data:'listing_marketing_episode, listing_exposure_fact, vacant_unit_audit_fact',threshold:'low quality < 60, rate ≥ 0.30',cat:'diagnosis-grade',scoring:'listing_quality (F7, wt 0.15)',scored:true,min:'5 listings',flag:true,flagNote:'Uses listing assessment (field-collected) data as input — good. However, the scoring treats it as subordinate to PM listing data. The field assessment of listing quality IS the primary measure; PM data just confirms a listing exists.',computation:'Scores each listing on photo count/quality, description completeness, accuracy against unit specs.'},
+    {id:'MLM-04',q:'Are listings needing repeated refreshes or reductions?',produces:'Refresh/reduction shares',data:'listing_marketing_episode',threshold:'reduction share ≥ 0.35 or refresh ≥ 0.50',cat:'exploratory',scoring:'refresh_dependence (F7, wt 0.10)',scored:true,min:'5 listings',flag:false,flagNote:'',computation:'Counts listing changes; classifies as content refresh vs price reduction; computes rates.'},
+    {id:'MLM-05',q:'Do field audits contradict marketing status?',produces:'Audit-vs-marketing contradiction rate',data:'vacancy_cycle_episode, field_validation_episode',threshold:'adaptive_prompt_trigger_threshold = 0.25',cat:'contradiction',scoring:'audit_consistency (F7, wt 0.10)',scored:true,min:'5 audited vacancies',flag:true,flagNote:'Explicitly frames field audit data as contradiction-checking against marketing claims. Field observations of actual unit/marketing status are co-equal primary evidence, not just validation.',computation:'Compares field audit observations against PM marketing status; flags mismatches.'},
+    {id:'MLM-06',q:'Do weekend completions cause listing delays?',produces:'Day-class lag table, spike flags',data:'vacancy_cycle_episode',threshold:'lag exceeds baseline by ≥ 2 days',cat:'diagnosis-grade',scoring:'calendar_handling (F7, wt 0.10)',scored:true,min:'5 per class',flag:false,flagNote:'',computation:'Groups make-ready completions by day-of-week; compares listing lag for weekday vs weekend completions.'},
+    {id:'MLM-07',q:'Is holding ready inventory off-market justified?',produces:'Hold cost, held inventory share',data:'vacancy_cycle_episode, listing_marketing_episode',threshold:'3+ units with same-type overlap',cat:'diagnosis-grade',scoring:'inventory_hold_strategy (F7, wt 0.15)',scored:true,min:'3 ready-but-unlisted',flag:false,flagNote:'',computation:'Identifies ready units not listed; computes daily hold cost and determines if strategic hold is justified by cannibalization data.'},
+    {id:'MLM-08',q:'Are upcoming vacancies pre-marketed before move-out?',produces:'Preleasing window utilization %',data:'notice_pipeline_episode, listing_marketing_episode',threshold:'pct < 0.25',cat:'diagnosis-grade',scoring:'inventory_hold_strategy composite (F7)',scored:true,min:'5 notice-backed vacancies',flag:false,flagNote:'',computation:'Checks if listing went live before actual move-out for units with notice; computes utilization rate.'}
+  ]
+},
+{
+  id:'F8',name:'Competitive Position & Experience',key:'competitive_position_and_experience',count:5,
+  desc:'Measures rent, concession, and vacancy positioning relative to the competitive set.',
+  patterns:[
+    {id:'CPE-01',q:'Is the property\'s rent below competitors?',produces:'Worst relative rent gap % by unit type',data:'rent_position_fact, competitor_pricing_snapshot_episode',threshold:'relative_disadvantage_pct = 0.10',cat:'diagnosis-grade',scoring:'relative_rent_position (F8, wt 0.30)',scored:true,min:'competitor set met',flag:true,flagNote:'Competitive survey data (field observation) is the primary source here but the pattern treats it as a benchmark reference, not as co-equal analytical input.',computation:'Compares subject asking rent by unit type against competitor average; identifies worst gap.'},
+    {id:'CPE-02',q:'Is the property giving more concessions than competitors?',produces:'Relative concession gap',data:'concession_fact, competitor_pricing_snapshot_episode',threshold:'gap > 0.10',cat:'diagnosis-grade',scoring:'relative_concession_position (F8, wt 0.15)',scored:true,min:'8 subject + comp set',flag:true,flagNote:'Same issue as CPE-01. Field-collected competitive data is primary evidence, not reference context.',computation:'Compares subject concession rate and value against competitor average.'},
+    {id:'CPE-03',q:'Is asking rent misaligned with product quality vs comps?',produces:'Position-vs-price mismatch flags',data:'competitor_property_fact, vacant_unit_audit_fact',threshold:'mismatch_gap_pct = 0.05',cat:'exploratory',scoring:'product_position_fit (F8, wt 0.15)',scored:true,min:'5 subject + comp set',flag:true,flagNote:'Uses both competitive survey AND vacant unit audit (field observations) but classifies as "exploratory" rather than diagnosis-grade. Field quality assessment is primary evidence.',computation:'Cross-references product quality assessment with rent positioning to detect misalignment.'},
+    {id:'CPE-04',q:'Is the property\'s vacancy worse than competitors?',produces:'Relative vacancy gap',data:'vacancy_cycle_episode, competitor_property_fact',threshold:'relative_disadvantage_pct = 0.10',cat:'diagnosis-grade',scoring:'relative_vacancy_position (F8, wt 0.25)',scored:true,min:'comp set met',flag:true,flagNote:'Field-collected competitive occupancy data is primary diagnostic input, not benchmark reference.',computation:'Compares subject vacancy rate against competitor average; identifies gap.'},
+    {id:'CPE-05',q:'Is the property creating vacancies faster than market absorbs?',produces:'Absorption mismatch ratio',data:'vacancy_cycle_episode, competitor_pricing_snapshot_episode',threshold:'ratio > 1.10',cat:'contextual',scoring:'market_absorption_fit (F8, wt 0.15)',scored:true,min:'absorption proxy computable',flag:true,flagNote:'Classified as "contextual" but absorption mismatch is a primary diagnostic — the field-collected market data driving this is co-equal analytical input.',computation:'Compares subject turnover rate against market absorption rate to detect supply-demand mismatch.'}
+  ]
+},
+{
+  id:'F9',name:'Mystery Shop & Experience Quality',key:'mystery_shop_and_experience_quality',count:4,
+  desc:'Measures leasing experience quality through mystery shop scores, response speed, and follow-up behavior.',
+  patterns:[
+    {id:'MEQ-01',q:'How quickly does the property respond in mystery shops?',produces:'Median response delay, strong/weak shares',data:'mystery_shop_experience_episode',threshold:'strong = 15 min, weak = 60 min',cat:'diagnosis-grade',scoring:'subject_response_speed (F9, wt 0.30)',scored:true,min:'3 subject shops',flag:true,flagNote:'Mystery shop measures response speed independently from CRM (LFA-01). These are co-equal measures of the same behavior but siloed into separate families with no cross-reference.',computation:'Measures time from inquiry to first response in mystery shop encounters.'},
+    {id:'MEQ-02',q:'Are mystery shop scores below compliance expectations?',produces:'Low-score rate, compliance-fail rate',data:'mystery_shop_experience_episode',threshold:'compliance_escalation_score_below = 60, rate ≥ 0.25',cat:'diagnosis-grade',scoring:'subject_compliance_quality (F9, wt 0.30)',scored:true,min:'3 subject shops',flag:true,flagNote:'Mystery shop data provides primary evidence of leasing execution quality, but is isolated in its own family rather than integrated into F2 (Leasing Funnel) analysis.',computation:'Scores mystery shop encounters against compliance checklist; computes low-score and fail rates.'},
+    {id:'MEQ-03',q:'Is the property responding slower than competitors?',produces:'Response gap minutes',data:'mystery_shop_experience_episode',threshold:'gap > 15 minutes',cat:'diagnosis-grade',scoring:'relative_response_gap (F9, wt 0.25)',scored:true,min:'3 each subject/comp',flag:true,flagNote:'Same issue — mystery shop competitive data is primary analytical input, not a separate validation track.',computation:'Compares subject response time against competitor mystery shop response times.'},
+    {id:'MEQ-04',q:'Is follow-up behavior weaker than competitors?',produces:'Follow-up presence and delay gaps',data:'mystery_shop_experience_episode',threshold:'presence gap ≥ 0.20 or delay gap ≥ 60 min',cat:'contextual',scoring:'follow_up_quality (F9, wt 0.15)',scored:true,min:'3 each subject/comp',flag:true,flagNote:'Classified as "contextual" but follow-up behavior is a primary leasing quality measure. Also isolated from F2 leasing analysis.',computation:'Compares follow-up presence and timing between subject and competitor shops.'}
+  ]
+},
+{
+  id:'F10',name:'Audit & Field Validation',key:'audit_and_field_validation',count:3,
+  desc:'Measures consistency between field observations and system records.',
+  patterns:[
+    {id:'AFV-01',q:'How often do field observations contradict system records?',produces:'Audit contradiction ratio',data:'field_validation_episode',threshold:'adaptive_prompt_trigger_threshold = 0.25',cat:'contradiction',scoring:'contradiction_control (F10, wt 0.50)',scored:true,min:'10 observable assertions',flag:true,flagNote:'STRUCTURAL ISSUE: This entire family treats field observations as validation checks against PM data. Field observations are co-equal primary evidence — the contradiction is bidirectional, not audit-checks-system.',computation:'Counts field assertions that contradict system status / total observable assertions.'},
+    {id:'AFV-02',q:'What % of field assertions are confirmed by system data?',produces:'Audit confirmation score (0-100)',data:'field_validation_episode',threshold:'audit_score_strong_min = 85',cat:'contextual',scoring:'confirmation_strength (F10, wt 0.30)',scored:true,min:'10 observable assertions',flag:true,flagNote:'STRUCTURAL ISSUE: Frames system data as the truth and field observations as needing "confirmation." The field observation is equally authoritative — disagreements should question both sources.',computation:'Count of field assertions matching system records / total assertions, scaled to 0-100.'},
+    {id:'AFV-03',q:'Which operational domains have worst field-vs-system disagreement?',produces:'Domain contradiction map, worst domain ratio',data:'field_validation_episode',threshold:'domain ratio ≥ 0.25',cat:'contradiction',scoring:'domain_consistency (F10, wt 0.20)',scored:true,min:'5 assertions per domain',flag:true,flagNote:'STRUCTURAL ISSUE: Same subordination framing. Additionally, domain-level contradiction patterns should feed back into the relevant domain families (F1, F6, F7) as primary inputs.',computation:'Groups contradictions by operational domain; identifies worst domain by contradiction rate.'}
+  ]
+},
+{
+  id:'F11',name:'Financial & Macro-Economics',key:'financial_and_macro_economics',count:14,
+  desc:'Quantifies financial impact of vacancy, turnover, maintenance, delinquency; computes segment cost distributions and acquisition economics.',
+  patterns:[
+    {id:'FME-01',q:'Is vacancy loss material relative to revenue?',produces:'Vacancy loss materiality %',data:'vacancy_cycle_episode, financial_period_fact',threshold:'materiality_threshold_pct = 0.05',cat:'diagnosis-grade',scoring:'vacancy_cost_materiality (F11, wt 0.20)',scored:true,min:'revenue non-null',flag:false,flagNote:'',computation:'Annualized vacancy cost / gross potential revenue.'},
+    {id:'FME-02',q:'Are turnover costs material relative to revenue?',produces:'Turnover cost materiality %',data:'turnover_cost_episode, financial_period_fact',threshold:'materiality_threshold_pct = 0.05',cat:'diagnosis-grade',scoring:'turnover_cost_materiality (F11, wt 0.10)',scored:true,min:'revenue non-null',flag:false,flagNote:'',computation:'Total turnover costs (make-ready + vacancy loss + concessions) / gross revenue.'},
+    {id:'FME-03',q:'Is maintenance cost burden material?',produces:'Ops-to-revenue burden ratio',data:'maintenance_burden_episode, financial_period_fact',threshold:'burden_ratio_high = 0.08',cat:'contextual',scoring:'maintenance_cost_materiality (F11, wt 0.10)',scored:true,min:'revenue non-null',flag:false,flagNote:'',computation:'Total maintenance spend / gross revenue.'},
+    {id:'FME-04',q:'Are delinquent balances threatening performance?',produces:'Balance-to-revenue ratio',data:'delinquency_balance_fact, financial_period_fact',threshold:'burden_ratio_high = 0.08',cat:'diagnosis-grade',scoring:'delinquency_financial_burden (F11, wt 0.10)',scored:true,min:'revenue non-null',flag:false,flagNote:'',computation:'Total delinquent balance / monthly gross revenue.'},
+    {id:'FME-05',q:'What is the annualized total vacancy cost?',produces:'Annualized vacancy cost anchor',data:'vacancy_cycle_episode',threshold:'None (anchor metric)',cat:'diagnosis-grade',scoring:'annualized_vacancy_anchor (F11, wt 0.20)',scored:true,min:'5 episodes',flag:false,flagNote:'',computation:'Sum of (daily rent × vacancy days) across all episodes, annualized.'},
+    {id:'FME-06',q:'How is vacancy cost distributed by segment?',produces:'Segment cost breakdown',data:'vacancy_cycle_episode',threshold:'None',cat:'diagnosis-grade',scoring:'segment_cost_concentration (F11, wt 0.15)',scored:true,min:'3 per segment',flag:false,flagNote:'',computation:'Groups vacancy cost by unit type/building/floor; computes share of total cost per segment.'},
+    {id:'FME-07',q:'Which segment has highest average vacancy cost?',produces:'Worst segment, severity flag',data:'FME-06 output',threshold:'exceeds portfolio avg by 20%',cat:'diagnosis-grade',scoring:'segment_cost_concentration composite (F11)',scored:true,min:'segment meets minimum',flag:false,flagNote:'',computation:'Ranks segments by average vacancy cost; flags worst segment if exceeds baseline.'},
+    {id:'FME-08',q:'Is vacancy cost trending better or worse?',produces:'Monthly cost trajectory, slope',data:'vacancy_cycle_episode',threshold:'meaningful_delta_pct = 0.05',cat:'progress',scoring:'Finding-only (progress signal, not same-period health)',scored:false,min:'4+ months',flag:false,flagNote:'',computation:'Monthly vacancy cost time series; computes linear slope and direction.'},
+    {id:'FME-09',q:'Which segments have disproportionate vacancy event counts?',produces:'Turnover frequency ratio by segment',data:'vacancy_cycle_episode, unit_inventory_fact',threshold:'ratio ≥ 1.25',cat:'diagnosis-grade',scoring:'segment_cost_concentration composite (F11)',scored:true,min:'5 units per segment',flag:false,flagNote:'',computation:'Vacancy events per unit by segment / property baseline; flags disproportionate segments.'},
+    {id:'FME-10',q:'Which segments have vacancy durations above baseline?',produces:'Segment duration delta table',data:'vacancy_cycle_episode',threshold:'delta pct ≥ 0.10',cat:'diagnosis-grade',scoring:'segment_cost_concentration composite (F11)',scored:true,min:'5 events per segment',flag:false,flagNote:'',computation:'Median vacancy days by segment minus property median; flags segments above threshold.'},
+    {id:'FME-11',q:'Which segments consume most cost per vacancy day?',produces:'Cost-per-day table by segment',data:'vacancy_cycle_episode',threshold:'exceeds portfolio median by 20%',cat:'diagnosis-grade',scoring:'segment_cost_concentration composite (F11)',scored:true,min:'5 events per segment',flag:false,flagNote:'',computation:'Total vacancy cost / total vacancy days per segment; ranks by cost efficiency.'},
+    {id:'FME-12',q:'What is the all-in cost to place a new tenant?',produces:'Median acquisition cost',data:'vacancy_cycle_episode, turnover_cost_episode',threshold:'None',cat:'diagnosis-grade',scoring:'Finding-only (scored indirectly via FME-13)',scored:false,min:'5 move-ins',flag:false,flagNote:'',computation:'Make-ready + vacancy loss + concession + admin cost per placement; computes median.'},
+    {id:'FME-13',q:'How does replacing a tenant compare to retaining one?',produces:'Acquisition-to-retention cost ratio',data:'FME-12 output, renewal_offer_fact',threshold:'ratio ≥ 2.0',cat:'diagnosis-grade',scoring:'acquisition_vs_retention_economics (F11, wt 0.15)',scored:true,min:'5 each',flag:false,flagNote:'',computation:'Median new tenant acquisition cost / median renewal retention cost (concession + admin).'},
+    {id:'FME-14',q:'Did upgrade spend produce enough rent lift to justify cost?',produces:'Payback months, poor ROI share',data:'turnover_cost_episode, vacancy_cycle_episode',threshold:'payback > 24 months and speed delta ≤ 0',cat:'exploratory',scoring:'acquisition_vs_retention_economics composite (F11)',scored:true,min:'5 upgraded + 5 comparable',flag:false,flagNote:'',computation:'(Upgrade cost premium) / (monthly rent lift); computes payback period and share with poor ROI.'}
+  ]
+},
+{
+  id:'F12',name:'Longitudinal Progress & Reassessment',key:'longitudinal_progress_and_reassessment',count:3,
+  desc:'Tracks improvement or deterioration across assessments; identifies persistent weaknesses.',
+  patterns:[
+    {id:'LPR-01',q:'Has each family score improved or worsened?',produces:'Family score deltas, improved/worsened shares',data:'prior + current family scores',threshold:'meaningful_delta_pct = 0.05',cat:'progress',scoring:'family_score_change (F12, wt 0.30)',scored:true,min:'prior assessment exists',flag:false,flagNote:'',computation:'Subtracts prior family score from current; classifies as improved/flat/worsened.'},
+    {id:'LPR-02',q:'Which core metrics changed materially?',produces:'Metric delta table',data:'prior + current pattern outputs',threshold:'meaningful_delta_pct = 0.05',cat:'progress',scoring:'metric_change_balance (F12, wt 0.25)',scored:true,min:'prior assessment exists',flag:false,flagNote:'',computation:'Compares key metric values between assessments; flags material changes.'},
+    {id:'LPR-03',q:'Which weakness flags are repeating across assessments?',produces:'Persistent weakness share',data:'prior + current diagnosis-grade flags',threshold:'weak boundary 0.50',cat:'progress',scoring:'persistent_weakness_reduction (F12, wt 0.25)',scored:true,min:'prior assessment exists',flag:false,flagNote:'',computation:'Counts flags present in both prior and current; computes share of total weaknesses that persisted.'}
+  ]
+},
+{
+  id:'F13',name:'Current-State Diagnostics',key:'current_state_diagnostics',count:7,
+  desc:'Snapshot analysis of current unit states, vacancy exposure, stale inventory, and forward-looking capacity/cascade risk.',
+  patterns:[
+    {id:'CSD-01',q:'What is the current unit state mix?',produces:'Occupied/vacant/notice/down/model counts, support share',data:'current_state_snapshot_episode',threshold:'minimum_current_state_support_pct = 0.50',cat:'current-state',scoring:'state_mix_health (F13, wt 0.15)',scored:true,min:'support threshold met',flag:true,flagNote:'Uses PM system data for unit states. Vacant unit audit field observations provide co-equal evidence of actual unit state (units PM says are "ready" may not be; units marked "down" may be habitable).',computation:'Counts units in each state from current snapshot; computes support share.'},
+    {id:'CSD-02',q:'Which units have 2+ simultaneous risk factors?',produces:'Multi-risk unit share',data:'current_state_snapshot_episode, vacancy/delinquency/notice data',threshold:'None specific',cat:'current-state',scoring:'state_mix_health composite (F13)',scored:true,min:'20 supported units',flag:false,flagNote:'',computation:'Cross-references vacancy, delinquency, notice, and maintenance status per unit; flags units with multiple concurrent issues.'},
+    {id:'CSD-03',q:'How are current vacancies distributed by stage?',produces:'Dominant open stage share',data:'vacancy_cycle_episode',threshold:'dominant stage > 0.40',cat:'current-state',scoring:'current_vacancy_exposure (F13, wt 0.25)',scored:true,min:'3 open vacancies',flag:false,flagNote:'',computation:'Groups open vacancies by current stage (make-ready, listed, applied, etc.); identifies dominant stage.'},
+    {id:'CSD-04',q:'What is the daily revenue bleed from open vacancies?',produces:'Portfolio daily bleed, bleed-to-revenue ratio',data:'vacancy_cycle_episode',threshold:'bleed ratio to monthly revenue',cat:'current-state',scoring:'current_vacancy_exposure composite (F13)',scored:true,min:'open count > 0',flag:false,flagNote:'',computation:'Sums daily rent for all currently vacant units; computes as share of total monthly potential revenue.'},
+    {id:'CSD-05',q:'Which units exceed stale thresholds for their stage?',produces:'Stale unit rate',data:'vacancy_cycle_episode, current_state_snapshot_episode',threshold:'stage-specific (ready > 2d, listed > 21d, signed > 3d)',cat:'current-state',scoring:'stale_inventory (F13, wt 0.15)',scored:true,min:'open count > 0',flag:false,flagNote:'',computation:'Compares days-in-current-stage against stage-specific thresholds; computes stale rate.'},
+    {id:'CSD-06',q:'Can maintenance handle current backlog + incoming notices?',produces:'Capacity ratio (backlog / throughput)',data:'notice_pipeline_episode, vacancy_cycle_episode, make_ready_episode',threshold:'ratio > 1.0',cat:'current-state',scoring:'ntv_capacity (F13, wt 0.15)',scored:true,min:'3 trailing completions',flag:false,flagNote:'',computation:'Current backlog + 30-day notice pipeline / trailing monthly throughput.'},
+    {id:'CSD-07',q:'Will 90-day exposure create an unmanageable cascade?',produces:'Cascade risk ratio, projected excess cost',data:'vacancy/notice/lease/make_ready episodes',threshold:'ratio > 1.0',cat:'current-state',scoring:'cascade_risk (F13, wt 0.20)',scored:true,min:'5 recent episodes + 3 completions',flag:false,flagNote:'',computation:'Projects 90-day vacancy volume from notices + lease expirations; compares against throughput capacity; estimates excess cost.'}
+  ]
+},
+{
+  id:'F14',name:'Micro-Slice-Based Diagnostics',key:'micro_slice_based_diagnostics',count:3,
+  desc:'Identifies divergent performance at the unit-type, building/floor, and staff member level.',
+  patterns:[
+    {id:'MSD-01',q:'Is one unit type worse than property baseline?',produces:'Slice delta table by unit type',data:'family outputs + slice by unit type',threshold:'slice_vs_baseline_delta_pct = 0.10',cat:'exploratory',scoring:'unit_type_divergence (F14, wt 0.30)',scored:true,min:'minimum_slice_size = 8',flag:false,flagNote:'',computation:'Re-runs key metrics by unit type; computes delta from property baseline per slice.'},
+    {id:'MSD-02',q:'Are certain buildings or floors worse?',produces:'Building/floor delta table',data:'vacancy/leasing/maintenance outputs + slice by building',threshold:'slice_vs_baseline_delta_pct = 0.10',cat:'exploratory',scoring:'building_floor_divergence (F14, wt 0.30)',scored:true,min:'minimum_slice_size = 8',flag:false,flagNote:'',computation:'Re-runs key metrics by building/floor; computes delta from property baseline per slice.'},
+    {id:'MSD-03',q:'Is any staff member materially underperforming?',produces:'Staff comparison table',data:'leasing_conversion_episode, renewal_cycle_episode',threshold:'2+ unfavorable metrics beyond delta threshold',cat:'exploratory',scoring:'staff_divergence (F14, wt 0.20)',scored:true,min:'staff minimum sample',flag:false,flagNote:'',computation:'Compares per-staff metrics against team baseline; flags staff with multiple underperforming dimensions.'}
+  ]
+},
+{
+  id:'F15',name:'Door-Opener Hypothesis Patterns',key:'door_opener_hypothesis_patterns',count:6,
+  desc:'Identifies statistical outliers, contradiction clusters, and high-value recovery opportunities for engagement hooks.',
+  patterns:[
+    {id:'DHP-01',q:'Which vacancy episodes are statistical outliers?',produces:'Outlier list with z-scores, outlier share',data:'vacancy_cycle_episode',threshold:'anomaly_sensitivity_zscore = 2.0',cat:'exploratory',scoring:'vacancy_outlier_density (F15, wt 0.20)',scored:true,min:'10 per segment',flag:false,flagNote:'',computation:'Computes z-score for each vacancy episode duration within segment; flags outliers.'},
+    {id:'DHP-02',q:'Which lead sources/staff are unusually weak?',produces:'Outlier funnel segments with z-scores',data:'leasing_conversion_episode',threshold:'z-score > anomaly_sensitivity_zscore',cat:'exploratory',scoring:'funnel_outlier_density (F15, wt 0.20)',scored:true,min:'5 comparable segments',flag:false,flagNote:'',computation:'Computes z-scores for conversion rates by source/staff; flags statistical outliers.'},
+    {id:'DHP-03',q:'Are contradictions clustering by domain/vendor/staff?',produces:'Contradiction cluster table',data:'field_validation_episode + contradiction episodes',threshold:'z-score > anomaly sensitivity',cat:'contradiction',scoring:'contradiction_cluster_density (F15, wt 0.20)',scored:true,min:'5 per group',flag:true,flagNote:'Uses field validation data but frames contradictions as one-directional (field checking system). Clusters should be bidirectional — system data may be the source of error.',computation:'Groups contradictions by domain/vendor/staff; computes z-scores for cluster density.'},
+    {id:'DHP-04',q:'Which episodes have largest recoverable opportunity?',produces:'Top 20 episodes by avoidable loss',data:'vacancy_cycle_episode, turnover_cost_episode',threshold:'avoidable days above slow_duration_days',cat:'exploratory',scoring:'high_value_recovery_density (F15, wt 0.20)',scored:true,min:'5 episodes',flag:false,flagNote:'',computation:'Computes avoidable cost per episode (actual - threshold days × daily rent); ranks top 20.'},
+    {id:'DHP-05',q:'Which vacancy episodes are costliest individual failures?',produces:'Top 20 costliest episodes',data:'vacancy_cycle_episode',threshold:'None (ranking)',cat:'exploratory',scoring:'high_value_recovery_density composite (F15)',scored:true,min:'3 episodes',flag:false,flagNote:'',computation:'Ranks all vacancy episodes by total cost; returns top 20.'},
+    {id:'DHP-06',q:'Are units getting worse turn-over-turn?',produces:'Deteriorated pair share',data:'vacancy_cycle_episode',threshold:'weak boundary 0.25',cat:'progress',scoring:'sequential_deterioration_density (F15, wt 0.20)',scored:true,min:'3 units with 2+ episodes',flag:false,flagNote:'',computation:'Compares consecutive vacancy episodes for same unit; computes share where later episode was slower/costlier.'}
+  ]
+}
+];
+
+const familiesEl = document.getElementById('families');
+const familyFilter = document.getElementById('familyFilter');
+const categoryFilter = document.getElementById('categoryFilter');
+const searchBox = document.getElementById('searchBox');
+const flagOnly = document.getElementById('flagOnly');
+const findingOnly = document.getElementById('findingOnly');
+const expandAllBtn = document.getElementById('expandAll');
+const collapseAllBtn = document.getElementById('collapseAll');
+
+let totalFlags = 0;
+DATA.forEach(f => f.patterns.forEach(p => { if(p.flag) totalFlags++; }));
+document.getElementById('flagCountStat').textContent = totalFlags;
+
+DATA.forEach((f,fi) => {
+  const opt = document.createElement('option');
+  opt.value = f.key;
+  opt.textContent = `${f.id}: ${f.name} (${f.count})`;
+  familyFilter.appendChild(opt);
+});
+
+function catClass(c){
+  const map={'diagnosis-grade':'cat-diagnosis','contextual':'cat-contextual','exploratory':'cat-exploratory','contradiction':'cat-contradiction','progress':'cat-progress','current-state':'cat-current'};
+  return map[c]||'';
+}
+
+function renderFamilies(){
+  const ff = familyFilter.value;
+  const cf = categoryFilter.value;
+  const sf = searchBox.value.toLowerCase();
+  const fo = flagOnly.checked;
+  const fio = findingOnly.checked;
+
+  familiesEl.innerHTML = '';
+
+  DATA.forEach((fam,fi) => {
+    if(ff !== 'all' && fam.key !== ff) return;
+
+    const filteredPatterns = fam.patterns.filter(p => {
+      if(cf !== 'all' && p.cat !== cf) return false;
+      if(fo && !p.flag) return false;
+      if(fio && p.scored) return false;
+      if(sf){
+        const hay = (p.id+' '+p.q+' '+p.produces+' '+p.data+' '+p.scoring+' '+p.computation).toLowerCase();
+        if(!hay.includes(sf)) return false;
+      }
+      return true;
+    });
+
+    if(filteredPatterns.length === 0) return;
+
+    const flagCount = filteredPatterns.filter(p=>p.flag).length;
+
+    const div = document.createElement('div');
+    div.className = 'family';
+    div.style.animationDelay = (fi*0.05)+'s';
+
+    div.innerHTML = `
+      <div class="family-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="family-color" style="background:${FAMILY_COLORS[fi]}"></div>
+        <div class="family-info">
+          <h2>${fam.id} — ${fam.name}</h2>
+          <div class="meta">
+            <span>${filteredPatterns.length} pattern${filteredPatterns.length!==1?'s':''}</span>
+            <span>${fam.desc}</span>
+          </div>
+        </div>
+        ${flagCount?`<span class="flag-count">⚑ ${flagCount} flag${flagCount!==1?'s':''}</span>`:''}
+        <span class="family-toggle">▼</span>
+      </div>
+      <div class="family-body">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Question</th>
+              <th>Produces</th>
+              <th>Category</th>
+              <th>Scoring Role</th>
+              <th>Min Data</th>
+              <th>⚑</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filteredPatterns.map((p,pi) => `
+              <tr class="${p.flag?'flagged':''}" onclick="toggleDetail(this)">
+                <td class="id">${p.id}</td>
+                <td class="question">${p.q}</td>
+                <td>${p.produces}</td>
+                <td class="category"><span class="badge ${catClass(p.cat)}">${p.cat}</span></td>
+                <td class="scoring">${p.scored?`<span class="scored">${p.scoring}</span>`:`<span class="finding-only">${p.scoring}</span>`}</td>
+                <td class="mono" style="font-size:.75rem">${p.min}</td>
+                <td class="flag-cell">${p.flag?'<span class="flag-icon">⚑</span>':''}</td>
+              </tr>
+              <tr class="detail-row" data-detail="true">
+                <td colspan="7">
+                  <div class="detail-content">
+                    <div class="dl">
+                      <dt>Computation</dt><dd>${p.computation}</dd>
+                      <dt>Data Sources</dt><dd class="mono">${p.data}</dd>
+                      <dt>Key Threshold</dt><dd class="mono">${p.threshold}</dd>
+                      <dt>Scoring</dt><dd>${p.scoring}</dd>
+                    </div>
+                    ${p.flag?`<div class="flag-note"><strong>⚑ Data Equality Issue:</strong> ${p.flagNote}</div>`:''}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+    familiesEl.appendChild(div);
+  });
+}
+
+window.toggleDetail = function(tr){
+  const next = tr.nextElementSibling;
+  if(next && next.dataset.detail){
+    next.classList.toggle('open');
+  }
+};
+
+familyFilter.addEventListener('change', renderFamilies);
+categoryFilter.addEventListener('change', renderFamilies);
+searchBox.addEventListener('input', renderFamilies);
+flagOnly.addEventListener('change', renderFamilies);
+findingOnly.addEventListener('change', renderFamilies);
+
+expandAllBtn.addEventListener('click', ()=>{
+  document.querySelectorAll('.family').forEach(f=>f.classList.add('open'));
+});
+collapseAllBtn.addEventListener('click', ()=>{
+  document.querySelectorAll('.family').forEach(f=>f.classList.remove('open'));
+  document.querySelectorAll('.detail-row').forEach(r=>r.classList.remove('open'));
+});
+
+renderFamilies();
+</script>
+</body>
+</html>

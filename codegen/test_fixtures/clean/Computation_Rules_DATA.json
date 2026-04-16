@@ -1,0 +1,16 @@
+[
+  {
+    "area": "1. Vacancy/Occupancy",
+    "items": [
+      {"name": "Vacancy Rate", "type": "Data", "computation": "units_vacant / total_units"},
+      {"name": "Unit Turn Cycle", "type": "Checklist", "computation": "checklist_score"}
+    ]
+  },
+  {
+    "area": "2. Leasing Performance",
+    "items": [
+      {"name": "Closing Ratio", "type": "Data", "computation": "leases_signed / applications"},
+      {"name": "Leasing Process", "type": "Checklist", "computation": "checklist_score"}
+    ]
+  }
+]

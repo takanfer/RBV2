@@ -1,0 +1,1930 @@
+==========================================================================================
+DATABASE SCHEMA VERIFICATION REPORT (V2)
+==========================================================================================
+
+SECTION 1: TABLE AND COLUMN INVENTORY
+----------------------------------------------------------------------
+Table Name                                          Cols      Engine
+----------------------------------------------------------------------
+source_system                                         11  PostgreSQL
+source_ingestion                                      13  PostgreSQL
+source_asset                                          10  PostgreSQL
+source_record_raw                                     11  PostgreSQL
+mapping_rule                                          10  PostgreSQL
+mapping_review_queue                                  10  PostgreSQL
+tenant                                                 7  PostgreSQL
+user_account                                           9  PostgreSQL
+audit_log                                             10  PostgreSQL
+client                                                10  PostgreSQL
+portfolio                                              5  PostgreSQL
+property                                              25  PostgreSQL
+building                                              10  PostgreSQL
+floor_plan                                            10  PostgreSQL
+unit                                                   5  PostgreSQL
+unit_version                                          16  PostgreSQL
+unit_existence_interval                                9  PostgreSQL
+unit_alias                                            11  PostgreSQL
+calendar_day                                          10  PostgreSQL
+property_amenity                                       9  PostgreSQL
+unit_amenity                                           9  PostgreSQL
+market_context                                        13  PostgreSQL
+resident                                              10  PostgreSQL
+lease                                                 28  PostgreSQL
+lease_interval                                        11  PostgreSQL
+lease_charge                                           9  PostgreSQL
+lease_event                                            6  PostgreSQL
+notice_event                                           8  PostgreSQL
+move_event                                            11  PostgreSQL
+renewal_offer                                         16  PostgreSQL
+payment_event                                          8  PostgreSQL
+delinquency_snapshot                                  14  PostgreSQL
+staff_member                                           9  PostgreSQL
+vendor                                                 7  PostgreSQL
+work_order                                            18  PostgreSQL
+work_order_line_item                                   6  PostgreSQL
+work_order_status_event                                6  PostgreSQL
+make_ready_cycle                                      21  PostgreSQL
+vacancy_cycle                                         12  PostgreSQL
+unit_condition_observation                            27  PostgreSQL
+field_validation                                      11  PostgreSQL
+budget_actual_line                                    11  PostgreSQL
+property_condition_observation                        12  PostgreSQL
+capital_asset_observation                             12  PostgreSQL
+deferred_maintenance_item                             11  PostgreSQL
+fire_safety_observation                               15  PostgreSQL
+back_of_house_observation                             11  PostgreSQL
+lead                                                  11  PostgreSQL
+lead_source                                            6  PostgreSQL
+lead_event                                            11  PostgreSQL
+communication_event                                    9  PostgreSQL
+tour_event                                            11  PostgreSQL
+application_event                                     10  PostgreSQL
+agent                                                  7  PostgreSQL
+crm_assignment_interval                                6  PostgreSQL
+conversion_metric_snapshot                            13  PostgreSQL
+marketing_channel                                      7  PostgreSQL
+campaign                                               9  PostgreSQL
+campaign_spend                                         5  PostgreSQL
+website_observation                                   17  PostgreSQL
+social_observation                                    10  PostgreSQL
+reputation_observation                                11  PostgreSQL
+google_business_observation                            7  PostgreSQL
+listing                                               11  PostgreSQL
+listing_observation                                   24  PostgreSQL
+listing_photo_assessment                              21  PostgreSQL
+listing_content_assessment                            22  PostgreSQL
+listing_asset                                          7  PostgreSQL
+marketing_observation                                  7  PostgreSQL
+competitive_set                                        7  PostgreSQL
+competitive_set_member                                 5  PostgreSQL
+comp_floorplan                                         8  PostgreSQL
+comp_listing_observation                              20  PostgreSQL
+comp_property_observation                              7  PostgreSQL
+comp_marketing_assessment                             11  PostgreSQL
+mystery_shop                                          75  PostgreSQL
+vacant_unit_audit                                     23  PostgreSQL
+resident_interview                                    10  PostgreSQL
+tour_observation                                       7  PostgreSQL
+tech_platform                                          9  PostgreSQL
+tech_summary                                          12  PostgreSQL
+assessment                                            14  PostgreSQL
+assessment_data_coverage                               8  PostgreSQL
+analysis_run                                           9  PostgreSQL
+scorecard                                              8  PostgreSQL
+score_result                                          24  PostgreSQL
+finding                                               16  PostgreSQL
+impact_estimate                                       16  PostgreSQL
+contradiction                                         14  PostgreSQL
+recommendation                                        16  PostgreSQL
+study                                                  7  PostgreSQL
+saved_query                                           10  PostgreSQL
+result_snapshot                                       15  PostgreSQL
+study_item                                             6  PostgreSQL
+comparison_board                                       7  PostgreSQL
+annotation                                             7  PostgreSQL
+evidence_bundle                                        6  PostgreSQL
+report                                                 8  PostgreSQL
+report_section                                        10  PostgreSQL
+report_render                                          7  PostgreSQL
+staffing_snapshot                                      5  PostgreSQL
+leasing_model_snapshot                                 5  PostgreSQL
+resident_event_program                                 5  PostgreSQL
+renewal_retention_snapshot                             5  PostgreSQL
+partnership_referral_snapshot                          5  PostgreSQL
+scoring_rubric_version                                 5  PostgreSQL
+benchmark_version                                      6  PostgreSQL
+metric_registry                                       10  PostgreSQL
+diagnostic_package                                    10  PostgreSQL
+impact_model_catalog                                  10  PostgreSQL
+fact_unit_day                                         18  ClickHouse
+fact_lease_interval                                   12  ClickHouse
+fact_vacancy_cycle                                    11  ClickHouse
+fact_work_order                                       10  ClickHouse
+fact_lead_funnel_event                                 8  ClickHouse
+fact_listing_observation                               9  ClickHouse
+fact_marketing_presence_day                            6  ClickHouse
+fact_comp_listing_observation                          9  ClickHouse
+fact_score_result                                     12  ClickHouse
+fact_finding_impact                                   10  ClickHouse
+fact_assessment_score                                  8  ClickHouse
+fact_assessment_finding                                8  ClickHouse
+fact_recommendation_status                             7  ClickHouse
+fact_property_kpi_period                               6  ClickHouse
+fact_unit_chronicity                                   7  ClickHouse
+----------------------------------------------------------------------
+PostgreSQL tables: 110
+ClickHouse tables: 15
+TOTAL tables:      125
+TOTAL columns:     1394
+
+SECTION 2: SPEC_1 TABLE CROSS-REFERENCE (curated)
+----------------------------------------------------------------------
+
+[A] Tables in BOTH spec_1 and DDL: 86
+  ✓ agent                                         (§4.2)
+  ✓ analysis_run                                  (§4.6)
+  ✓ annotation                                    (§9.1)
+  ✓ application_event                             (§4.2 (spec says application))
+  ✓ assessment                                    (§4.6)
+  ✓ assessment_data_coverage                      (§4.6)
+  ✓ budget_actual_line                            (§4.3)
+  ✓ building                                      (§4.1)
+  ✓ calendar_day                                  (§3.3 key core tables)
+  ✓ campaign                                      (§4.4)
+  ✓ campaign_spend                                (§4.4)
+  ✓ communication_event                           (§4.2 (spec says communication_touch))
+  ✓ comp_floorplan                                (§4.5)
+  ✓ comp_listing_observation                      (§4.5)
+  ✓ comp_property_observation                     (§4.5)
+  ✓ comparison_board                              (§9.1)
+  ✓ competitive_set                               (§4.5)
+  ✓ crm_assignment_interval                       (§4.2)
+  ✓ delinquency_snapshot                          (§3.4 event facts)
+  ✓ evidence_bundle                               (§9.1)
+  ✓ fact_assessment_finding                       (§14.2 longitudinal (ClickHouse))
+  ✓ fact_assessment_score                         (§14.2 longitudinal (ClickHouse))
+  ✓ fact_comp_listing_observation                 (§3.1 Layer C (ClickHouse))
+  ✓ fact_finding_impact                           (§3.1 Layer C (ClickHouse))
+  ✓ fact_lead_funnel_event                        (§3.1 Layer C (ClickHouse))
+  ✓ fact_lease_interval                           (§3.1 Layer C (ClickHouse))
+  ✓ fact_listing_observation                      (§3.1 Layer C (ClickHouse))
+  ✓ fact_marketing_presence_day                   (§3.1 Layer C (ClickHouse))
+  ✓ fact_property_kpi_period                      (§14.2 longitudinal (ClickHouse))
+  ✓ fact_recommendation_status                    (§14.2 longitudinal (ClickHouse))
+  ✓ fact_score_result                             (§3.1 Layer C (ClickHouse))
+  ✓ fact_unit_chronicity                          (§14.2 longitudinal (ClickHouse))
+  ✓ fact_unit_day                                 (§3.1 Layer C (ClickHouse))
+  ✓ fact_vacancy_cycle                            (§3.1 Layer C (ClickHouse))
+  ✓ fact_work_order                               (§3.1 Layer C (ClickHouse))
+  ✓ field_validation                              (§4.3)
+  ✓ finding                                       (§4.6)
+  ✓ impact_estimate                               (§4.6)
+  ✓ lead                                          (§4.2)
+  ✓ lead_event                                    (§3.4 event facts)
+  ✓ lead_source                                   (§4.2)
+  ✓ lease                                         (§3.3 key core tables)
+  ✓ lease_event                                   (§3.4 event facts)
+  ✓ lease_interval                                (§3.3 key core tables)
+  ✓ listing                                       (§4.4)
+  ✓ listing_asset                                 (§4.4)
+  ✓ listing_observation                           (§4.4)
+  ✓ make_ready_cycle                              (§4.3)
+  ✓ marketing_channel                             (§4.4)
+  ✓ marketing_observation                         (§4.4)
+  ✓ move_event                                    (§3.4 event facts)
+  ✓ mystery_shop                                  (§3.3 key core tables)
+  ✓ notice_event                                  (§3.4 event facts)
+  ✓ payment_event                                 (§3.4 event facts)
+  ✓ property                                      (§4.1)
+  ✓ recommendation                                (§4.6)
+  ✓ renewal_offer                                 (§3.4 event facts)
+  ✓ report                                        (§4.6)
+  ✓ report_render                                 (§4.6)
+  ✓ report_section                                (§4.6)
+  ✓ resident_interview                            (§3.3 key core tables)
+  ✓ result_snapshot                               (§9.1)
+  ✓ saved_query                                   (§9.1)
+  ✓ score_result                                  (§4.6)
+  ✓ scorecard                                     (§4.6)
+  ✓ social_observation                            (§4.4)
+  ✓ source_asset                                  (§3.1 Layer A)
+  ✓ source_ingestion                              (§3.1 Layer A)
+  ✓ source_record_raw                             (§3.1 Layer A)
+  ✓ source_system                                 (§3.1 Layer A)
+  ✓ staff_member                                  (§4.3)
+  ✓ study                                         (§9.1)
+  ✓ study_item                                    (§9.1)
+  ✓ tour_event                                    (§4.2 (spec says tour))
+  ✓ unit                                          (§4.1)
+  ✓ unit_alias                                    (§3.3 key core tables)
+  ✓ unit_condition_observation                    (§4.3)
+  ✓ unit_existence_interval                       (§3.3 key core tables)
+  ✓ unit_version                                  (§3.3 key core tables)
+  ✓ vacancy_cycle                                 (§3.3 key core tables)
+  ✓ vacant_unit_audit                             (§3.3 key core tables)
+  ✓ vendor                                        (§4.3)
+  ✓ website_observation                           (§4.4)
+  ✓ work_order                                    (§4.3)
+  ✓ work_order_line_item                          (§4.3)
+  ✓ work_order_status_event                       (§3.4 event facts)
+
+[B] Tables GENUINELY MISSING from DDL: 0
+  (none)
+
+[C] Spec_1 names handled by DESIGN DECISION: 2
+  → field_observation_event
+    SPLIT → field_validation + unit_condition_observation + back_of_house_observation
+  → mystery_shop_event
+    MERGED → mystery_shop table (single row per shop, not event stream)
+
+[D] DDL tables NOT in spec_1 (sourced from CDI/AWS/scoring): 39
+  + audit_log                                     (10 columns)
+  + back_of_house_observation                     (11 columns)
+  + benchmark_version                             (6 columns)
+  + capital_asset_observation                     (12 columns)
+  + client                                        (10 columns)
+  + comp_marketing_assessment                     (11 columns)
+  + competitive_set_member                        (5 columns)
+  + contradiction                                 (14 columns)
+  + conversion_metric_snapshot                    (13 columns)
+  + deferred_maintenance_item                     (11 columns)
+  + diagnostic_package                            (10 columns)
+  + fire_safety_observation                       (15 columns)
+  + floor_plan                                    (10 columns)
+  + google_business_observation                   (7 columns)
+  + impact_model_catalog                          (10 columns)
+  + lease_charge                                  (9 columns)
+  + leasing_model_snapshot                        (5 columns)
+  + listing_content_assessment                    (22 columns)
+  + listing_photo_assessment                      (21 columns)
+  + mapping_review_queue                          (10 columns)
+  + mapping_rule                                  (10 columns)
+  + market_context                                (13 columns)
+  + metric_registry                               (10 columns)
+  + partnership_referral_snapshot                 (5 columns)
+  + portfolio                                     (5 columns)
+  + property_amenity                              (9 columns)
+  + property_condition_observation                (12 columns)
+  + renewal_retention_snapshot                    (5 columns)
+  + reputation_observation                        (11 columns)
+  + resident                                      (10 columns)
+  + resident_event_program                        (5 columns)
+  + scoring_rubric_version                        (5 columns)
+  + staffing_snapshot                             (5 columns)
+  + tech_platform                                 (9 columns)
+  + tech_summary                                  (12 columns)
+  + tenant                                        (7 columns)
+  + tour_observation                              (7 columns)
+  + unit_amenity                                  (9 columns)
+  + user_account                                  (9 columns)
+
+SECTION 3: DETAILED COLUMN LISTING
+----------------------------------------------------------------------
+
+  source_system [PG] (11 columns):
+    source_system_id                         uuid                      NULL
+    tenant_id                                uuid                      NOT NULL
+    system_name                              text                      NOT NULL
+    system_type                              text                      NOT NULL
+    vendor_name                              text                      NULL
+    api_base_url                             text                      NULL
+    adapter_type                             text                      NOT NULL
+    configuration                            jsonb                     NOT NULL
+    is_active                                boolean                   NOT NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  source_ingestion [PG] (13 columns):
+    ingestion_id                             uuid                      NULL
+    source_system_id                         uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    ingestion_type                           text                      NOT NULL
+    status                                   text                      NOT NULL
+    file_count                               integer                   NOT NULL
+    record_count                             integer                   NULL
+    idempotency_key                          text                      NULL
+    started_at                               timestamptz               NULL
+    completed_at                             timestamptz               NULL
+    error_detail                             jsonb                     NULL
+    created_at                               timestamptz               NOT NULL
+    created_by                               uuid                      NULL
+
+  source_asset [PG] (10 columns):
+    asset_id                                 uuid                      NULL
+    ingestion_id                             uuid                      NOT NULL
+    asset_type                               text                      NOT NULL
+    original_filename                        text                      NULL
+    mime_type                                text                      NULL
+    file_size_bytes                          bigint                    NULL
+    content_hash                             text                      NOT NULL
+    storage_path                             text                      NOT NULL
+    metadata                                 jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  source_record_raw [PG] (11 columns):
+    record_id                                uuid                      NULL
+    asset_id                                 uuid                      NOT NULL
+    ingestion_id                             uuid                      NOT NULL
+    record_type                              text                      NOT NULL
+    source_row_number                        integer                   NULL
+    raw_data                                 jsonb                     NOT NULL
+    mapping_status                           text                      NOT NULL
+    mapping_confidence                       numeric(5,4)              NULL
+    canonical_entity                         text                      NULL
+    canonical_id                             uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  mapping_rule [PG] (10 columns):
+    rule_id                                  uuid                      NULL
+    source_system_id                         uuid                      NOT NULL
+    source_record_type                       text                      NOT NULL
+    source_column                            text                      NOT NULL
+    target_table                             text                      NOT NULL
+    target_column                            text                      NOT NULL
+    transform_expr                           text                      NULL
+    is_active                                boolean                   NOT NULL
+    created_at                               timestamptz               NOT NULL
+    created_by                               uuid                      NULL
+
+  mapping_review_queue [PG] (10 columns):
+    review_id                                uuid                      NULL
+    ingestion_id                             uuid                      NOT NULL
+    record_id                                uuid                      NULL
+    review_type                              text                      NOT NULL
+    description                              text                      NOT NULL
+    suggested_mapping                        jsonb                     NULL
+    resolution                               text                      NULL
+    resolved_by                              uuid                      NULL
+    resolved_at                              timestamptz               NULL
+    created_at                               timestamptz               NOT NULL
+
+  tenant [PG] (7 columns):
+    tenant_id                                uuid                      NULL
+    org_name                                 text                      NOT NULL
+    slug                                     text                      NOT NULL
+    settings                                 jsonb                     NOT NULL
+    is_active                                boolean                   NOT NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  user_account [PG] (9 columns):
+    user_id                                  uuid                      NULL
+    tenant_id                                uuid                      NOT NULL
+    email                                    text                      NOT NULL
+    display_name                             text                      NOT NULL
+    role                                     text                      NOT NULL
+    auth_provider_id                         text                      NULL
+    is_active                                boolean                   NOT NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  audit_log [PG] (10 columns):
+    log_id                                   uuid                      NULL
+    tenant_id                                uuid                      NOT NULL
+    user_id                                  uuid                      NULL
+    action                                   text                      NOT NULL
+    entity_type                              text                      NOT NULL
+    entity_id                                uuid                      NOT NULL
+    before_value                             jsonb                     NULL
+    after_value                              jsonb                     NULL
+    reason                                   text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  client [PG] (10 columns):
+    client_id                                uuid                      NULL
+    tenant_id                                uuid                      NOT NULL
+    client_name                              text                      NOT NULL
+    contact_name                             text                      NULL
+    contact_phone                            text                      NULL
+    contact_email                            text                      NULL
+    attributes                               jsonb                     NOT NULL
+    is_active                                boolean                   NOT NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  portfolio [PG] (5 columns):
+    portfolio_id                             uuid                      NULL
+    client_id                                uuid                      NOT NULL
+    portfolio_name                           text                      NOT NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  property [PG] (25 columns):
+    property_id                              uuid                      NULL
+    tenant_id                                uuid                      NOT NULL
+    client_id                                uuid                      NULL
+    portfolio_id                             uuid                      NULL
+    property_name                            text                      NOT NULL
+    street_address                           text                      NOT NULL
+    city                                     text                      NOT NULL
+    state                                    text                      NOT NULL
+    zip_code                                 text                      NOT NULL
+    total_units                              integer                   NULL
+    year_built                               integer                   NULL
+    property_class                           text                      NULL
+    building_type                            text                      NULL
+    buildings_count                          integer                   NULL
+    stories                                  integer                   NULL
+    total_sqft                               integer                   NULL
+    lot_size                                 text                      NULL
+    parking_spaces                           integer                   NULL
+    parking_type                             text                      NULL
+    is_subject                               boolean                   NOT NULL
+    latitude                                 numeric(10,7)             NULL
+    longitude                                numeric(10,7)             NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  building [PG] (10 columns):
+    building_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    parent_building_id                       uuid                      NULL
+    building_label                           text                      NOT NULL
+    building_type                            text                      NULL
+    stories                                  integer                   NULL
+    unit_count                               integer                   NULL
+    has_elevator                             boolean                   NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  floor_plan [PG] (10 columns):
+    floor_plan_id                            uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    plan_code                                text                      NOT NULL
+    plan_name                                text                      NULL
+    bedrooms                                 numeric(4,1)              NOT NULL
+    bathrooms                                numeric(4,1)              NOT NULL
+    sqft                                     integer                   NULL
+    base_market_rent                         numeric(12,2)             NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  unit [PG] (5 columns):
+    unit_id                                  uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    unit_natural_key                         text                      NOT NULL
+    created_at                               timestamptz               NOT NULL
+    retired_at                               timestamptz               NULL
+
+  unit_version [PG] (16 columns):
+    unit_version_id                          uuid                      NULL
+    unit_id                                  uuid                      NOT NULL
+    valid_from                               date                      NOT NULL
+    valid_to                                 date                      NULL
+    building_id                              uuid                      NULL
+    floor_plan_id                            uuid                      NULL
+    floor_label                              text                      NULL
+    unit_label                               text                      NOT NULL
+    floorplan_code                           text                      NULL
+    bedrooms                                 numeric(4,1)              NULL
+    bathrooms                                numeric(4,1)              NULL
+    sqft                                     integer                   NULL
+    finish_package                           text                      NULL
+    attributes                               jsonb                     NOT NULL
+    recorded_from                            timestamptz               NOT NULL
+    recorded_to                              timestamptz               NULL
+
+  unit_existence_interval [PG] (9 columns):
+    interval_id                              uuid                      NULL
+    unit_id                                  uuid                      NOT NULL
+    valid_from                               date                      NOT NULL
+    valid_to                                 date                      NULL
+    existence_status                         text                      NOT NULL
+    rentable_flag                            boolean                   NOT NULL
+    reason_code                              text                      NULL
+    recorded_from                            timestamptz               NOT NULL
+    recorded_to                              timestamptz               NULL
+
+  unit_alias [PG] (11 columns):
+    alias_id                                 uuid                      NULL
+    unit_id                                  uuid                      NOT NULL
+    source_system_id                         uuid                      NULL
+    alias_key                                text                      NOT NULL
+    alias_type                               text                      NOT NULL
+    valid_from                               date                      NULL
+    valid_to                                 date                      NULL
+    match_method                             text                      NULL
+    match_confidence                         numeric(5,4)              NULL
+    reviewer_override                        boolean                   NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  calendar_day [PG] (10 columns):
+    day_date                                 date                      NULL
+    day_of_week                              smallint                  NOT NULL
+    day_of_month                             smallint                  NOT NULL
+    day_of_year                              smallint                  NOT NULL
+    week_of_year                             smallint                  NOT NULL
+    month                                    smallint                  NOT NULL
+    quarter                                  smallint                  NOT NULL
+    year                                     smallint                  NOT NULL
+    is_weekend                               boolean                   NOT NULL
+    is_month_end                             boolean                   NOT NULL
+
+  property_amenity [PG] (9 columns):
+    amenity_id                               uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    amenity_category                         text                      NOT NULL
+    amenity_name                             text                      NOT NULL
+    is_present                               boolean                   NULL
+    source                                   text                      NULL
+    verification                             text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  unit_amenity [PG] (9 columns):
+    amenity_id                               uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    amenity_category                         text                      NOT NULL
+    amenity_name                             text                      NOT NULL
+    is_present                               boolean                   NULL
+    source                                   text                      NULL
+    verification                             text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  market_context [PG] (13 columns):
+    context_id                               uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    submarket_name                           text                      NULL
+    submarket_vacancy_pct                    numeric(6,3)              NULL
+    submarket_avg_rent_psf                   numeric(10,2)             NULL
+    yoy_rent_growth_pct                      numeric(6,3)              NULL
+    new_supply_units                         integer                   NULL
+    employment_growth_pct                    numeric(6,3)              NULL
+    population_growth_pct                    numeric(6,3)              NULL
+    median_household_income                  numeric(12,2)             NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  resident [PG] (10 columns):
+    resident_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    resident_name                            text                      NULL
+    household_id                             uuid                      NULL
+    contact_email                            text                      NULL
+    contact_phone                            text                      NULL
+    source_system_id                         uuid                      NULL
+    source_key                               text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  lease [PG] (28 columns):
+    lease_id                                 uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    resident_id                              uuid                      NULL
+    lease_type                               text                      NULL
+    lease_start                              date                      NOT NULL
+    lease_end                                date                      NULL
+    lease_term_months                        integer                   NULL
+    execution_date                           date                      NULL
+    monthly_rent                             numeric(12,2)             NULL
+    market_rent                              numeric(12,2)             NULL
+    security_deposit                         numeric(12,2)             NULL
+    concession_type                          text                      NULL
+    concession_monthly                       numeric(12,2)             NULL
+    concession_start                         date                      NULL
+    concession_end                           date                      NULL
+    leasing_agent                            text                      NULL
+    move_in_date                             date                      NULL
+    notice_date                              date                      NULL
+    expected_move_out                        date                      NULL
+    actual_move_out                          date                      NULL
+    move_out_reason                          text                      NULL
+    occupancy_status                         text                      NULL
+    source_ingestion_id                      uuid                      NULL
+    attributes                               jsonb                     NOT NULL
+    recorded_from                            timestamptz               NOT NULL
+    recorded_to                              timestamptz               NULL
+    created_at                               timestamptz               NOT NULL
+
+  lease_interval [PG] (11 columns):
+    interval_id                              uuid                      NULL
+    lease_id                                 uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    valid_from                               date                      NOT NULL
+    valid_to                                 date                      NULL
+    monthly_rent                             numeric(12,2)             NULL
+    effective_rent                           numeric(12,2)             NULL
+    concession_value                         numeric(12,2)             NULL
+    interval_status                          text                      NOT NULL
+    recorded_from                            timestamptz               NOT NULL
+    recorded_to                              timestamptz               NULL
+
+  lease_charge [PG] (9 columns):
+    charge_id                                uuid                      NULL
+    lease_id                                 uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    charge_code                              text                      NOT NULL
+    charge_description                       text                      NULL
+    monthly_amount                           numeric(12,2)             NOT NULL
+    effective_from                           date                      NULL
+    effective_to                             date                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  lease_event [PG] (6 columns):
+    event_id                                 uuid                      NULL
+    lease_id                                 uuid                      NOT NULL
+    event_type                               text                      NOT NULL
+    event_date                               date                      NOT NULL
+    details                                  jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  notice_event [PG] (8 columns):
+    event_id                                 uuid                      NULL
+    lease_id                                 uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    notice_date                              date                      NOT NULL
+    expected_move_out                        date                      NULL
+    notice_type                              text                      NULL
+    reason                                   text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  move_event [PG] (11 columns):
+    event_id                                 uuid                      NULL
+    lease_id                                 uuid                      NULL
+    unit_id                                  uuid                      NOT NULL
+    resident_id                              uuid                      NULL
+    event_type                               text                      NOT NULL
+    event_date                               date                      NOT NULL
+    rent_amount                              numeric(12,2)             NULL
+    reason                                   text                      NULL
+    source_ingestion_id                      uuid                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  renewal_offer [PG] (16 columns):
+    offer_id                                 uuid                      NULL
+    lease_id                                 uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    resident_id                              uuid                      NULL
+    offer_date                               date                      NOT NULL
+    current_rent                             numeric(12,2)             NULL
+    offered_rent                             numeric(12,2)             NULL
+    offered_term                             text                      NULL
+    outcome                                  text                      NULL
+    accepted_date                            date                      NULL
+    incentive_offered                        text                      NULL
+    incentive_value                          numeric(12,2)             NULL
+    competitor_offer                         numeric(12,2)             NULL
+    resident_sentiment                       text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  payment_event [PG] (8 columns):
+    event_id                                 uuid                      NULL
+    lease_id                                 uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    payment_date                             date                      NOT NULL
+    amount                                   numeric(12,2)             NOT NULL
+    payment_type                             text                      NOT NULL
+    payment_method                           text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  delinquency_snapshot [PG] (14 columns):
+    snapshot_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    resident_id                              uuid                      NULL
+    snapshot_date                            date                      NOT NULL
+    current_balance                          numeric(12,2)             NULL
+    bucket_0_30                              numeric(12,2)             NULL
+    bucket_31_60                             numeric(12,2)             NULL
+    bucket_61_90                             numeric(12,2)             NULL
+    bucket_90_plus                           numeric(12,2)             NULL
+    last_payment_date                        date                      NULL
+    collections_status                       text                      NULL
+    eviction_filed                           boolean                   NULL
+    created_at                               timestamptz               NOT NULL
+
+  staff_member [PG] (9 columns):
+    staff_id                                 uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    staff_name                               text                      NOT NULL
+    role                                     text                      NULL
+    tenure_months                            integer                   NULL
+    certifications                           text                      NULL
+    is_active                                boolean                   NOT NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  vendor [PG] (7 columns):
+    vendor_id                                uuid                      NULL
+    tenant_id                                uuid                      NOT NULL
+    vendor_name                              text                      NOT NULL
+    vendor_type                              text                      NULL
+    contact_info                             jsonb                     NOT NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  work_order [PG] (18 columns):
+    work_order_id                            uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    unit_id                                  uuid                      NULL
+    work_order_number                        text                      NULL
+    category                                 text                      NOT NULL
+    sub_category                             text                      NULL
+    description                              text                      NULL
+    priority                                 text                      NULL
+    status                                   text                      NOT NULL
+    assigned_to                              text                      NULL
+    vendor_id                                uuid                      NULL
+    cost                                     numeric(12,2)             NULL
+    date_created                             date                      NOT NULL
+    date_completed                           date                      NULL
+    is_make_ready                            boolean                   NOT NULL
+    source_ingestion_id                      uuid                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  work_order_line_item [PG] (6 columns):
+    line_item_id                             uuid                      NULL
+    work_order_id                            uuid                      NOT NULL
+    cost_category                            text                      NOT NULL
+    description                              text                      NULL
+    amount                                   numeric(12,2)             NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  work_order_status_event [PG] (6 columns):
+    event_id                                 uuid                      NULL
+    work_order_id                            uuid                      NOT NULL
+    status                                   text                      NOT NULL
+    event_date                               timestamptz               NOT NULL
+    notes                                    text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  make_ready_cycle [PG] (21 columns):
+    cycle_id                                 uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    move_out_date                            date                      NULL
+    notice_date                              date                      NULL
+    make_ready_start                         date                      NULL
+    make_ready_complete                      date                      NULL
+    ready_observed                           date                      NULL
+    first_listing_date                       date                      NULL
+    first_tour_date                          date                      NULL
+    first_showing_date                       date                      NULL
+    application_date                         date                      NULL
+    lease_signed_date                        date                      NULL
+    move_in_date                             date                      NULL
+    prior_lease_id                           uuid                      NULL
+    new_lease_id                             uuid                      NULL
+    total_turn_days                          integer                   NULL
+    make_ready_scope                         text                      NULL
+    total_cost                               numeric(12,2)             NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  vacancy_cycle [PG] (12 columns):
+    cycle_id                                 uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    vacancy_start                            date                      NOT NULL
+    vacancy_end                              date                      NULL
+    days_vacant                              integer                   NULL
+    prior_rent                               numeric(12,2)             NULL
+    new_rent                                 numeric(12,2)             NULL
+    vacancy_cost                             numeric(12,2)             NULL
+    make_ready_cycle_id                      uuid                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  unit_condition_observation [PG] (27 columns):
+    observation_id                           uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    observation_date                         date                      NOT NULL
+    observer_id                              uuid                      NULL
+    flooring                                 text                      NULL
+    walls_paint                              text                      NULL
+    kitchen_cabinets                         text                      NULL
+    kitchen_appliances                       text                      NULL
+    bathroom_fixtures                        text                      NULL
+    windows_blinds                           text                      NULL
+    doors_hardware                           text                      NULL
+    lighting_fixtures                        text                      NULL
+    hvac_in_unit                             text                      NULL
+    overall_cleanliness                      text                      NULL
+    general_finish                           text                      NULL
+    cleanliness_acceptable                   boolean                   NULL
+    odor_present                             boolean                   NULL
+    pest_evidence                            boolean                   NULL
+    water_damage                             boolean                   NULL
+    appliances_functional                    boolean                   NULL
+    windows_blinds_intact                    boolean                   NULL
+    hvac_operational                         boolean                   NULL
+    ready_to_show                            boolean                   NULL
+    condition_notes                          text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  field_validation [PG] (11 columns):
+    validation_id                            uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    entity_type                              text                      NOT NULL
+    entity_id                                uuid                      NOT NULL
+    field_name                               text                      NOT NULL
+    pm_value                                 text                      NULL
+    field_value                              text                      NULL
+    is_match                                 boolean                   NULL
+    severity                                 text                      NULL
+    notes                                    text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  budget_actual_line [PG] (11 columns):
+    line_id                                  uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    line_category                            text                      NOT NULL
+    line_item                                text                      NOT NULL
+    period_month                             date                      NOT NULL
+    budget_amount                            numeric(14,2)             NULL
+    actual_amount                            numeric(14,2)             NULL
+    per_unit_amount                          numeric(12,2)             NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  property_condition_observation [PG] (12 columns):
+    observation_id                           uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    observation_date                         date                      NOT NULL
+    overall_condition                        text                      NULL
+    common_areas                             text                      NULL
+    exterior_presentation                    text                      NULL
+    amenities_condition                      text                      NULL
+    issues_count                             integer                   NULL
+    issues_detail                            text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  capital_asset_observation [PG] (12 columns):
+    observation_id                           uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    system_name                              text                      NOT NULL
+    system_type                              text                      NULL
+    condition_rating                         text                      NULL
+    install_year                             integer                   NULL
+    last_service_date                        date                      NULL
+    age_years                                integer                   NULL
+    observation_notes                        text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  deferred_maintenance_item [PG] (11 columns):
+    item_id                                  uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    location                                 text                      NULL
+    description                              text                      NOT NULL
+    affected_system                          text                      NULL
+    severity                                 text                      NULL
+    estimated_cost                           numeric(12,2)             NULL
+    is_safety_hazard                         boolean                   NOT NULL
+    photo_asset_id                           uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  fire_safety_observation [PG] (15 columns):
+    observation_id                           uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    fire_inspection_current                  boolean                   NULL
+    last_fire_inspection                     date                      NULL
+    open_violations                          boolean                   NULL
+    violation_count                          integer                   NULL
+    violation_details                        text                      NULL
+    no_open_code_violations                  boolean                   NULL
+    ada_compliance_met                       boolean                   NULL
+    insurance_current                        boolean                   NULL
+    reac_nspire_score                        numeric(5,1)              NULL
+    elevator_inspection_current              boolean                   NULL
+    last_elevator_inspection                 date                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  back_of_house_observation [PG] (11 columns):
+    observation_id                           uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    shop_organized                           boolean                   NULL
+    parts_inventory_labeled                  boolean                   NULL
+    safety_equipment_present                 boolean                   NULL
+    fire_extinguisher_current                boolean                   NULL
+    chemical_storage_compliant               boolean                   NULL
+    vehicle_cart_condition                   text                      NULL
+    cleanliness                              text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  lead [PG] (11 columns):
+    lead_id                                  uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    prospect_id                              text                      NULL
+    lead_created_date                        date                      NULL
+    lead_source_id                           uuid                      NULL
+    agent_id                                 uuid                      NULL
+    unit_type_interest                       text                      NULL
+    status                                   text                      NULL
+    attributes                               jsonb                     NOT NULL
+    source_ingestion_id                      uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  lead_source [PG] (6 columns):
+    source_id                                uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    source_name                              text                      NOT NULL
+    source_category                          text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  lead_event [PG] (11 columns):
+    event_id                                 uuid                      NULL
+    lead_id                                  uuid                      NOT NULL
+    event_type                               text                      NOT NULL
+    event_date                               date                      NOT NULL
+    agent_id                                 uuid                      NULL
+    response_time_min                        integer                   NULL
+    outcome                                  text                      NULL
+    reason_lost                              text                      NULL
+    notes                                    text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  communication_event [PG] (9 columns):
+    event_id                                 uuid                      NULL
+    lead_id                                  uuid                      NULL
+    resident_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    channel                                  text                      NOT NULL
+    direction                                text                      NOT NULL
+    event_date                               timestamptz               NOT NULL
+    notes                                    text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  tour_event [PG] (11 columns):
+    event_id                                 uuid                      NULL
+    lead_id                                  uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    agent_id                                 uuid                      NULL
+    tour_date                                date                      NOT NULL
+    tour_type                                text                      NULL
+    outcome                                  text                      NULL
+    duration_minutes                         integer                   NULL
+    units_shown                              jsonb                     NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  application_event [PG] (10 columns):
+    event_id                                 uuid                      NULL
+    lead_id                                  uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    unit_id                                  uuid                      NULL
+    application_date                         date                      NOT NULL
+    status                                   text                      NOT NULL
+    screening_score                          text                      NULL
+    decision_date                            date                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  agent [PG] (7 columns):
+    agent_id                                 uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    agent_name                               text                      NOT NULL
+    agent_type                               text                      NULL
+    is_active                                boolean                   NOT NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  crm_assignment_interval [PG] (6 columns):
+    interval_id                              uuid                      NULL
+    lead_id                                  uuid                      NOT NULL
+    agent_id                                 uuid                      NOT NULL
+    assigned_from                            date                      NOT NULL
+    assigned_to                              date                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  conversion_metric_snapshot [PG] (13 columns):
+    snapshot_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    period_label                             text                      NOT NULL
+    total_leads                              integer                   NULL
+    total_tours                              integer                   NULL
+    total_no_shows                           integer                   NULL
+    total_applications                       integer                   NULL
+    total_leases                             integer                   NULL
+    avg_days_lead_tour                       numeric(8,2)              NULL
+    avg_days_tour_app                        numeric(8,2)              NULL
+    avg_days_app_lease                       numeric(8,2)              NULL
+    created_at                               timestamptz               NOT NULL
+
+  marketing_channel [PG] (7 columns):
+    channel_id                               uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    channel_name                             text                      NOT NULL
+    channel_type                             text                      NOT NULL
+    platform_url                             text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  campaign [PG] (9 columns):
+    campaign_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    channel_id                               uuid                      NULL
+    campaign_name                            text                      NOT NULL
+    start_date                               date                      NULL
+    end_date                                 date                      NULL
+    budget                                   numeric(12,2)             NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  campaign_spend [PG] (5 columns):
+    spend_id                                 uuid                      NULL
+    campaign_id                              uuid                      NOT NULL
+    period_month                             date                      NOT NULL
+    amount                                   numeric(12,2)             NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  website_observation [PG] (17 columns):
+    observation_id                           uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    observation_date                         date                      NOT NULL
+    website_url                              text                      NULL
+    website_exists                           boolean                   NULL
+    mobile_responsive                        boolean                   NULL
+    live_chat                                boolean                   NULL
+    contact_form                             boolean                   NULL
+    floor_plans                              boolean                   NULL
+    photo_gallery                            boolean                   NULL
+    unit_availability                        boolean                   NULL
+    virtual_tours                            boolean                   NULL
+    online_application                       boolean                   NULL
+    tour_scheduling                          boolean                   NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  social_observation [PG] (10 columns):
+    observation_id                           uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    platform                                 text                      NOT NULL
+    profile_url                              text                      NULL
+    is_active                                boolean                   NULL
+    follower_count                           integer                   NULL
+    post_frequency                           text                      NULL
+    observation_date                         date                      NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  reputation_observation [PG] (11 columns):
+    observation_id                           uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    platform                                 text                      NOT NULL
+    platform_url                             text                      NULL
+    profile_exists                           boolean                   NULL
+    review_score                             numeric(3,1)              NULL
+    review_count                             integer                   NULL
+    reviews_last_90d                         integer                   NULL
+    observation_date                         date                      NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  google_business_observation [PG] (7 columns):
+    observation_id                           uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    gmb_claimed                              boolean                   NULL
+    gmb_optimized                            boolean                   NULL
+    observation_date                         date                      NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  listing [PG] (11 columns):
+    listing_id                               uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    unit_id                                  uuid                      NULL
+    floor_plan_id                            uuid                      NULL
+    channel_id                               uuid                      NULL
+    platform                                 text                      NOT NULL
+    listing_url                              text                      NULL
+    first_listed_date                        date                      NULL
+    delisted_date                            date                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  listing_observation [PG] (24 columns):
+    observation_id                           uuid                      NULL
+    listing_id                               uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    unit_id                                  uuid                      NULL
+    assessment_id                            uuid                      NULL
+    platform                                 text                      NOT NULL
+    observation_date                         date                      NOT NULL
+    asking_rent                              numeric(12,2)             NULL
+    concession_displayed                     boolean                   NULL
+    concession_amount                        numeric(12,2)             NULL
+    photo_count                              integer                   NULL
+    photo_quality                            numeric(4,1)              NULL
+    description_quality                      numeric(4,1)              NULL
+    description_word_count                   integer                   NULL
+    floor_plan_available                     boolean                   NULL
+    virtual_tour_available                   boolean                   NULL
+    amenities_listed                         boolean                   NULL
+    pricing_accurate                         boolean                   NULL
+    matches_availability                     boolean                   NULL
+    contact_info_accurate                    boolean                   NULL
+    listing_url                              text                      NULL
+    notes                                    text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  listing_photo_assessment [PG] (21 columns):
+    assessment_photo_id                      uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    hero_image_present                       boolean                   NULL
+    exterior_shots_count                     integer                   NULL
+    living_room_shown                        boolean                   NULL
+    kitchen_shown                            boolean                   NULL
+    bedrooms_shown                           boolean                   NULL
+    bathrooms_shown                          boolean                   NULL
+    features_shown                           boolean                   NULL
+    pool_photo                               boolean                   NULL
+    fitness_photo                            boolean                   NULL
+    clubhouse_photo                          boolean                   NULL
+    other_amenity_count                      integer                   NULL
+    total_amenities                          integer                   NULL
+    amenities_photographed                   integer                   NULL
+    lifestyle_photos                         integer                   NULL
+    professional_photographer                boolean                   NULL
+    last_photo_update                        date                      NULL
+    shows_actual_units                       text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  listing_content_assessment [PG] (22 columns):
+    content_id                               uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    platform_count                           integer                   NULL
+    ils_coverage                             text                      NULL
+    posting_method                           text                      NULL
+    syndication_tool                         text                      NULL
+    update_frequency                         text                      NULL
+    usp_mentioned                            boolean                   NULL
+    neighborhood_context                     boolean                   NULL
+    call_to_action                           boolean                   NULL
+    contact_info_clear                       boolean                   NULL
+    floor_plans_on_listing                   boolean                   NULL
+    unit_specs_accurate                      boolean                   NULL
+    amenities_fully_listed                   boolean                   NULL
+    pet_policy_stated                        boolean                   NULL
+    lease_terms_mentioned                    boolean                   NULL
+    pricing_consistent                       boolean                   NULL
+    availability_accurate                    boolean                   NULL
+    photos_match_condition                   boolean                   NULL
+    specials_updated                         boolean                   NULL
+    created_at                               timestamptz               NOT NULL
+
+  listing_asset [PG] (7 columns):
+    asset_id                                 uuid                      NULL
+    listing_id                               uuid                      NOT NULL
+    asset_type                               text                      NOT NULL
+    storage_path                             text                      NULL
+    quality_score                            numeric(4,1)              NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  marketing_observation [PG] (7 columns):
+    observation_id                           uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    observation_date                         date                      NOT NULL
+    observation_type                         text                      NOT NULL
+    data                                     jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  competitive_set [PG] (7 columns):
+    comp_set_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    set_name                                 text                      NOT NULL
+    valid_from                               date                      NULL
+    valid_to                                 date                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  competitive_set_member [PG] (5 columns):
+    member_id                                uuid                      NULL
+    comp_set_id                              uuid                      NOT NULL
+    competitor_property_id                   uuid                      NOT NULL
+    distance_miles                           numeric(6,2)              NULL
+    created_at                               timestamptz               NOT NULL
+
+  comp_floorplan [PG] (8 columns):
+    comp_floorplan_id                        uuid                      NULL
+    competitor_property_id                   uuid                      NOT NULL
+    unit_type                                text                      NULL
+    bedrooms                                 numeric(4,1)              NULL
+    bathrooms                                numeric(4,1)              NULL
+    sqft                                     integer                   NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  comp_listing_observation [PG] (20 columns):
+    observation_id                           uuid                      NULL
+    competitor_property_id                   uuid                      NOT NULL
+    comp_floorplan_id                        uuid                      NULL
+    assessment_id                            uuid                      NULL
+    observation_date                         date                      NOT NULL
+    bedrooms                                 numeric(4,1)              NULL
+    bathrooms                                numeric(4,1)              NULL
+    unit_type                                text                      NULL
+    sqft                                     integer                   NULL
+    asking_rent                              numeric(12,2)             NULL
+    rent_per_sqft                            numeric(8,2)              NULL
+    floor                                    text                      NULL
+    is_available                             boolean                   NULL
+    private_outdoor                          boolean                   NULL
+    concession_amount                        numeric(12,2)             NULL
+    days_listed                              integer                   NULL
+    confidence_score                         numeric(5,4)              NULL
+    notes                                    text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  comp_property_observation [PG] (7 columns):
+    observation_id                           uuid                      NULL
+    competitor_property_id                   uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    observation_date                         date                      NOT NULL
+    occupancy_rate_pct                       numeric(6,3)              NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  comp_marketing_assessment [PG] (11 columns):
+    assessment_score_id                      uuid                      NULL
+    competitor_property_id                   uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    platform_coverage                        numeric(4,1)              NULL
+    photo_quality                            numeric(4,1)              NULL
+    content_quality                          numeric(4,1)              NULL
+    listing_accuracy                         numeric(4,1)              NULL
+    website_quality                          numeric(4,1)              NULL
+    social_marketing                         numeric(4,1)              NULL
+    partnership_referral                     numeric(4,1)              NULL
+    created_at                               timestamptz               NOT NULL
+
+  mystery_shop [PG] (75 columns):
+    shop_id                                  uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NOT NULL
+    shop_date                                date                      NOT NULL
+    agent_name                               text                      NULL
+    is_subject                               boolean                   NOT NULL
+    phone_friendly_greeting                  boolean                   NULL
+    phone_answered_timely                    boolean                   NULL
+    phone_enthusiasm                         boolean                   NULL
+    phone_described_community                boolean                   NULL
+    phone_qualifying_questions               boolean                   NULL
+    phone_offered_incentives                 boolean                   NULL
+    phone_matched_needs                      boolean                   NULL
+    phone_scheduled_tour                     boolean                   NULL
+    phone_collected_info                     boolean                   NULL
+    phone_impression                         numeric(4,1)              NULL
+    phone_response_time                      numeric(8,2)              NULL
+    phone_response_unit                      text                      NULL
+    email_response_time                      numeric(8,2)              NULL
+    email_response_unit                      text                      NULL
+    greeting_prompt                          boolean                   NULL
+    greeting_eye_contact                     boolean                   NULL
+    greeting_handshake                       boolean                   NULL
+    greeting_asked_name                      boolean                   NULL
+    greeting_rapport                         boolean                   NULL
+    greeting_refreshments                    boolean                   NULL
+    greeting_impression                      numeric(4,1)              NULL
+    needs_move_timeline                      boolean                   NULL
+    needs_floor_plan                         boolean                   NULL
+    needs_budget                             boolean                   NULL
+    needs_lifestyle                          boolean                   NULL
+    needs_most_important                     boolean                   NULL
+    needs_active_listening                   boolean                   NULL
+    needs_impression                         numeric(4,1)              NULL
+    wait_time_minutes                        numeric(6,1)              NULL
+    tour_duration_minutes                    numeric(6,1)              NULL
+    tour_showed_unit                         boolean                   NULL
+    tour_highlighted_features                boolean                   NULL
+    tour_amenities                           boolean                   NULL
+    tour_tailored                            boolean                   NULL
+    tour_product_knowledge                   boolean                   NULL
+    tour_competitive_knowledge               boolean                   NULL
+    tour_submarket_knowledge                 boolean                   NULL
+    tour_lease_terms                         boolean                   NULL
+    tour_curb_appeal                         boolean                   NULL
+    tour_fair_housing                        boolean                   NULL
+    presentation_impression                  numeric(4,1)              NULL
+    close_asked_lease                        boolean                   NULL
+    close_overcame_objections                boolean                   NULL
+    close_next_steps                         boolean                   NULL
+    close_urgency                            boolean                   NULL
+    close_pricing_info                       boolean                   NULL
+    closing_impression                       numeric(4,1)              NULL
+    followup_received                        boolean                   NULL
+    followup_personalized                    boolean                   NULL
+    followup_referenced_visit                boolean                   NULL
+    followup_close_attempt                   boolean                   NULL
+    followup_impression                      numeric(4,1)              NULL
+    followup_timing                          text                      NULL
+    followup_method                          text                      NULL
+    fair_housing_no_discrimination           boolean                   NULL
+    fair_housing_consistent                  boolean                   NULL
+    fair_housing_accommodations              boolean                   NULL
+    fair_housing_impression                  numeric(4,1)              NULL
+    condition_grounds                        boolean                   NULL
+    condition_office                         boolean                   NULL
+    condition_show_unit                      boolean                   NULL
+    condition_common_areas                   boolean                   NULL
+    condition_signage                        boolean                   NULL
+    condition_impression                     numeric(4,1)              NULL
+    overall_experience                       numeric(4,1)              NULL
+    strengths                                text                      NULL
+    gaps                                     text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  vacant_unit_audit [PG] (23 columns):
+    audit_id                                 uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    observation_date                         date                      NOT NULL
+    marketed                                 boolean                   NULL
+    like_kind_listing_date                   date                      NULL
+    marketed_date                            date                      NULL
+    listing_platform                         text                      NULL
+    listing_type                             text                      NULL
+    representative_unit                      boolean                   NULL
+    last_refresh_date                        date                      NULL
+    leasing_agent                            text                      NULL
+    tours_scheduled                          integer                   NULL
+    tours_completed                          integer                   NULL
+    applications_received                    integer                   NULL
+    showing_method                           text                      NULL
+    why_still_vacant                         text                      NULL
+    concession_type                          text                      NULL
+    concession_proactive                     boolean                   NULL
+    notes                                    text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  resident_interview [PG] (10 columns):
+    interview_id                             uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    unit_id                                  uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    interview_type                           text                      NOT NULL
+    interview_date                           date                      NOT NULL
+    resident_id                              uuid                      NULL
+    data                                     jsonb                     NOT NULL
+    notes                                    text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  tour_observation [PG] (7 columns):
+    observation_id                           uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    observation_date                         date                      NOT NULL
+    data                                     jsonb                     NOT NULL
+    notes                                    text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  tech_platform [PG] (9 columns):
+    platform_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    platform_name                            text                      NOT NULL
+    annual_cost                              numeric(12,2)             NULL
+    staff_mobile_access                      boolean                   NULL
+    functions_handled                        jsonb                     NOT NULL
+    capabilities                             jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  tech_summary [PG] (12 columns):
+    summary_id                               uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    total_annual_spend                       numeric(12,2)             NULL
+    spend_per_unit                           numeric(12,2)             NULL
+    active_integrations                      integer                   NULL
+    staff_mobile_access                      boolean                   NULL
+    resident_app                             boolean                   NULL
+    automation_level                         text                      NULL
+    redundant_systems                        text                      NULL
+    gaps_pain_points                         text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  assessment [PG] (14 columns):
+    assessment_id                            uuid                      NULL
+    tenant_id                                uuid                      NOT NULL
+    property_id                              uuid                      NOT NULL
+    client_id                                uuid                      NULL
+    assessment_type                          text                      NOT NULL
+    status                                   text                      NOT NULL
+    date_range_start                         date                      NULL
+    date_range_end                           date                      NULL
+    site_visit_date                          date                      NULL
+    comp_set_id                              uuid                      NULL
+    created_by                               uuid                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  assessment_data_coverage [PG] (8 columns):
+    coverage_id                              uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    domain                                   text                      NOT NULL
+    source_system_id                         uuid                      NULL
+    coverage_status                          text                      NOT NULL
+    coverage_pct                             numeric(5,2)              NULL
+    notes                                    text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  analysis_run [PG] (9 columns):
+    run_id                                   uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    rule_package_version                     text                      NOT NULL
+    benchmark_version                        text                      NULL
+    transformation_version                   text                      NULL
+    status                                   text                      NOT NULL
+    started_at                               timestamptz               NULL
+    completed_at                             timestamptz               NULL
+    created_at                               timestamptz               NOT NULL
+
+  scorecard [PG] (8 columns):
+    scorecard_id                             uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    analysis_run_id                          uuid                      NULL
+    scorecard_type                           text                      NOT NULL
+    overall_score                            numeric(6,2)              NULL
+    overall_grade                            text                      NULL
+    version                                  text                      NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  score_result [PG] (24 columns):
+    result_id                                uuid                      NULL
+    scorecard_id                             uuid                      NOT NULL
+    assessment_id                            uuid                      NOT NULL
+    analysis_run_id                          uuid                      NULL
+    scoring_level                            text                      NOT NULL
+    area_number                              integer                   NULL
+    area_name                                text                      NULL
+    item_name                                text                      NULL
+    sub_item_name                            text                      NULL
+    input_type                               text                      NULL
+    metric_value                             numeric(14,4)             NULL
+    normalized_score                         numeric(6,2)              NULL
+    weight                                   numeric(8,4)              NULL
+    weighted_score                           numeric(8,4)              NULL
+    benchmark_type                           text                      NULL
+    benchmark_reference                      text                      NULL
+    confidence_score                         numeric(5,2)              NULL
+    coverage_score                           numeric(5,2)              NULL
+    grade_letter                             text                      NULL
+    scope_status                             text                      NULL
+    evidence_count                           integer                   NULL
+    version                                  text                      NOT NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  finding [PG] (16 columns):
+    finding_id                               uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    analysis_run_id                          uuid                      NULL
+    finding_type                             text                      NOT NULL
+    domain                                   text                      NOT NULL
+    severity                                 text                      NOT NULL
+    title                                    text                      NOT NULL
+    description                              text                      NOT NULL
+    entity_type                              text                      NULL
+    entity_id                                uuid                      NULL
+    evidence_refs                            jsonb                     NOT NULL
+    contributing_causes                      jsonb                     NOT NULL
+    confidence                               numeric(5,2)              NULL
+    rule_package_version                     text                      NULL
+    attributes                               jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  impact_estimate [PG] (16 columns):
+    estimate_id                              uuid                      NULL
+    finding_id                               uuid                      NOT NULL
+    assessment_id                            uuid                      NOT NULL
+    impact_model                             text                      NOT NULL
+    impact_family_id                         uuid                      NULL
+    primary_driver_share                     numeric(5,4)              NULL
+    contributing_share                       numeric(5,4)              NULL
+    low_estimate                             numeric(14,2)             NULL
+    base_estimate                            numeric(14,2)             NULL
+    high_estimate                            numeric(14,2)             NULL
+    annualized_amount                        numeric(14,2)             NULL
+    per_unit_amount                          numeric(12,2)             NULL
+    formula_trace                            jsonb                     NOT NULL
+    assumption_trace                         jsonb                     NOT NULL
+    confidence                               numeric(5,2)              NULL
+    created_at                               timestamptz               NOT NULL
+
+  contradiction [PG] (14 columns):
+    contradiction_id                         uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    source_a_type                            text                      NOT NULL
+    source_a_ref                             uuid                      NULL
+    source_b_type                            text                      NOT NULL
+    source_b_ref                             uuid                      NULL
+    matching_rule                            text                      NOT NULL
+    contradiction_type                       text                      NOT NULL
+    severity                                 text                      NOT NULL
+    affected_domains                         jsonb                     NOT NULL
+    trust_penalty                            numeric(5,4)              NULL
+    evidence_links                           jsonb                     NOT NULL
+    notes                                    text                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  recommendation [PG] (16 columns):
+    recommendation_id                        uuid                      NULL
+    finding_id                               uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    domain                                   text                      NOT NULL
+    target_entity_type                       text                      NULL
+    target_entity_id                         uuid                      NULL
+    priority                                 text                      NOT NULL
+    title                                    text                      NOT NULL
+    description                              text                      NOT NULL
+    expected_impact                          jsonb                     NULL
+    owner                                    text                      NULL
+    due_date                                 date                      NULL
+    status                                   text                      NOT NULL
+    verification_evidence                    jsonb                     NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  study [PG] (7 columns):
+    study_id                                 uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    study_name                               text                      NOT NULL
+    description                              text                      NULL
+    created_by                               uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  saved_query [PG] (10 columns):
+    query_id                                 uuid                      NULL
+    assessment_id                            uuid                      NULL
+    study_id                                 uuid                      NULL
+    query_name                               text                      NOT NULL
+    query_definition                         jsonb                     NOT NULL
+    parameters                               jsonb                     NOT NULL
+    filters                                  jsonb                     NOT NULL
+    chart_spec                               jsonb                     NULL
+    created_by                               uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  result_snapshot [PG] (15 columns):
+    snapshot_id                              uuid                      NULL
+    saved_query_id                           uuid                      NULL
+    assessment_id                            uuid                      NULL
+    study_id                                 uuid                      NULL
+    source_data_version                      text                      NULL
+    transformation_version                   text                      NULL
+    rule_package_version                     text                      NULL
+    benchmark_version                        text                      NULL
+    result_payload                           jsonb                     NOT NULL
+    chart_spec                               jsonb                     NULL
+    sql_definition                           text                      NULL
+    filters                                  jsonb                     NOT NULL
+    data_hash                                text                      NULL
+    created_by                               uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  study_item [PG] (6 columns):
+    item_id                                  uuid                      NULL
+    study_id                                 uuid                      NOT NULL
+    item_type                                text                      NOT NULL
+    ref_id                                   uuid                      NOT NULL
+    sort_order                               integer                   NULL
+    created_at                               timestamptz               NOT NULL
+
+  comparison_board [PG] (7 columns):
+    board_id                                 uuid                      NULL
+    study_id                                 uuid                      NULL
+    assessment_id                            uuid                      NULL
+    board_name                               text                      NOT NULL
+    layout                                   jsonb                     NOT NULL
+    created_by                               uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  annotation [PG] (7 columns):
+    annotation_id                            uuid                      NULL
+    entity_type                              text                      NOT NULL
+    entity_id                                uuid                      NOT NULL
+    note_text                                text                      NOT NULL
+    created_by                               uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  evidence_bundle [PG] (6 columns):
+    bundle_id                                uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    bundle_name                              text                      NOT NULL
+    item_refs                                jsonb                     NOT NULL
+    created_by                               uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+
+  report [PG] (8 columns):
+    report_id                                uuid                      NULL
+    assessment_id                            uuid                      NOT NULL
+    template_name                            text                      NOT NULL
+    report_type                              text                      NOT NULL
+    status                                   text                      NOT NULL
+    created_by                               uuid                      NULL
+    created_at                               timestamptz               NOT NULL
+    updated_at                               timestamptz               NOT NULL
+
+  report_section [PG] (10 columns):
+    section_id                               uuid                      NULL
+    report_id                                uuid                      NOT NULL
+    section_type                             text                      NOT NULL
+    sort_order                               integer                   NOT NULL
+    title                                    text                      NULL
+    content                                  jsonb                     NOT NULL
+    data_bindings                            jsonb                     NOT NULL
+    narrative                                text                      NULL
+    chart_spec                               jsonb                     NULL
+    created_at                               timestamptz               NOT NULL
+
+  report_render [PG] (7 columns):
+    render_id                                uuid                      NULL
+    report_id                                uuid                      NOT NULL
+    format                                   text                      NOT NULL
+    storage_path                             text                      NOT NULL
+    section_manifest                         jsonb                     NOT NULL
+    rendered_at                              timestamptz               NOT NULL
+    rendered_by                              uuid                      NULL
+
+  staffing_snapshot [PG] (5 columns):
+    snapshot_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    data                                     jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  leasing_model_snapshot [PG] (5 columns):
+    snapshot_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    data                                     jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  resident_event_program [PG] (5 columns):
+    program_id                               uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    data                                     jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  renewal_retention_snapshot [PG] (5 columns):
+    snapshot_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    data                                     jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  partnership_referral_snapshot [PG] (5 columns):
+    snapshot_id                              uuid                      NULL
+    property_id                              uuid                      NOT NULL
+    assessment_id                            uuid                      NULL
+    data                                     jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  scoring_rubric_version [PG] (5 columns):
+    version_id                               uuid                      NULL
+    version_label                            text                      NOT NULL
+    is_active                                boolean                   NOT NULL
+    config                                   jsonb                     NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  benchmark_version [PG] (6 columns):
+    version_id                               uuid                      NULL
+    version_label                            text                      NOT NULL
+    benchmark_type                           text                      NOT NULL
+    data                                     jsonb                     NOT NULL
+    is_active                                boolean                   NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  metric_registry [PG] (10 columns):
+    metric_id                                uuid                      NULL
+    metric_name                              text                      NOT NULL
+    domain                                   text                      NOT NULL
+    grain                                    text                      NOT NULL
+    description                              text                      NULL
+    formula                                  text                      NULL
+    required_inputs                          jsonb                     NOT NULL
+    output_type                              text                      NOT NULL
+    version                                  text                      NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  diagnostic_package [PG] (10 columns):
+    package_id                               uuid                      NULL
+    package_name                             text                      NOT NULL
+    domain                                   text                      NOT NULL
+    version                                  text                      NOT NULL
+    required_inputs                          jsonb                     NOT NULL
+    optional_inputs                          jsonb                     NOT NULL
+    grain                                    text                      NULL
+    description                              text                      NULL
+    is_active                                boolean                   NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  impact_model_catalog [PG] (10 columns):
+    model_id                                 uuid                      NULL
+    model_name                               text                      NOT NULL
+    formula                                  text                      NOT NULL
+    required_inputs                          jsonb                     NOT NULL
+    optional_refinements                     jsonb                     NOT NULL
+    low_high_params                          jsonb                     NOT NULL
+    double_count_rules                       jsonb                     NOT NULL
+    narrative                                text                      NULL
+    version                                  text                      NOT NULL
+    created_at                               timestamptz               NOT NULL
+
+  fact_unit_day [ClickHouse] (18 columns):
+    property_id                              UUID                      NULL
+    unit_id                                  UUID                      NULL
+    day_date                                 Date                      NULL
+    unit_version_id                          UUID                      NULL
+    existence_status                         LowCardinality(String)    NULL
+    rentable_flag                            UInt8                     NULL
+    occupancy_state                          LowCardinality(String)    NULL
+    readiness_state                          LowCardinality(String)    NULL
+    marketing_state                          LowCardinality(String)    NULL
+    active_lease_id                          Nullable(UUID)            NULL
+    active_listing_id                        Nullable(UUID)            NULL
+    days_vacant                              Nullable(Int32)           NULL
+    asking_rent                              Nullable(Decimal(12,2))   NULL
+    effective_rent                           Nullable(Decimal(12,2))   NULL
+    concession_value                         Nullable(Decimal(12,2))   NULL
+    condition_score                          Nullable(Decimal(5,2))    NULL
+    contradiction_flags                      String                    NULL
+    evidence_coverage                        String                    NULL
+
+  fact_lease_interval [ClickHouse] (12 columns):
+    property_id                              UUID                      NULL
+    unit_id                                  UUID                      NULL
+    lease_id                                 UUID                      NULL
+    interval_start                           Date                      NULL
+    interval_end                             Nullable(Date)            NULL
+    monthly_rent                             Nullable(Decimal(12,2))   NULL
+    effective_rent                           Nullable(Decimal(12,2))   NULL
+    concession_value                         Nullable(Decimal(12,2))   NULL
+    lease_type                               LowCardinality(String)    NULL
+    resident_id                              Nullable(UUID)            NULL
+    bedrooms                                 Nullable(Decimal(4,1))    NULL
+    sqft                                     Nullable(Int32)           NULL
+
+  fact_vacancy_cycle [ClickHouse] (11 columns):
+    property_id                              UUID                      NULL
+    unit_id                                  UUID                      NULL
+    cycle_id                                 UUID                      NULL
+    vacancy_start                            Date                      NULL
+    vacancy_end                              Nullable(Date)            NULL
+    days_vacant                              Nullable(Int32)           NULL
+    prior_rent                               Nullable(Decimal(12,2))   NULL
+    new_rent                                 Nullable(Decimal(12,2))   NULL
+    vacancy_cost                             Nullable(Decimal(12,2))   NULL
+    make_ready_days                          Nullable(Int32)           NULL
+    make_ready_cost                          Nullable(Decimal(12,2))   NULL
+
+  fact_work_order [ClickHouse] (10 columns):
+    property_id                              UUID                      NULL
+    unit_id                                  Nullable(UUID)            NULL
+    work_order_id                            UUID                      NULL
+    category                                 LowCardinality(String)    NULL
+    is_make_ready                            UInt8                     NULL
+    date_created                             Date                      NULL
+    date_completed                           Nullable(Date)            NULL
+    days_to_complete                         Nullable(Int32)           NULL
+    cost                                     Nullable(Decimal(12,2))   NULL
+    vendor_id                                Nullable(UUID)            NULL
+
+  fact_lead_funnel_event [ClickHouse] (8 columns):
+    property_id                              UUID                      NULL
+    lead_id                                  UUID                      NULL
+    event_type                               LowCardinality(String)    NULL
+    event_date                               Date                      NULL
+    agent_id                                 Nullable(UUID)            NULL
+    lead_source                              Nullable(String)          NULL
+    response_time_min                        Nullable(Int32)           NULL
+    outcome                                  Nullable(String)          NULL
+
+  fact_listing_observation [ClickHouse] (9 columns):
+    property_id                              UUID                      NULL
+    unit_id                                  Nullable(UUID)            NULL
+    observation_id                           UUID                      NULL
+    platform                                 LowCardinality(String)    NULL
+    observation_date                         Date                      NULL
+    asking_rent                              Nullable(Decimal(12,2))   NULL
+    photo_quality                            Nullable(Decimal(4,1))    NULL
+    description_quality                      Nullable(Decimal(4,1))    NULL
+    days_on_market                           Nullable(Int32)           NULL
+
+  fact_marketing_presence_day [ClickHouse] (6 columns):
+    property_id                              UUID                      NULL
+    channel_id                               UUID                      NULL
+    day_date                                 Date                      NULL
+    is_active                                UInt8                     NULL
+    platform                                 LowCardinality(String)    NULL
+    spend_daily                              Nullable(Decimal(12,2))   NULL
+
+  fact_comp_listing_observation [ClickHouse] (9 columns):
+    competitor_property_id                   UUID                      NULL
+    observation_id                           UUID                      NULL
+    observation_date                         Date                      NULL
+    bedrooms                                 Nullable(Decimal(4,1))    NULL
+    sqft                                     Nullable(Int32)           NULL
+    asking_rent                              Nullable(Decimal(12,2))   NULL
+    rent_per_sqft                            Nullable(Decimal(8,2))    NULL
+    is_available                             Nullable(UInt8)           NULL
+    concession_amount                        Nullable(Decimal(12,2))   NULL
+
+  fact_score_result [ClickHouse] (12 columns):
+    assessment_id                            UUID                      NULL
+    property_id                              UUID                      NULL
+    scorecard_id                             UUID                      NULL
+    scoring_level                            LowCardinality(String)    NULL
+    area_number                              Nullable(Int32)           NULL
+    area_name                                Nullable(String)          NULL
+    item_name                                Nullable(String)          NULL
+    normalized_score                         Nullable(Decimal(6,2))    NULL
+    weighted_score                           Nullable(Decimal(8,4))    NULL
+    confidence_score                         Nullable(Decimal(5,2))    NULL
+    grade_letter                             Nullable(String)          NULL
+    version                                  String                    NULL
+
+  fact_finding_impact [ClickHouse] (10 columns):
+    assessment_id                            UUID                      NULL
+    property_id                              UUID                      NULL
+    finding_id                               UUID                      NULL
+    finding_type                             LowCardinality(String)    NULL
+    domain                                   LowCardinality(String)    NULL
+    severity                                 LowCardinality(String)    NULL
+    impact_model                             Nullable(String)          NULL
+    base_estimate                            Nullable(Decimal(14,2))   NULL
+    annualized_amount                        Nullable(Decimal(14,2))   NULL
+    confidence                               Nullable(Decimal(5,2))    NULL
+
+  fact_assessment_score [ClickHouse] (8 columns):
+    property_id                              UUID                      NULL
+    assessment_id                            UUID                      NULL
+    assessment_date                          Date                      NULL
+    area_number                              Nullable(Int32)           NULL
+    area_name                                Nullable(String)          NULL
+    overall_score                            Nullable(Decimal(6,2))    NULL
+    grade_letter                             Nullable(String)          NULL
+    version                                  String                    NULL
+
+  fact_assessment_finding [ClickHouse] (8 columns):
+    property_id                              UUID                      NULL
+    assessment_id                            UUID                      NULL
+    assessment_date                          Date                      NULL
+    finding_id                               UUID                      NULL
+    domain                                   LowCardinality(String)    NULL
+    severity                                 LowCardinality(String)    NULL
+    is_recurring                             UInt8                     NULL
+    prior_finding_id                         Nullable(UUID)            NULL
+
+  fact_recommendation_status [ClickHouse] (7 columns):
+    property_id                              UUID                      NULL
+    assessment_id                            UUID                      NULL
+    recommendation_id                        UUID                      NULL
+    domain                                   LowCardinality(String)    NULL
+    priority                                 LowCardinality(String)    NULL
+    status                                   LowCardinality(String)    NULL
+    status_date                              Date                      NULL
+
+  fact_property_kpi_period [ClickHouse] (6 columns):
+    property_id                              UUID                      NULL
+    period_start                             Date                      NULL
+    period_end                               Date                      NULL
+    kpi_name                                 LowCardinality(String)    NULL
+    kpi_value                                Nullable(Decimal(14,4))   NULL
+    kpi_unit                                 LowCardinality(String)    NULL
+
+  fact_unit_chronicity [ClickHouse] (7 columns):
+    property_id                              UUID                      NULL
+    unit_id                                  UUID                      NULL
+    assessment_id                            UUID                      NULL
+    chronic_type                             LowCardinality(String)    NULL
+    duration_days                            Nullable(Int32)           NULL
+    cycle_count                              Nullable(Int32)           NULL
+    total_cost                               Nullable(Decimal(14,2))   NULL
+
+==========================================================================================
+END OF VERIFICATION REPORT
+==========================================================================================

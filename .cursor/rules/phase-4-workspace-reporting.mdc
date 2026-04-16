@@ -1,0 +1,94 @@
+---
+description: Phase 4 — Workspace and Reporting. Rules for building the investigative workspace (studies, snapshots, comparison boards) and the report template/rendering system.
+globs:
+  - src/services/study_snapshot/**
+  - src/services/report_rendering/**
+  - src/api/routes/workspace/**
+  - src/api/routes/reports/**
+alwaysApply: false
+---
+
+# Phase 4 Rules — Workspace and Reporting
+
+## What This Phase Builds
+
+- Diagnostic hub and drilldown pages (UI for scorecards, findings, contradictions, impacts)
+- Study & Snapshot Service: saved queries, frozen snapshots, comparison boards, annotations, evidence bundles
+- Report template system and rendering pipeline (PDF, HTML, PPTX)
+- 7 standard report templates (Full Assessment, Executive Summary, Vacancy Deep Dive, Leasing Deep Dive, Competitive Analysis, Progress Tracking, Door Opener)
+- Custom report creation from any combination of section types
+- Export formats for evidence bundles and rendered reports
+- Analysis Lab: guided pivots, SQL access, drilldowns, compare views
+- First consultant pilot on live engagements
+
+## Prerequisites
+
+Phase 3 must be complete: full diagnostic pipeline operational (metrics computed, scorecards scored, findings compiled, impacts estimated, contradictions detected).
+
+## Authoritative References
+
+Before writing any code, read these documents:
+
+1. `rbv2-project.mdc` — Master project rules (always applies)
+2. `Code_Patterns_Specification.md` — Exact code templates. Follow the patterns established in prior phase code.
+3. `UI_UX_Specification.md` — Consultant workspace modules 1-7: module inventory, service dependencies, data objects, user flows
+3. `Report_Template_Specification.md` — Report composition model, section types, render formats, rendering pipeline, 7 standard templates, custom report model, extensibility
+4. `Service_Interface_Contracts.md` — Study & Snapshot Service (line 403), Report Rendering Service (line 443)
+5. `Database_Schema_Specification.md` — DDL for workspace objects: `study` (line 2139), `saved_query` (line 2156), `result_snapshot` (line 2177), `study_item` (line 2203), `comparison_board` (line 2219), `annotation` (line 2236), `evidence_bundle` (line 2253), `report` (line 2269), `report_section` (line 2292), `report_render` (line 2312)
+6. `spec_1` §9 (workspace design, lines 915-957), §12 (reporting, lines 1066-1117)
+
+## Study & Snapshot Rules
+
+- A `saved_query` stores a reusable query definition with parameters, filters, and optional chart spec. Queries run against ClickHouse fact tables.
+- A `result_snapshot` freezes the output of a query at a point in time. Snapshots must preserve: `source_data_version`, `transformation_version`, `rule_package_version`, `benchmark_version`, `result_payload`, `chart_spec`, `sql_definition`, `filters`, `data_hash`, `created_by`, `created_at` (spec_1 §9.2, lines 932-944; DDL lines 2182-2197).
+- A `study` is a named investigation container scoped to an assessment. Studies organize snapshots, findings, annotations, and comparisons.
+- `study_item` links a study to artifacts via `item_type` (snapshot, finding, annotation, comparison) and `ref_id`.
+- A `comparison_board` provides side-by-side layout of selected results. Layout stored as JSONB.
+- `annotation` attaches consultant notes to any entity (polymorphic via `entity_type` + `entity_id`).
+- `evidence_bundle` curates items for export. `item_refs` is a JSONB array of referenced artifact IDs.
+
+## Study Workflow (spec_1 §9.3, lines 949-956)
+
+The canonical study workflow:
+1. Run an analysis
+2. Freeze it as a snapshot
+3. Add related snapshots to a study
+4. Open a comparison board inside the study
+5. Annotate the evidence
+6. Promote selected artifacts into a report section
+
+## Report Rendering Rules
+
+- Reports are composed from system objects, not copy-pasted from spreadsheets (spec_1 §12.4, line 1117).
+- `report.report_type` values: `full_assessment`, `executive_summary`, `vacancy_deep_dive`, `leasing_deep_dive`, `competitive_analysis`, `progress_tracking`, `door_opener`, `custom` (DDL line 2278).
+- `report_section.section_type` values: `scorecard`, `finding`, `saved_query`, `snapshot`, `commentary`, `recommendation` (DDL line 2295).
+- Each section stores: `section_type`, `sort_order`, `title`, `content` (JSONB), `data_bindings` (JSONB), `narrative` (text), `chart_spec` (JSONB).
+- `report_render.format` values: `pdf`, `html`, `pptx` (DDL line 2315).
+- Rendering pipeline: query bound data → render sections → apply brand theme → render to output format → store artifact and section manifest in S3.
+- `report_render` stores: `format`, `storage_path` (S3), `section_manifest` (JSONB), `rendered_at`, `rendered_by`.
+- **Rendering technology (ADR-016):** HTML/PDF via **WeasyPrint** (Jinja2 templates → HTML → PDF), PPTX via **python-pptx**. Report templates are Jinja2 HTML files in `src/services/report_rendering/templates/`. PPTX templates are `.pptx` files alongside. Charts are rendered as SVG/PNG and embedded in both outputs. Report rendering is a Celery task (ADR-014) — it runs in the background, not in the API request cycle.
+
+## Analysis Lab Rules
+
+- The Analysis Lab exposes the platform's depth without forcing power users into raw SQL for routine work (spec_1 §11.1, lines 1050-1051).
+- Guided exploration covers common investigations (pre-built pivots mapped to diagnostic question categories from `Analytical_Question_Inventory.md`).
+- SQL access remains available for edge cases.
+- All query results can be saved as `saved_query` and frozen as `result_snapshot`.
+
+## Testing Rules
+
+- Study & Snapshot Service: test full workflow (create study → save query → take snapshot → add to study → create comparison → annotate → create bundle → export).
+- Snapshot immutability: verify frozen snapshots cannot be modified after creation.
+- Report Rendering: test each standard template produces valid output with bound data.
+- Custom report: test composing a report from mixed section types.
+- Export formats: verify PDF, HTML, and PPTX rendering produces valid output files.
+- Evidence bundle export: verify bundle contains all referenced artifacts.
+- All tests use **pytest**. Shared fixtures in `tests/conftest.py`.
+
+## What NOT To Build In This Phase
+
+- Do not implement the client portal — that's Phase 5 (Client Portal Service).
+- Do not implement longitudinal tracking or trend marts — that's Phase 5 (Trend & Trajectory Service).
+- Do not implement the door opener assessment type — that's Phase 6 (Door Opener Service).
+- Do not implement the extension SDK — that's Phase 6.
+- The UI visual design, component library, and layout decisions are defined during this phase's implementation — refer to `UI_UX_Specification.md` for the structural framework and open design decisions.

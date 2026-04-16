@@ -1,0 +1,8 @@
+{
+  "aw__vacancy_occupancy": 50,
+  "aw__leasing_performance": 50,
+  "iw__vacancy_occupancy__vacancy_rate": 50,
+  "iw__vacancy_occupancy__unit_turn_cycle": 50,
+  "iw__leasing_performance__closing_ratio": 50,
+  "iw__leasing_performance__leasing_process": 50
+}

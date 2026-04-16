@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "total_areas": 2,
+    "total_items": 4,
+    "total_sub_items": 8,
+    "item_type_counts": {
+      "Data": 2,
+      "Checklist": 2
+    }
+  },
+  "areas": [
+    {
+      "name": "Vacancy/Occupancy",
+      "weight": 50,
+      "items": [
+        {"name": "Vacancy Rate", "type": "Data"},
+        {"name": "Unit Turn Cycle", "type": "Checklist"}
+      ]
+    },
+    {
+      "name": "Leasing Performance",
+      "weight": 50,
+      "items": [
+        {"name": "Closing Ratio", "type": "Data"},
+        {"name": "Leasing Process", "type": "Checklist"}
+      ]
+    }
+  ]
+}

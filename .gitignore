@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Environment
+.env
+.env.local
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Node (frontend)
+node_modules/
+.next/
+out/
+
+# Cursor plans (local only)
+.cursor/plans/

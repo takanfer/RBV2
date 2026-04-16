@@ -1,0 +1,169 @@
+---
+description: RBv2 Multifamily Property Assessment Platform — project constraints, authoritative sources, and conventions
+globs:
+  - REBOOT/RBv2/**
+alwaysApply: true
+---
+
+# RBv2 Project Rules
+
+## Authoritative Document Hierarchy
+
+When information conflicts, the document higher in this list wins. Never invent values — always source from the authoritative file.
+
+| Priority | Document | Source of Truth For |
+|----------|----------|-------------------|
+| 1 | `Scoring_Weights_Final_Update.json` | Locked-in weight values (12 area weights, 65 item weights, 315 sub-item points) |
+| 2 | `Scoring_Model_Specification.md` | Scoring structure, methodology, design principles, area/item definitions |
+| 3 | `Scoring_Model_Workbook.html` | Weight editing interface, sub-item point budgets, tier definitions |
+| 4 | `Computation_Rules_Workbook.html` | Computation rules, data sources, formulas for every scored item |
+| 5 | `Scoring_Thresholds_Calibration.md` | Raw-value-to-score thresholds for Data and Comparative items |
+| 6 | `Analytical_Engine_Specification.md` | Engine architecture, layers, simulated optimal budget, date range variable |
+| 6a | `Basic_Analytic_Data_Set.md` | 124 pre-computed KPIs, calculations, and benchmarks |
+| 7 | `Complete_Data_Inventory.md` | Complete field inventory (1,100+ fields across all sources) |
+| 8 | `Audit_Workbook_Specification.md` | Audit data collection instrument (field procedures, workflow badges) |
+| 9 | `spec_1_multifamily_property_assessment_platform.md` | Platform requirements, tech stack, data architecture, domain model |
+| 10 | `Project_Skeleton_Specification.md` | Locked tech stack, monorepo structure, naming conventions, testing, CI/CD |
+| 11 | `Database_Schema_Specification.md` | Migration-ready DDL for all PostgreSQL (110 tables) and ClickHouse (15 fact tables) — 125 total, 1393 columns |
+| 12 | `Shared_Type_Definitions.md` | Pydantic model reference — generated from DDL via `codegen/generate_models.py` (14 domain modules) |
+| 13 | `Service_Interface_Contracts.md` | Service interfaces for 15 services (Phases 0-6), data shapes reference `src/shared/models/`, error conditions |
+| 14 | `Data_Onramp_Specification.md` | Two data streams, 4 intake channels, vendor adapters, column mapping, review queue, raw evidence pipeline |
+| 15 | `scoring_config.json` | Machine-readable scoring structure (12 areas, 65 items, 315 sub-items, weights, tiers) |
+| 16 | `Code_Patterns_Specification.md` | Exact code templates for services, routes, repositories, exceptions, tests, Celery tasks, audit logging |
+| 17 | `API_Design_Specification.md` | REST API conventions: URL patterns, pagination, error shapes, auth headers, OpenAPI |
+| 18 | `Authentication_Middleware_Specification.md` | JWT claims schema, FastAPI dependency chain, tenant resolution flow, CORS |
+| 19 | `Infrastructure_Specification.md` | Environment variables, Docker Compose, S3 bucket structure, secrets management, production topology |
+| 20 | `Observability_Specification.md` | Structured logging format, correlation IDs, health checks, audit logging, monitoring metrics |
+
+All specification files live in `REBOOT/RBv2/`.
+
+## Scoring Structure
+
+### 12 Scoring Areas (exact names and numbers)
+
+1. Vacancy/Occupancy (9%)
+2. Marketing (8%)
+3. Leasing Performance (8%)
+4. Listings (8%)
+5. Pricing (8%)
+6. Retention & Renewal (8%)
+7. Operations (8%)
+8. Financials (9%)
+9. Maintenance & Turnovers (8%)
+10. Property Condition (8%)
+11. Competitive Position (10%)
+12. Collections & Screening (8%)
+
+Total: 100%. All weights are user-configurable.
+
+### Three Input Types
+
+- **Data** — continuous numerical value scored against calibrated thresholds via piecewise linear interpolation → 0–10 score. 20 items.
+- **Checklist** — human observations. Sub-items share a 100-point budget. Points earned / 100 × 10 = score. 38 items.
+- **Comparative** — subject vs comp set average, scored via calibrated thresholds → 0–10 score. 7 items.
+
+Total scored items: 65.
+
+### Three-Level Weighting
+
+1. **Sub-item points** — within a checklist item, sum to 100
+2. **Item weights** — within an area, sum to 100%
+3. **Area weights** — across all 12 areas, sum to 100%
+
+### Checklist 100-Point Budget Rule
+
+Every checklist item's sub-items share exactly 100 points. Y/N sub-items earn their full point value (Y) or zero (N). Tiered sub-items earn a percentage of their point value based on tier achieved.
+
+### Financials Scoring
+
+Area 8 (Financials) is scored by comparing actual performance against the **owner's stated financial targets/budget** — NOT generic industry benchmarks. Revenue: higher actual is favorable. Expenses: lower actual is favorable. The Simulated Optimal Budget is a separate Layer 4+ output for comparison, not the scoring target.
+
+### Missing Data
+
+Missing items are excluded from the weighted average (not scored as zero). The system tracks coverage percentage per area.
+
+## Assessment Types
+
+- **Door Opener** — public-data-only assessment for sales/initial diagnostics. No property access required.
+- **Full Engagement** — comprehensive assessment including site visits, mystery shops, PM data, interviews, unit walks, compliance checks. Builds upon door opener data.
+
+Workflow badges in Audit Workbook:
+- `[DOOR OPENER]` — public data sources only
+- `[FULL ENGAGEMENT]` — requires property access
+- `[DOOR OPENER → VERIFIED ON-SITE]` — populated from public data, verified during site visit
+
+## Tech Stack (Locked)
+
+### Data Platform
+- **PostgreSQL** — canonical application database (AWS RDS). Operational data, workflow, security, bitemporal entities, JSONB, RLS.
+- **ClickHouse** — analytical warehouse (ClickHouse Cloud on AWS). Dense daily facts, pre-aggregated score marts, fast slicing/benchmarking/trends.
+- **AWS S3** — raw evidence and frozen snapshots. Immutable, versioned, with provenance and hash.
+- **AWS** — all infrastructure on AWS.
+
+### Backend
+- **Python 3.11+** — all analysis logic, API services, metric computation, scoring, report rendering.
+- **FastAPI** — API framework. Async, Pydantic-native, auto-generated OpenAPI docs.
+- **SQLAlchemy Core** — PostgreSQL access (SQL expression language, not full ORM).
+- **clickhouse-connect** — ClickHouse access (official Python driver).
+- **Alembic** — PostgreSQL schema migrations.
+- **uv** — Python package management.
+- **pytest** — testing framework.
+- **ruff** — linting and formatting (replaces black, isort, flake8).
+- **Docker Compose** — local development (PostgreSQL + ClickHouse + MinIO containers).
+
+### Frontend
+- **Next.js (App Router)** — React framework with SSR.
+- **TypeScript** — all frontend code.
+- **Tailwind CSS** — utility-first styling.
+- **shadcn/ui** — component library (copied into project, fully customizable).
+- **TanStack Table** — data tables (sorting, filtering, pagination).
+- **Recharts / D3** — charts and custom visualizations.
+- **TanStack Query** — data fetching and caching against FastAPI endpoints.
+- **React Hook Form + Zod** — form validation (mirrors Pydantic on backend).
+- **PWA** — mobile field capture via same Next.js app with offline service workers.
+
+### Infrastructure
+- **Monorepo** — single repository for all services, shared types, and frontend.
+- **GitHub Actions** — CI/CD.
+- **AWS ECS** — production container orchestration.
+
+## AI Role
+
+AI is **advisory only**. The AI Analysis Layer reads all data and all structured layer outputs but writes into nothing. It cannot modify scores, findings, or the Impact Summary (Layer 5). Its output goes to the consultant as a second opinion. The consultant is the final arbiter.
+
+Source: Analytical Engine Specification, AI Analysis Layer section.
+
+## Date Range Variable
+
+All date-range-dependent items use an **assessment-level date range variable** set once per engagement. Never hardcode trailing periods (e.g., "trailing 12 months"). The variable is configurable.
+
+Source: Scoring Model Specification Design Principle 9; Analytical Engine Specification.
+
+## Naming Conventions
+
+- Capital asset condition tiers: Good / Fair / Poor / **Critical** (not "End of Life")
+- Input types: **Data**, **Checklist**, **Comparative** (not "Benchmark", not "Metric")
+- Scoring hierarchy: **Area** → **Item** → **Sub-item** (not "dimension", not "category")
+- Areas are numbered 1–12 (not 1–10)
+- Items total 65 (not 133)
+
+## Model Generation Pipeline
+
+The DDL in `Database_Schema_Specification.md` is the single source of truth for all data structures. Pydantic models are **generated**, not hand-written.
+
+- **Generator:** `codegen/generate_models.py` (uses sqlglot parser, not regex)
+- **Test fixtures:** `codegen/test_ddl.sql` + `codegen/expected_asset.py` (answer key)
+- **Output:** `codegen/output/` → copied to `src/shared/models/`
+- **Regenerate after DDL changes:** `python codegen/generate_models.py Database_Schema_Specification.md src/shared/models/`
+
+Do not hand-edit files in `src/shared/models/`. Change the DDL and regenerate.
+
+## Working Principles
+
+1. **Never invent data.** Every value in a specification, config, or implementation must trace to a source document.
+2. **Cross-reference before editing.** Changes to any spec file may affect dependent files. Check the authoritative hierarchy.
+3. **Read before writing.** Always read relevant spec files before making changes or recommendations.
+4. **Scores are auditable.** Every score must trace back to specific data fields, specific thresholds/criteria, and a specific scoring method.
+5. **Structured layers are deterministic.** Same data always produces same scores. No randomness in Layers 1–5.
+6. **DDL is the source of truth.** All Pydantic models, type definitions, and schema documentation derive from the DDL. Never let models drift from the schema.
+7. **All agent behavior rules in `.cursor/rules/agent-behavior.mdc` apply here.** Nothing from memory, no assumptions, no unsanctioned writes, full exhaustive verification, accuracy over speed. Read that rule and follow it.

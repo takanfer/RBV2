@@ -1,0 +1,9 @@
+# RBv2 Project Rules
+
+## Tech Stack
+
+- FastAPI for API framework
+- SQLAlchemy Core for database access
+- uv for package management
+- shadcn/ui for components
+- Tailwind CSS for styling

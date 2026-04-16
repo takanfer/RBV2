@@ -1,0 +1,2684 @@
+[
+  {
+    "area": "1. Vacancy/Occupancy",
+    "items": [
+      {
+        "name": "Occupancy Rate",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Occupied Units / Total Units",
+        "format": "Percentage"
+      },
+      {
+        "name": "Average Vacant Days",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Sum of vacant days across all units that were vacant in period / count of those units",
+        "format": "Days"
+      },
+      {
+        "name": "Aged Vacancy",
+        "type": "Data",
+        "source": "PM System",
+        "method": "(Count of units vacant > 60 days / Total units) × 100",
+        "format": "Percentage"
+      }
+    ]
+  },
+  {
+    "area": "2. Marketing",
+    "items": [
+      {
+        "name": "Online Reputation",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Avg Review Score",
+            "type": "Tiered",
+            "source": "Review Platforms",
+            "method": "Volume-weighted average across all platforms (Google, Yelp, Apartments.com, ApartmentRatings, Facebook). Each platform score weighted by its review count relative to total reviews.",
+            "format": "Rating (1-5)"
+          },
+          {
+            "name": "Review Volume",
+            "type": "Tiered",
+            "source": "Review Platforms",
+            "method": "Total review count across all tracked platforms",
+            "format": "Count"
+          },
+          {
+            "name": "Review Recency (last 90d)",
+            "type": "Tiered",
+            "source": "Review Platforms",
+            "method": "Count of reviews posted in last 90 days across all platforms",
+            "format": "Count"
+          },
+          {
+            "name": "Platform Coverage",
+            "type": "Tiered",
+            "source": "Review Platforms",
+            "method": "Count of platforms where property has a profile with reviews. Platforms: Google, Yelp, Apartments.com, ApartmentRatings, Facebook.",
+            "format": "Count"
+          },
+          {
+            "name": "GMB Claimed",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Check Google Business Profile — is it claimed by the property?",
+            "format": "Y/N"
+          },
+          {
+            "name": "GMB Optimized",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "GMB has complete info: hours, photos, description, categories, services",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Digital/Social Presence",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Social - Facebook",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Property has an active Facebook page",
+            "format": "Y/N"
+          },
+          {
+            "name": "Social - Instagram",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Property has an active Instagram account",
+            "format": "Y/N"
+          },
+          {
+            "name": "Social - TikTok",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Property has an active TikTok account",
+            "format": "Y/N"
+          },
+          {
+            "name": "Social - LinkedIn",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Property has a LinkedIn company page",
+            "format": "Y/N"
+          },
+          {
+            "name": "Audience Size",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Total followers/likes across all active social platforms",
+            "format": "Count"
+          },
+          {
+            "name": "Post Consistency",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average posts per week across active platforms (sample last 30 days)",
+            "format": "Count per week"
+          }
+        ]
+      },
+      {
+        "name": "Website Quality",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Website Exists",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Property has a dedicated website (not just an ILS listing)",
+            "format": "Y/N"
+          },
+          {
+            "name": "Mobile Responsive",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Website renders correctly on mobile device",
+            "format": "Y/N"
+          },
+          {
+            "name": "Live Chat",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Website has live chat or chatbot functionality",
+            "format": "Y/N"
+          },
+          {
+            "name": "Contact Form",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Website has a working contact/inquiry form",
+            "format": "Y/N"
+          },
+          {
+            "name": "Floor Plans",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Floor plan images or diagrams available on website",
+            "format": "Y/N"
+          },
+          {
+            "name": "Photo Gallery",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Website has a photo gallery section",
+            "format": "Y/N"
+          },
+          {
+            "name": "Unit Availability",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Website shows current available units with pricing",
+            "format": "Y/N"
+          },
+          {
+            "name": "Virtual Tours",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Website offers virtual tour / 3D walkthrough of units",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Digital Marketing",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Social Media Paid Ads",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Property runs paid social media advertising campaigns",
+            "format": "Y/N"
+          },
+          {
+            "name": "Google Adwords",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Property runs Google Ads / PPC campaigns",
+            "format": "Y/N"
+          },
+          {
+            "name": "Email/SMS Marketing",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Property has email or SMS marketing campaigns for prospects/residents",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Referral Program",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Referral Program Exists",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Formal resident referral program in place",
+            "format": "Y/N"
+          },
+          {
+            "name": "Referral Incentive Offered",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Monetary or other incentive offered for successful referrals",
+            "format": "Y/N"
+          },
+          {
+            "name": "Referral Tracking System",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "System exists to track referral sources and outcomes",
+            "format": "Y/N"
+          },
+          {
+            "name": "Local Business Partnerships",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Partnerships with local businesses for cross-promotion",
+            "format": "Y/N"
+          },
+          {
+            "name": "Influencer/Creator Collaborations",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Collaborations with social media influencers or content creators",
+            "format": "Y/N"
+          },
+          {
+            "name": "Co-Branded Content or Events",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Joint content or events with partner organizations",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Corporate Relocation Program",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Corp Relocation Program Exists",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Formal corporate relocation program in place",
+            "format": "Y/N"
+          },
+          {
+            "name": "RMC Partnerships",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Active partnerships with Relocation Management Companies",
+            "format": "Y/N"
+          },
+          {
+            "name": "Corporate Rates/Packages",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Special rates or packages for corporate relocations",
+            "format": "Y/N"
+          },
+          {
+            "name": "Furnished/Short-Term Options",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Furnished or short-term lease options available for relocations",
+            "format": "Y/N"
+          },
+          {
+            "name": "Dedicated Relocation Contact",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Named point of contact for relocation inquiries",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Broker/Locator Program",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Broker Program Exists",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Formal broker/locator program in place",
+            "format": "Y/N"
+          },
+          {
+            "name": "Broker Portal",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Online portal for brokers to check availability and submit clients",
+            "format": "Y/N"
+          },
+          {
+            "name": "Broker Materials",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Marketing materials specifically for brokers/locators",
+            "format": "Y/N"
+          },
+          {
+            "name": "Direct Broker Contact",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Named direct contact for broker inquiries",
+            "format": "Y/N"
+          },
+          {
+            "name": "Broker Lead Tracking",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "System to track broker-referred leads and conversions",
+            "format": "Y/N"
+          },
+          {
+            "name": "Broker Events/Outreach",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Events or outreach specifically targeting brokers/locators",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Cost per Lead",
+        "type": "Data",
+        "source": "PM System / Marketing Data",
+        "method": "Total marketing spend (trailing 12 months) / total leads generated in same period. Marketing spend includes paid advertising + platform subscriptions + listing fees + monthly service costs.",
+        "format": "Dollar Amount"
+      }
+    ]
+  },
+  {
+    "area": "3. Leasing Performance",
+    "items": [
+      {
+        "name": "Conversion Metrics",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Lead-to-Tour %",
+            "type": "Tiered",
+            "source": "PM System / CRM",
+            "method": "Tours scheduled / total leads received",
+            "format": "Percentage"
+          },
+          {
+            "name": "Tour-to-App %",
+            "type": "Tiered",
+            "source": "PM System / CRM",
+            "method": "Applications submitted / tours completed",
+            "format": "Percentage"
+          },
+          {
+            "name": "App-to-Lease %",
+            "type": "Tiered",
+            "source": "PM System / CRM",
+            "method": "Leases signed / applications submitted",
+            "format": "Percentage"
+          },
+          {
+            "name": "Tour-to-Lease %",
+            "type": "Tiered",
+            "source": "PM System / CRM",
+            "method": "Leases signed / tours completed",
+            "format": "Percentage"
+          },
+          {
+            "name": "Lead-to-Lease %",
+            "type": "Tiered",
+            "source": "PM System / CRM",
+            "method": "Leases signed / total leads received",
+            "format": "Percentage"
+          },
+          {
+            "name": "Cancel Rate",
+            "type": "Tiered",
+            "source": "PM System / CRM",
+            "method": "Scheduled tours cancelled by prospect before appointment / total scheduled tours",
+            "format": "Percentage"
+          },
+          {
+            "name": "Ghost Rate",
+            "type": "Tiered",
+            "source": "PM System / CRM",
+            "method": "Scheduled tours where prospect did not show and did not cancel / total scheduled tours (excludes cancellations)",
+            "format": "Percentage"
+          }
+        ]
+      },
+      {
+        "name": "Tour Observation",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Greeting: Prompt Acknowledgment",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Eye Contact & Smile",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Handshake / Introduced by Name",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Asked Prospect's Name",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Built Rapport",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Offered Refreshments",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked Move-In Timeline",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked Floor Plan / Size",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked Budget / Price Range",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked Lifestyle Needs",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked What's Most Important",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Actively Listened",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Wait Time",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — time from arrival to acknowledgment",
+            "format": "Minutes"
+          },
+          {
+            "name": "Tour: Showed Model or Available Unit",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Highlighted Features & Benefits",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Pointed Out Amenities",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Tailored to Prospect Needs",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Demonstrated Product Knowledge",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Competitive Landscape Knowledge",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Submarket/Neighborhood Knowledge",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Discussed Lease Terms & Costs",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Fair Housing Compliance Observed",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour Duration",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — total tour duration",
+            "format": "Minutes"
+          },
+          {
+            "name": "Close: Asked for the Lease",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Close: Overcame Objections",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Close: Discussed Next Steps",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Close: Created Urgency",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          },
+          {
+            "name": "Close: Provided Pricing & App Info",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Auditor shadow — observed during tour",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Mystery Shop Score",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Phone: Friendly Professional Greeting",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Phone: Answered Within 3 Rings",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Phone: Enthusiasm & Positive Attitude",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Phone: Described Community & Features",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Phone: Asked Qualifying Questions",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Phone: Offered Incentives/Specials",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Phone: Matched Apartment to Needs",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Phone: Attempted to Schedule Tour",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Phone: Collected Contact Info",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Prompt Acknowledgment",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Eye Contact & Smile",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Handshake / Introduced by Name",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Asked Prospect's Name",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Built Rapport",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Greeting: Offered Refreshments",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked Move-In Timeline",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked Floor Plan / Size",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked Budget / Price Range",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked Lifestyle Needs",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Asked What's Most Important",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Needs: Actively Listened",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Wait Time",
+            "type": "Tiered",
+            "source": "Mystery Shop",
+            "method": "Secret shopper — time from arrival to acknowledgment",
+            "format": "Minutes"
+          },
+          {
+            "name": "Tour: Showed Model or Available Unit",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Highlighted Features & Benefits",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Pointed Out Amenities",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Tailored to Prospect Needs",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Demonstrated Product Knowledge",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Competitive Landscape Knowledge",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Submarket/Neighborhood Knowledge",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Discussed Lease Terms & Costs",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Property Curb Appeal Observed",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour: Fair Housing Compliance Observed",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Tour Duration",
+            "type": "Tiered",
+            "source": "Mystery Shop",
+            "method": "Secret shopper — total tour duration",
+            "format": "Minutes"
+          },
+          {
+            "name": "Close: Asked for the Lease",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Close: Overcame Objections",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Close: Discussed Next Steps",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Close: Created Urgency",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Close: Provided Pricing & App Info",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper evaluation",
+            "format": "Y/N"
+          },
+          {
+            "name": "Follow-Up: Contact Received",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper — did follow-up occur?",
+            "format": "Y/N"
+          },
+          {
+            "name": "Follow-Up: Was Personalized",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper — was follow-up personalized?",
+            "format": "Y/N"
+          },
+          {
+            "name": "Follow-Up: Referenced Visit Details",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper — did follow-up reference the visit?",
+            "format": "Y/N"
+          },
+          {
+            "name": "Follow-Up: Made Another Close Attempt",
+            "type": "Y/N",
+            "source": "Mystery Shop",
+            "method": "Secret shopper — did follow-up include close attempt?",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Lead Management Quality",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Email Response Time",
+            "type": "Tiered",
+            "source": "Audit / Mystery Shop",
+            "method": "Send test email inquiry, measure response time",
+            "format": "Minutes/Hours"
+          },
+          {
+            "name": "Phone Response Time",
+            "type": "Tiered",
+            "source": "Audit / Mystery Shop",
+            "method": "Place test call, measure callback time if not answered",
+            "format": "Minutes/Hours"
+          },
+          {
+            "name": "Follow-Up System",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Is follow-up documented and/or automated?",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Follow-Up Volume",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "How many follow-up touches in the nurture sequence?",
+            "format": "Count"
+          },
+          {
+            "name": "After-Hours Handling",
+            "type": "Tiered",
+            "source": "Audit / Mystery Shop",
+            "method": "Call after hours — what happens?",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Weekend Handling",
+            "type": "Tiered",
+            "source": "Audit / Mystery Shop",
+            "method": "Call/visit on weekend — what's available?",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Advanced Programs",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Nurture drip and/or re-engagement campaigns in place?",
+            "format": "Tiered Rating"
+          }
+        ]
+      },
+      {
+        "name": "Leasing Process Quality",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Expectations Communicated",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Leasing process expectations set with applicants upfront",
+            "format": "Y/N"
+          },
+          {
+            "name": "Online Application Available",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Application can be completed online",
+            "format": "Y/N"
+          },
+          {
+            "name": "Mobile-Friendly Application",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Application works on mobile device",
+            "format": "Y/N"
+          },
+          {
+            "name": "Application Status Communication",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Applicants notified of status updates during processing",
+            "format": "Y/N"
+          },
+          {
+            "name": "Credit Check Performed",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Credit check is part of screening",
+            "format": "Y/N"
+          },
+          {
+            "name": "Background Check Performed",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Criminal background check is part of screening",
+            "format": "Y/N"
+          },
+          {
+            "name": "Income Verification Performed",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Income verification is part of screening",
+            "format": "Y/N"
+          },
+          {
+            "name": "Rental History Verification",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Prior landlord references checked",
+            "format": "Y/N"
+          },
+          {
+            "name": "Employment Verification",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Employment verified during screening",
+            "format": "Y/N"
+          },
+          {
+            "name": "Electronic Lease Signing",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Leases can be signed electronically",
+            "format": "Y/N"
+          },
+          {
+            "name": "Clear Move-In Cost Breakdown",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Itemized move-in costs provided to applicant",
+            "format": "Y/N"
+          },
+          {
+            "name": "Deposit/Fee Payment Online",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Deposits and fees can be paid online",
+            "format": "Y/N"
+          },
+          {
+            "name": "Move-In Date Scheduling Process",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Defined process for scheduling move-in date",
+            "format": "Y/N"
+          },
+          {
+            "name": "Pre-Move-In Unit Inspection",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Unit inspected before resident move-in",
+            "format": "Y/N"
+          },
+          {
+            "name": "Move-In Checklist Provided",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Resident receives move-in condition checklist",
+            "format": "Y/N"
+          },
+          {
+            "name": "Utility Setup Guidance",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Guidance provided for utility transfers/setup",
+            "format": "Y/N"
+          },
+          {
+            "name": "Key/Access Handoff Process",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Defined process for key/fob/access handoff",
+            "format": "Y/N"
+          },
+          {
+            "name": "Welcome Package Provided",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "New resident welcome package provided",
+            "format": "Y/N"
+          },
+          {
+            "name": "New Resident Orientation",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "In-person or virtual orientation for new residents",
+            "format": "Y/N"
+          },
+          {
+            "name": "Resident Portal Setup Assistance",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Staff assists new resident with portal/app setup",
+            "format": "Y/N"
+          },
+          {
+            "name": "Community Rules & Policies Reviewed",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Rules and policies reviewed with new resident",
+            "format": "Y/N"
+          },
+          {
+            "name": "Emergency Procedures Communicated",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Emergency contacts and procedures provided",
+            "format": "Y/N"
+          },
+          {
+            "name": "Amenity Walkthrough During Onboarding",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "New resident given amenity walkthrough",
+            "format": "Y/N"
+          },
+          {
+            "name": "App Processing Speed",
+            "type": "Tiered",
+            "source": "PM System / Management Interview",
+            "method": "Average time from application submission to processing complete",
+            "format": "Days"
+          },
+          {
+            "name": "Screening Processing Speed",
+            "type": "Tiered",
+            "source": "PM System / Management Interview",
+            "method": "Average time for screening results",
+            "format": "Days"
+          },
+          {
+            "name": "Approval Speed",
+            "type": "Tiered",
+            "source": "PM System / Management Interview",
+            "method": "Average time from screening to approval decision",
+            "format": "Days"
+          },
+          {
+            "name": "Lease Turnaround",
+            "type": "Tiered",
+            "source": "PM System / Management Interview",
+            "method": "Average time from approval to executed lease",
+            "format": "Days"
+          }
+        ]
+      },
+      {
+        "name": "Training & Development",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Formal Program Exists",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Documented training program exists",
+            "format": "Y/N"
+          },
+          {
+            "name": "Onboarding Duration",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Length of new hire onboarding program",
+            "format": "Days"
+          },
+          {
+            "name": "Ongoing Frequency",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "How often ongoing training occurs",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Coaching Frequency",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "How often one-on-one coaching sessions occur",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Certifications Required",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Industry certifications required or encouraged",
+            "format": "Y/N"
+          },
+          {
+            "name": "Product Knowledge Training",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Training on property features, amenities, neighborhood",
+            "format": "Y/N"
+          },
+          {
+            "name": "Sales/Closing Training",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Training on sales techniques and closing",
+            "format": "Y/N"
+          },
+          {
+            "name": "Fair Housing Training",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Fair housing compliance training provided",
+            "format": "Y/N"
+          },
+          {
+            "name": "CRM/Systems Training",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Training on CRM and other technology systems",
+            "format": "Y/N"
+          },
+          {
+            "name": "Other Training Programs",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Additional training programs (customer service, conflict resolution, etc.)",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Tour Scheduling Quality",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Scheduling Methods",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Count of available scheduling methods (phone, email, online, walk-in)",
+            "format": "Count"
+          },
+          {
+            "name": "Online Self-Booking",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Prospects can self-schedule tours online",
+            "format": "Y/N"
+          },
+          {
+            "name": "Availability (Weekend/Evening)",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Tours available weekends and/or evenings?",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Broker Scheduling Access",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Brokers can schedule tours directly",
+            "format": "Y/N"
+          },
+          {
+            "name": "Flexibility (Same-day/Walk-ins)",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Same-day tours and/or walk-ins accepted?",
+            "format": "Tiered Rating"
+          }
+        ]
+      },
+      {
+        "name": "Office Environment",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Accessibility",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Parking availability + signage/wayfinding to leasing office",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Hours Coverage",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Days per week office is open",
+            "format": "Days per week"
+          },
+          {
+            "name": "Seating Available",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Guest seating in leasing office",
+            "format": "Y/N"
+          },
+          {
+            "name": "Refreshments",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Water, coffee, or other refreshments offered",
+            "format": "Y/N"
+          },
+          {
+            "name": "WiFi",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Guest WiFi available in leasing office",
+            "format": "Y/N"
+          },
+          {
+            "name": "Restroom",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Restroom accessible to prospects",
+            "format": "Y/N"
+          },
+          {
+            "name": "Professional Setup",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Leasing office has marketing materials + technology setup",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Wayfinding Signage",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Clear signage directing to leasing office from entrance",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Model Unit Quality",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Model Available",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Designated model unit available for tours",
+            "format": "Y/N"
+          },
+          {
+            "name": "Model Quality",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Model unit furnishing and staging level",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Model Positioning",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Does model represent a typical unit or the best-case scenario?",
+            "format": "Tiered Rating"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "area": "4. Listings",
+    "items": [
+      {
+        "name": "Platform Coverage",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Platform Count",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Count platforms where property is actively listed",
+            "format": "Count"
+          },
+          {
+            "name": "ILS Coverage",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Presence on Apartments.com and Zillow specifically",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Update Frequency",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "How often listings are updated (real-time sync vs manual)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Management Quality",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Who manages listings (in-house, PM company, external agency)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Syndication Method",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Centralized feed vs partial vs manual per-platform",
+            "format": "Tiered Rating"
+          }
+        ]
+      },
+      {
+        "name": "Photo Quality",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Hero Image Present",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Strong hero/featured image on primary listing",
+            "format": "Y/N"
+          },
+          {
+            "name": "Exterior Coverage (5+)",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "At least 5 exterior photos across listings",
+            "format": "Y/N"
+          },
+          {
+            "name": "Unit Interior (all rooms/types)",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Interior photos covering all rooms and unit types",
+            "format": "Y/N"
+          },
+          {
+            "name": "Amenity Coverage",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Percentage of amenities photographed",
+            "format": "Percentage"
+          },
+          {
+            "name": "Lifestyle Shots (5+)",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "At least 5 lifestyle/staging photos",
+            "format": "Y/N"
+          },
+          {
+            "name": "Professional Photographer",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Photos taken by professional photographer",
+            "format": "Y/N"
+          },
+          {
+            "name": "Photo Recency",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "When were listing photos last updated?",
+            "format": "Months"
+          }
+        ]
+      },
+      {
+        "name": "Content Quality",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Unique Selling Points Mentioned",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Listing description highlights property differentiators",
+            "format": "Y/N"
+          },
+          {
+            "name": "Neighborhood Context Included",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Description mentions neighborhood, nearby amenities, transit",
+            "format": "Y/N"
+          },
+          {
+            "name": "Call-to-Action Included",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Description includes clear CTA (schedule tour, apply, call)",
+            "format": "Y/N"
+          },
+          {
+            "name": "Contact Info Clear",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Phone, email, or contact method clearly displayed",
+            "format": "Y/N"
+          },
+          {
+            "name": "Floor Plans Available",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Floor plan images on listing",
+            "format": "Y/N"
+          },
+          {
+            "name": "Unit Specs Accurate",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Square footage, bed/bath count accurate",
+            "format": "Y/N"
+          },
+          {
+            "name": "Amenities Fully Listed",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "All community and unit amenities listed",
+            "format": "Y/N"
+          },
+          {
+            "name": "Pet Policy Stated",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Pet policy clearly stated on listing",
+            "format": "Y/N"
+          },
+          {
+            "name": "Lease Terms Mentioned",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Available lease terms mentioned",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Listing Accuracy",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Pricing Accurate Across Platforms",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Compare pricing on 3+ platforms — consistent?",
+            "format": "Y/N"
+          },
+          {
+            "name": "Availability Accurate",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Listed availability matches actual availability",
+            "format": "Y/N"
+          },
+          {
+            "name": "Unit Types/Sizes Correct",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Unit types and square footages match reality",
+            "format": "Y/N"
+          },
+          {
+            "name": "Amenities List Accurate",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Listed amenities match what's actually available",
+            "format": "Y/N"
+          },
+          {
+            "name": "Photos Match Property Condition",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Photos accurately represent current property condition",
+            "format": "Y/N"
+          },
+          {
+            "name": "Specials Updated",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Advertised specials/promotions are current",
+            "format": "Y/N"
+          },
+          {
+            "name": "Contact Info Current",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Phone numbers, emails, office hours are correct",
+            "format": "Y/N"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "area": "5. Pricing",
+    "items": [
+      {
+        "name": "Relative to Market",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Loss-to-Lease %",
+            "type": "Data",
+            "source": "PM System + Comp Research",
+            "method": "(Comp-derived market rent - In-Place Rent) / Comp-derived market rent, across all occupied units. Market rent is established from auditor-collected comp set data, not the property's internal rent matrix.",
+            "format": "Percentage"
+          },
+          {
+            "name": "New Leases (12mo) — Avg PPSF vs Market Avg PPSF",
+            "type": "Comparative",
+            "source": "PM System + Comp Research",
+            "method": "Average PPSF of leases signed in last 12 months vs comp set average PPSF",
+            "format": "Ratio/Percentage"
+          }
+        ]
+      },
+      {
+        "name": "Concession % of GPR",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Total free rent concession value / Gross Potential Rent. Concessions = free rent only (excludes waived fees, deposits, or non-rent incentives).",
+        "format": "Percentage"
+      },
+      {
+        "name": "Rent Lift on Turnover",
+        "type": "Data",
+        "source": "PM System",
+        "method": "(New lease rent - previous tenant rent) / previous tenant rent, averaged across all turnovers. Date range: assessment-level variable.",
+        "format": "Percentage"
+      },
+      {
+        "name": "Net Effective vs Asking Gap",
+        "type": "Data",
+        "source": "PM System",
+        "method": "(Asking Rent - Net Effective Rent) / Asking Rent, averaged across all current leases. Date range: assessment-level variable.",
+        "format": "Percentage"
+      },
+      {
+        "name": "Renewal Rent Increase",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Average % rent increase on renewed leases. Date range: assessment-level variable.",
+        "format": "Percentage"
+      }
+    ]
+  },
+  {
+    "area": "6. Retention & Renewal",
+    "items": [
+      {
+        "name": "Renewal Rate",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Leases renewed / leases expiring in period",
+        "format": "Percentage"
+      },
+      {
+        "name": "Average Resident Tenure",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Average months of residency across all current residents",
+        "format": "Months"
+      },
+      {
+        "name": "Month-to-Month %",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Units on month-to-month leases / total occupied units",
+        "format": "Percentage"
+      },
+      {
+        "name": "Controllable Turnover Rate",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Move-outs due to controllable reasons / total units. Controllable: maintenance/condition issues, noise/neighbor complaints, management dissatisfaction, pest issues, safety concerns, rent increase, amenity/service complaints. Uncontrollable: job relocation, military transfer, home purchase, health/family emergency, roommate split, school/graduation, death.",
+        "format": "Percentage"
+      },
+      {
+        "name": "DNR Rate",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Do-Not-Renew notices issued / total expiring leases",
+        "format": "Percentage"
+      },
+      {
+        "name": "Renewal & Retention Process",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Defined Renewal Process Exists",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Documented renewal process in place",
+            "format": "Y/N"
+          },
+          {
+            "name": "Renewal Offer Communicated in Writing",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Renewal offers sent in writing (email/letter)",
+            "format": "Y/N"
+          },
+          {
+            "name": "Renewal Pricing Strategy Defined",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Defined strategy for setting renewal rent increases",
+            "format": "Y/N"
+          },
+          {
+            "name": "Resident Satisfaction Assessed Before Renewal",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Satisfaction check before renewal offer sent",
+            "format": "Y/N"
+          },
+          {
+            "name": "Renewal Negotiation Flexibility",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Staff has authority/guidelines to negotiate renewal terms",
+            "format": "Y/N"
+          },
+          {
+            "name": "Electronic Renewal Signing Available",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Renewals can be signed electronically",
+            "format": "Y/N"
+          },
+          {
+            "name": "Proactive Retention Outreach Program",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Proactive outreach to residents beyond renewal notices",
+            "format": "Y/N"
+          },
+          {
+            "name": "Retention Incentives Offered",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Incentives offered to encourage renewal (upgrades, concessions)",
+            "format": "Y/N"
+          },
+          {
+            "name": "Resident Feedback/Survey Program",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Regular satisfaction surveys conducted",
+            "format": "Y/N"
+          },
+          {
+            "name": "Exit Interview / Move-Out Survey",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Exit interviews or move-out surveys conducted",
+            "format": "Y/N"
+          },
+          {
+            "name": "DNR Review Process Exists",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Formal review process before issuing DNR",
+            "format": "Y/N"
+          },
+          {
+            "name": "DNR Criteria Documented",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Written criteria for when to issue DNR",
+            "format": "Y/N"
+          },
+          {
+            "name": "DNR Decisions Reviewed by Management",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "DNR decisions reviewed/approved by management",
+            "format": "Y/N"
+          },
+          {
+            "name": "DNR Communication Timeline Defined",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Defined timeline for communicating DNR to resident",
+            "format": "Y/N"
+          },
+          {
+            "name": "Occupied Apartment Program Exists",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Program to show/prepare units before current resident moves out",
+            "format": "Y/N"
+          },
+          {
+            "name": "Non-Renewal Triggers Showing Communication",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Non-renewal triggers communication to begin showing unit",
+            "format": "Y/N"
+          },
+          {
+            "name": "Pre-Move-Out Unit Assessment",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Unit assessed before move-out for make-ready planning",
+            "format": "Y/N"
+          },
+          {
+            "name": "Move-Out Checklist Provided",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Move-out checklist provided to departing resident",
+            "format": "Y/N"
+          },
+          {
+            "name": "Outreach Timeline",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Self-reported by management: how many days before lease expiration does renewal outreach begin? Verified by reviewing sample renewal files/communications.",
+            "format": "Days"
+          },
+          {
+            "name": "NTV Response Speed",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "How quickly does management respond to a Notice to Vacate?",
+            "format": "Days"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "area": "7. Operations",
+    "items": [
+      {
+        "name": "Units per Leasing Agent",
+        "type": "Data",
+        "source": "PM System / Management Interview",
+        "method": "Total units / leasing staff FTE (full-time equivalent)",
+        "format": "Ratio"
+      },
+      {
+        "name": "Units per Maintenance Tech",
+        "type": "Data",
+        "source": "PM System / Management Interview",
+        "method": "Total units / maintenance technician FTE (full-time equivalent)",
+        "format": "Ratio"
+      },
+      {
+        "name": "Staffing Stability",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Staff Turnover Rate",
+            "type": "Data",
+            "source": "PM System / Management Interview",
+            "method": "Staff departures in trailing 12mo / average headcount",
+            "format": "Percentage"
+          },
+          {
+            "name": "Average Staff Tenure",
+            "type": "Data",
+            "source": "PM System / Management Interview",
+            "method": "Average months of employment across all current staff",
+            "format": "Months"
+          },
+          {
+            "name": "PM Tenure",
+            "type": "Data",
+            "source": "Management Interview",
+            "method": "How long current property manager has been in role",
+            "format": "Months"
+          },
+          {
+            "name": "Open Position Rate",
+            "type": "Data",
+            "source": "Management Interview",
+            "method": "Open/unfilled positions / total budgeted positions",
+            "format": "Percentage"
+          }
+        ]
+      },
+      {
+        "name": "Technology Effectiveness",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Coverage Breadth",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Count of technology categories in use (PMS, CRM, accounting, maintenance, payments, screening, etc.)",
+            "format": "Count"
+          },
+          {
+            "name": "Capability Depth",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Auditor assesses how fully each system is utilized by evaluating workflows, interviewing staff on daily usage, and observing live demonstrations. Audit workbook provides tiered selection aligned with scoring tiers.",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Integration Quality",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Count of system-to-system integrations (PMS↔CRM, PMS↔accounting, etc.)",
+            "format": "Count"
+          },
+          {
+            "name": "Staff Mobile Access",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Staff can access key systems via mobile devices",
+            "format": "Y/N"
+          },
+          {
+            "name": "Resident Mobile Access",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Residents have a mobile app for payments, maintenance, etc.",
+            "format": "Y/N"
+          },
+          {
+            "name": "Automation Level",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Level of workflow automation (lease renewals, follow-ups, maintenance routing)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "System Efficiency",
+            "type": "Tiered",
+            "source": "Audit / Management Interview",
+            "method": "Level of system redundancy (multiple systems doing same thing)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Tech Spend ROI",
+            "type": "Tiered",
+            "source": "PM System / Management Interview",
+            "method": "Total technology spend / total units",
+            "format": "Dollar per Unit"
+          }
+        ]
+      },
+      {
+        "name": "Compliance",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Fire/Safety Inspection Current",
+            "type": "Y/N",
+            "source": "Audit / Document Review",
+            "method": "Most recent fire/safety inspection is current and passed",
+            "format": "Y/N"
+          },
+          {
+            "name": "No Open Code Violations",
+            "type": "Y/N",
+            "source": "Audit / Document Review",
+            "method": "No unresolved code violations on file",
+            "format": "Y/N"
+          },
+          {
+            "name": "ADA Compliance Met",
+            "type": "Y/N",
+            "source": "Audit Observation / Document Review",
+            "method": "Property meets ADA requirements for accessible units and common areas",
+            "format": "Y/N"
+          },
+          {
+            "name": "Insurance Current",
+            "type": "Y/N",
+            "source": "Document Review",
+            "method": "Property insurance policy is active and current",
+            "format": "Y/N"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "area": "8. Financials",
+    "items": [
+      {
+        "name": "Revenue",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Gross Potential Rent",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual GPR vs owner's benchmark/budget GPR",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Vacancy Loss",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual vacancy loss vs owner's budgeted vacancy loss",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Concessions / Loss-to-Lease",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual concession spend vs owner's budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Other Income",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual other income vs owner's budget (pet fees, parking, laundry, etc.)",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Effective Gross Income",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual EGI vs owner's budgeted EGI",
+            "format": "Dollar Amount / Variance %"
+          }
+        ]
+      },
+      {
+        "name": "Expenses",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Payroll & Benefits",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual payroll vs budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Repairs & Maintenance",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual R&M spend vs budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Utilities",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual utilities vs budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Marketing & Advertising",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual marketing spend vs budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Insurance",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual insurance cost vs budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Real Estate Taxes",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual tax expense vs budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Admin / G&A",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual G&A vs budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Contract Services",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual contract services vs budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Management Fee",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual management fee vs budget/contract",
+            "format": "Dollar Amount / Variance %"
+          }
+        ]
+      },
+      {
+        "name": "Bottom Line",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Total Operating Expenses",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual total OpEx vs budget",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Net Operating Income",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual NOI vs owner's budgeted NOI",
+            "format": "Dollar Amount / Variance %"
+          }
+        ]
+      },
+      {
+        "name": "Capital",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Capital Expenditures",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Actual CapEx vs budgeted CapEx",
+            "format": "Dollar Amount / Variance %"
+          },
+          {
+            "name": "Capital Reserves",
+            "type": "Data",
+            "source": "Owner-Reported + PM System",
+            "method": "Current reserve balance vs target reserve balance",
+            "format": "Dollar Amount / Variance %"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "area": "9. Maintenance & Turnovers",
+    "items": [
+      {
+        "name": "Maintenance Performance",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Emergency Response Time",
+            "type": "Tiered",
+            "source": "PM System",
+            "method": "Average time from emergency work order submission to first response",
+            "format": "Hours"
+          },
+          {
+            "name": "Routine Response Time",
+            "type": "Tiered",
+            "source": "PM System",
+            "method": "Average time from routine work order submission to first response",
+            "format": "Hours"
+          },
+          {
+            "name": "Work Order Completion Rate",
+            "type": "Data",
+            "source": "PM System",
+            "method": "Completed work orders / total work orders submitted in period",
+            "format": "Percentage"
+          },
+          {
+            "name": "Avg Work Order Completion Duration",
+            "type": "Data",
+            "source": "PM System",
+            "method": "Average days from work order submission to completion",
+            "format": "Days"
+          },
+          {
+            "name": "Callback / Repeat Work Order Rate",
+            "type": "Data",
+            "source": "PM System",
+            "method": "Work orders for same issue code in same unit recurring within the lease term (12 months) / total completed work orders. Any issue reported, fixed, and broken again within the lease term indicates a temporary fix that will directly affect renewal.",
+            "format": "Percentage"
+          },
+          {
+            "name": "Preventive vs Reactive Ratio",
+            "type": "Data",
+            "source": "PM System",
+            "method": "Preventive/scheduled work orders / total work orders",
+            "format": "Percentage"
+          }
+        ]
+      },
+      {
+        "name": "Maintenance Operations Systems",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Formal Request System",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Structured work order system exists (portal, app, or software)",
+            "format": "Y/N"
+          },
+          {
+            "name": "Maintenance Process Documentation",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Written SOPs for maintenance processes",
+            "format": "Y/N"
+          },
+          {
+            "name": "Parts Inventory System",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Common parts stocked on-site with tracking system",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Turnover Performance",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Make-Ready Duration",
+            "type": "Data",
+            "source": "PM System",
+            "method": "Average days from move-out to unit listed as market-ready",
+            "format": "Days"
+          },
+          {
+            "name": "Make-Ready Cost",
+            "type": "Data",
+            "source": "PM System",
+            "method": "Average direct cost per unit turnover (labor + materials + vendor invoices). Excludes allocated overhead and staff time.",
+            "format": "Dollar Amount"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "area": "10. Property Condition",
+    "items": [
+      {
+        "name": "Overall Property Condition",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Overall Condition Rating",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Auditor's overall assessment of property physical condition",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Common Areas Rating",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Condition of lobbies, hallways, stairwells, laundry rooms",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Exterior Presentation",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Grounds, parking, signage, lighting, landscaping, facades",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Amenities Condition Rating",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Condition of pool, gym, clubhouse, dog park, playgrounds, business center",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Issues Count",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Count of observable physical issues during site walk",
+            "format": "Count"
+          }
+        ]
+      },
+      {
+        "name": "Capital Asset Condition",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Roof",
+            "type": "Tiered",
+            "source": "Audit Observation / Management Interview",
+            "method": "Visual inspection + management-reported age and last service date",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "HVAC Systems",
+            "type": "Tiered",
+            "source": "Audit Observation / Management Interview",
+            "method": "System age, performance complaints, last service date",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Plumbing",
+            "type": "Tiered",
+            "source": "Audit Observation / Management Interview",
+            "method": "Pipe material, visible leaks, water pressure test, reported issues",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Electrical",
+            "type": "Tiered",
+            "source": "Audit Observation / Management Interview",
+            "method": "Panel condition, wiring age, capacity concerns",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Siding / Facade",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Visual inspection of exterior walls, siding, brick condition",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Windows",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Seal integrity, condensation, operability, age",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Parking Surfaces",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Lot/garage condition, striping, drainage, cracking",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Elevators",
+            "type": "Tiered",
+            "source": "Audit Observation / Document Review",
+            "method": "Condition, inspection currency, reported issues. N/A if no elevators",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Water Heaters",
+            "type": "Tiered",
+            "source": "Audit Observation / Management Interview",
+            "method": "Age, type (tank/tankless, individual/central), condition",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Fire/Life Safety Systems",
+            "type": "Tiered",
+            "source": "Audit Observation / Document Review",
+            "method": "Sprinklers, alarms, extinguishers, emergency lighting condition",
+            "format": "Tiered Rating"
+          }
+        ]
+      },
+      {
+        "name": "Deferred Maintenance",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Number of Deferred Items",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Count of distinct deferred maintenance items identified during site walk",
+            "format": "Count"
+          },
+          {
+            "name": "Critical Systems Affected",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Any deferred items on major systems (roof, HVAC, plumbing, electrical, structural)?",
+            "format": "Y/N"
+          },
+          {
+            "name": "Safety Hazards Present",
+            "type": "Y/N",
+            "source": "Audit Observation",
+            "method": "Any deferred items creating safety risks (trip hazards, faulty electrical, broken railings)?",
+            "format": "Y/N"
+          }
+        ]
+      },
+      {
+        "name": "Unit Condition — Vacant Walks",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Flooring",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Walls / Paint",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Kitchen Cabinets & Countertops",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Kitchen Appliances",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Bathroom Fixtures & Tile",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Windows & Blinds",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Doors & Hardware",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Lighting Fixtures",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "HVAC (in-unit)",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "Overall Cleanliness",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated individually, then averaged for this category)",
+            "format": "Tiered Rating"
+          },
+          {
+            "name": "General Finish Level",
+            "type": "Tiered",
+            "source": "Audit Observation",
+            "method": "Average rating across all sampled vacant units (each unit rated Dated/Acceptable/Updated/Modern, then averaged for this category)",
+            "format": "Tiered Rating"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "area": "11. Competitive Position",
+    "items": [
+      {
+        "name": "Pricing vs Comps",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Studio — Avg Price vs Comps",
+            "type": "Comparative",
+            "source": "Comp Research",
+            "method": "Subject studio avg rent / comp set studio avg rent",
+            "format": "Ratio/Percentage"
+          },
+          {
+            "name": "Studio — PPSF vs Comps",
+            "type": "Comparative",
+            "source": "Comp Research",
+            "method": "Subject studio PPSF / comp set studio avg PPSF",
+            "format": "Ratio/Percentage"
+          },
+          {
+            "name": "1-Bed — Avg Price vs Comps",
+            "type": "Comparative",
+            "source": "Comp Research",
+            "method": "Subject 1BR avg rent / comp set 1BR avg rent",
+            "format": "Ratio/Percentage"
+          },
+          {
+            "name": "1-Bed — PPSF vs Comps",
+            "type": "Comparative",
+            "source": "Comp Research",
+            "method": "Subject 1BR PPSF / comp set 1BR avg PPSF",
+            "format": "Ratio/Percentage"
+          },
+          {
+            "name": "2-Bed — Avg Price vs Comps",
+            "type": "Comparative",
+            "source": "Comp Research",
+            "method": "Subject 2BR avg rent / comp set 2BR avg rent",
+            "format": "Ratio/Percentage"
+          },
+          {
+            "name": "2-Bed — PPSF vs Comps",
+            "type": "Comparative",
+            "source": "Comp Research",
+            "method": "Subject 2BR PPSF / comp set 2BR avg PPSF",
+            "format": "Ratio/Percentage"
+          }
+        ]
+      },
+      {
+        "name": "Amenity Count vs Comps",
+        "type": "Comparative",
+        "source": "Comp Research",
+        "method": "Subject amenity count / comp set average amenity count. Standard amenity list defined in audit intake form.",
+        "format": "Ratio"
+      },
+      {
+        "name": "Reputation Score vs Comps",
+        "type": "Comparative",
+        "source": "Review Platforms + Comp Research",
+        "method": "Subject avg review score minus comp set avg review score (point difference on 5-point scale)",
+        "format": "Point Difference"
+      },
+      {
+        "name": "Mystery Shop Score vs Comps",
+        "type": "Comparative",
+        "source": "Mystery Shop",
+        "method": "Subject mystery shop score / comp set avg mystery shop score. All comps are mystery-toured using the same evaluation checklist as the subject property.",
+        "format": "Ratio"
+      },
+      {
+        "name": "Occupancy vs Comps",
+        "type": "Comparative",
+        "source": "Comp Research",
+        "method": "Subject occupancy rate minus comp set avg occupancy rate (percentage point difference)",
+        "format": "Percentage Point Difference"
+      },
+      {
+        "name": "Resident Services vs Comps",
+        "type": "Comparative",
+        "source": "Comp Research",
+        "method": "Subject resident services count / comp set avg resident services count. Standard services list defined in audit intake form.",
+        "format": "Ratio"
+      },
+      {
+        "name": "Resident Events vs Comps",
+        "type": "Comparative",
+        "source": "Comp Research",
+        "method": "Compare whether resident events are offered (Y/N) and frequency per month. Subject events frequency / comp set avg events frequency.",
+        "format": "Ratio"
+      },
+      {
+        "name": "Resident Mobile App vs Comps",
+        "type": "Comparative",
+        "source": "Comp Research",
+        "method": "Subject has app (1 or 0) vs comp set adoption rate (% of comps with a resident app)",
+        "format": "Custom Matrix (Method D)"
+      }
+    ]
+  },
+  {
+    "area": "12. Collections & Screening",
+    "items": [
+      {
+        "name": "Delinquency Rate",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Units with outstanding balance 30+ days past due / total occupied units",
+        "format": "Percentage"
+      },
+      {
+        "name": "Bad Debt Write-Off Rate",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Total bad debt written off / total rent billed in period",
+        "format": "Percentage"
+      },
+      {
+        "name": "Eviction Rate",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Eviction filings in period / total occupied units. If assessment date range is less than 12 months, annualize: (rate / months in period) × 12. Thresholds are calibrated to annual rates.",
+        "format": "Percentage (Annualized)"
+      },
+      {
+        "name": "Application Denial Rate",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Applications denied / total applications received",
+        "format": "Percentage"
+      },
+      {
+        "name": "Short-Tenure Turnover Rate",
+        "type": "Data",
+        "source": "PM System",
+        "method": "Move-outs that occur at any point before the lease term ends / total move-outs. Any early termination regardless of how far into the lease.",
+        "format": "Percentage"
+      },
+      {
+        "name": "Screening Process Quality",
+        "type": "Checklist",
+        "subs": [
+          {
+            "name": "Defined Screening Criteria Documented",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Written screening criteria exist",
+            "format": "Y/N"
+          },
+          {
+            "name": "Credit Check Required",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Credit check is mandatory for all applicants",
+            "format": "Y/N"
+          },
+          {
+            "name": "Background Check Required",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Background check is mandatory for all applicants",
+            "format": "Y/N"
+          },
+          {
+            "name": "Income Verification Required",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Income verification is mandatory",
+            "format": "Y/N"
+          },
+          {
+            "name": "Rental History Verification Required",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Prior landlord references required",
+            "format": "Y/N"
+          },
+          {
+            "name": "Employment Verification Required",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Employment verification required",
+            "format": "Y/N"
+          },
+          {
+            "name": "Consistent Application of Criteria",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Same screening standards applied to all applicants (fair housing)",
+            "format": "Y/N"
+          },
+          {
+            "name": "Adverse Action Notice Process",
+            "type": "Y/N",
+            "source": "Audit / Management Interview",
+            "method": "Formal adverse action notice process for denied applicants",
+            "format": "Y/N"
+          }
+        ]
+      }
+    ]
+  }
+]

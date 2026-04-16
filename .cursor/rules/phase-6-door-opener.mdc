@@ -1,0 +1,92 @@
+---
+description: Phase 6 — Door Opener and Extensibility. Rules for building the public-data-only assessment type and the connector/package extension SDK.
+globs:
+  - src/services/door_opener/**
+  - src/shared/sdk/**
+  - src/api/routes/door_opener/**
+alwaysApply: false
+---
+
+# Phase 6 Rules — Door Opener and Extensibility
+
+## What This Phase Builds
+
+- Door Opener Service: `DOOR_OPENER` assessment type with public-data-only scoring
+  - 11 of 65 items scorable from public data (applicability matrix enforcement)
+  - Public listing/marketing data collection workflow
+  - Public-data diagnostic packages
+  - Door opener report generation
+  - Upgrade path from door opener to full engagement (preserves all prior data)
+- Extension SDK: framework for adding new connectors, diagnostic packages, scoring rubrics, and entity domains
+  - Connector registration and validation
+  - Diagnostic package registration and validation
+  - Rubric version registration with weight-sum validation
+  - New fact grain registration with ClickHouse DDL generation
+
+## Prerequisites
+
+Phase 5 must be complete: client portal operational, trend marts functional, recommendation tracking working, at least one full assessment lifecycle (create → score → report → deliver to client) validated end-to-end.
+
+## Authoritative References
+
+Before writing any code, read these documents:
+
+1. `rbv2-project.mdc` — Master project rules (always applies)
+2. `Code_Patterns_Specification.md` — Exact code templates. Follow the patterns established in prior phase code.
+3. `Service_Interface_Contracts.md` — Door Opener Service (line 598), Extension SDK (line 652)
+3. `Door_Opener_Applicability_Matrix.md` — Definitive 65-item matrix: 11 items applicable, 54 not applicable. Strict interpretation: if any sub-item requires non-public data, the entire item is not applicable.
+4. `Database_Schema_Specification.md` — `assessment.assessment_type` supports `'door_opener'` (line 1921), `scorecard.scorecard_type` supports `'door_opener'` (line 1982), `report.report_type` supports `'door_opener'` (line 2278)
+5. `spec_1` §13 (door openers, lines 1119-1159), §15 (extensibility, lines 1204-1223)
+6. `Audit_Workbook_Specification.md` — Sections marked `[DOOR OPENER]`: §2 (Pre-Audit Digital Review, line 110), §2A (Online Reputation, line 116), §10A-10K (competitor observations, line 1315)
+7. `Report_Template_Specification.md` — Door opener report template (standard template #7)
+8. `Data_Onramp_Specification.md` — `VendorAdapter` protocol that new connectors must implement
+
+## Door Opener Rules
+
+- A door opener assessment uses `assessment_type = 'door_opener'`. The same domain packages run, but only items whose input requirements are satisfied by public data are scored (spec_1 §13.2, lines 1143-1153).
+- The applicability matrix is authoritative: exactly 11 items are scorable. Do not score items marked "NOT APPLICABLE" in `Door_Opener_Applicability_Matrix.md`.
+- The 11 scorable items span 3 of 12 areas (per `Door_Opener_Applicability_Matrix.md` lines 179-191):
+  - Area 2 (Marketing): Online Reputation, Digital/Social Presence, Website Quality
+  - Area 4 (Listings): Content Quality, Listing Accuracy
+  - Area 11 (Competitive Position): Pricing vs Comps, Amenity Count vs Comps, Reputation Score vs Comps, Resident Services vs Comps, Resident Events vs Comps, Resident Mobile App vs Comps
+- Non-applicable areas score as `OUT_OF_SCOPE`, not zero. Coverage metadata must clearly show what was and was not assessed.
+- The upgrade path from door opener to full engagement changes `assessment_type` to `full_engagement` and preserves all door opener data. Prior public findings remain comparable — they are not rebuilt from scratch (spec_1 §13.3, lines 1156-1159).
+
+## Public Data Collection Rules
+
+- Door opener data comes from publicly accessible sources only:
+  - ILS listings (Apartments.com, Zillow, etc.)
+  - Review platforms (Google, Yelp, ApartmentRatings, Facebook)
+  - Property website
+  - Social media profiles
+  - Google Business Profile
+  - App stores (resident mobile app)
+  - Comp property public data (same sources applied to comp set)
+- Data collection sections: Audit Workbook §2 `[DOOR OPENER]` and §10A-10K `[DOOR OPENER]`.
+- No PM internal data, CRM data, financial data, work orders, resident interviews, or field validation unless performed publicly or onsite.
+
+## Extension SDK Rules
+
+- New connectors must implement the `VendorAdapter` protocol from `Data_Onramp_Specification.md` (spec_1 §15.1).
+- New connectors declare: supported source system type, supported report types, column mappings, adapter class. Validation runs against sample test files.
+- New diagnostic packages must provide: metric definitions, benchmark definitions, rule thresholds, impact formulas, output templates (spec_1 §15.2).
+- No schema rewrite is required for new packages unless the analysis introduces a truly new fact grain (spec_1 §15.2, line 1217).
+- Rubric versions are metadata-driven and deploy independently of core entity tables (spec_1 §15.3). Registration validates weight sums: area weights sum to 100%, item weights sum to 100% per area, sub-item points sum to 100 per checklist item.
+- New entity domains register canonical facts in the semantic catalog. Existing workspace, studies, and reporting infrastructure remain reusable (spec_1 §15.4).
+
+## Testing Rules
+
+- Door opener assessment: test that only the 11 applicable items are scored and the remaining 54 return `OUT_OF_SCOPE`.
+- Door opener scoring: test that area-level and overall scores are computed correctly using only applicable items.
+- Door opener report: test that the door opener report template includes only scored areas and clearly marks non-applicable areas.
+- Upgrade to full engagement: test that all door opener data is preserved after upgrade, and that new internal data integrates without rebuilding public findings.
+- Connector SDK: test registering a new connector, validating it, and running a sample import through it.
+- Package SDK: test registering a new diagnostic package, validating its metrics and formulas, and running it.
+- Rubric versioning: test that invalid weight sums (not summing to 100% or 100 points) are rejected at registration.
+- All tests use **pytest**. Shared fixtures in `tests/conftest.py`.
+
+## What NOT To Build In This Phase
+
+- Do not modify the core scoring engine — rubric versions extend it, they don't replace it.
+- Do not modify the core import pipeline — connectors extend it via the adapter protocol.
+- Do not implement AI/ML analysis features — those are outside the current roadmap scope.

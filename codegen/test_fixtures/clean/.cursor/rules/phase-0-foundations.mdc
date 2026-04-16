@@ -1,0 +1,15 @@
+# Phase 0: Foundations
+
+## Scope
+
+This phase implements the data ingestion service.
+
+Operations in scope: `create_ingestion`, `get_ingestion_status`.
+
+Key tables: `source_asset`, `user_account`.
+
+Use FastAPI with SQLAlchemy Core for PostgreSQL access.
+
+## References
+
+See `Database_Schema_Specification.md` and `Data_Onramp_Specification.md`.

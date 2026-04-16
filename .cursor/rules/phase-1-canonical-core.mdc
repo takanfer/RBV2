@@ -1,0 +1,90 @@
+---
+description: Phase 1 — Canonical Core and Import Framework. Rules for building entity schemas, file import, PM connectors, and entity resolution.
+globs:
+  - src/services/import_mapping/**
+  - src/services/entity_resolution/**
+  - db/postgresql/migrations/versions/**
+alwaysApply: false
+---
+
+# Phase 1 Rules — Canonical Core and Import Framework
+
+## What This Phase Builds
+
+- Canonical entity schemas for all 6 domains (Asset, Resident/Lease, Operations, Demand, Market, Assessment)
+- File import framework with schema mapping and review queue
+- First PM connectors (Yardi, RealPage, Entrata, AppFolio, ResMan adapters)
+- CRM data ingestion
+- Manual field form ingestion (Audit Data Set)
+- Entity resolution and alias mapping
+- Coverage metadata and source provenance tracking
+
+## Prerequisites
+
+Phase 0 must be complete: databases provisioned, object storage working, tenancy/auth functional, CI pipeline running.
+
+## Authoritative References
+
+Before writing any code, read these documents:
+
+1. `rbv2-project.mdc` — Master project rules
+2. `Code_Patterns_Specification.md` — Exact code templates for all services, routes, repositories, exceptions, and tests. Follow every pattern exactly. Phase 0 code in `src/services/authz/` and `src/services/engagement/` is the reference implementation.
+3. `API_Design_Specification.md` — REST API conventions. Follow the patterns established in Phase 0 routes.
+4. `Authentication_Middleware_Specification.md` — JWT dependency chain. Use `get_tenant_context` for all authenticated routes.
+5. `Observability_Specification.md` — Structured logging and audit logging patterns. Follow the patterns established in Phase 0 services.
+6. `Database_Schema_Specification.md` — DDL for all 6 entity domains (implement all Layer B tables in this phase)
+7. `Service_Interface_Contracts.md` — Import & Mapping Service and Entity Resolution Service contracts
+8. `Data_Onramp_Specification.md` — File formats, column mapping rules, vendor adapters, review queue logic
+9. `Complete_Data_Inventory.md` — All 1,100+ fields organized by PM report type (Sections 1.1–1.12)
+10. `Shared_Type_Definitions.md` — Generated Pydantic model reference (125 models, 1,393 fields across 14 domain modules). Note: `data_dictionary.json` is in `DEPRECATED/` — use `Complete_Data_Inventory.md` and `Shared_Type_Definitions.md` instead.
+
+## Schema Migration Rules
+
+- All canonical entity tables go through **Alembic** migrations.
+- Each entity domain gets its own migration file (e.g., `002_asset_domain.py`, `003_resident_lease_domain.py`).
+- Foreign key constraints must be defined in the migration.
+- Indexes from `Database_Schema_Specification.md` must be included in the migration.
+- RLS policies must be created for every new tenant-scoped table.
+
+## Import Framework Rules
+
+- Raw files are **always** stored in S3 before any processing. The `source_asset` record with SHA-256 hash is created first.
+- Raw parsed records are stored in `source_record_raw` with the original JSON payload. This is the audit trail.
+- Never modify a `source_asset` or `source_record_raw` after creation. They are immutable evidence.
+- The `source_record_raw.raw_data` JSONB column stores the exact values from the source file — no transformation at this stage.
+- Mapping and transformation happen when creating canonical entities from source records.
+
+## Connector Rules
+
+- Each PM vendor adapter lives in `src/services/import_mapping/adapters/<vendor>.py`.
+- Adapters implement the `VendorAdapter` protocol defined in `Data_Onramp_Specification.md`.
+- Adapters declare supported report types and column mappings.
+- Auto-detection confidence threshold is 0.8. Below that, the file goes to review.
+- Record-level mapping confidence threshold is 0.7. Below that, the record goes to review.
+
+## Entity Resolution Rules
+
+- Unit resolution always checks `unit_alias` first (deterministic match).
+- Fuzzy matching uses normalized string comparison, not raw string equality.
+- All resolution results store: `match_method`, `confidence`, `reviewer_override`.
+- New entities are created only when no match is found AND confidence that it's truly new >= 0.8 (matches Service_Interface_Contracts.md review threshold).
+- Resident matching uses email (exact) > phone (exact) > name + unit (fuzzy).
+
+## Idempotency Rules
+
+- Re-uploading the same file (same SHA-256 hash) is a no-op.
+- Re-importing the same record (same source_system_id + source_table + source_row_key) updates the existing canonical entity, not creates a duplicate.
+
+## Testing Rules
+
+- Each PM adapter must have tests using sample files from that vendor format.
+- Entity resolution must have tests for: exact match, alias match, fuzzy match, no match (new entity), and manual override.
+- Import pipeline must have end-to-end test: upload file → parse → map → resolve → verify canonical entities.
+- Review queue must have tests for each resolution option (approve, remap, reject, create new, merge).
+
+## What NOT To Build In This Phase
+
+- Do not implement temporal modeling (unit spine, fact_unit_day) — that's Phase 2.
+- Do not implement scoring or diagnostics — that's Phase 3.
+- Do not implement UI for the import/mapping — that's Phase 4 (use API endpoints for now).
+- Do not hardcode vendor-specific logic outside of adapter files.

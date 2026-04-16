@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scoring System Comparison: RBv1 vs V6</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17;
+  --surface: #111827;
+  --surface2: #1a2234;
+  --surface3: #243044;
+  --border: #2a3a52;
+  --text: #e2e8f0;
+  --text-dim: #94a3b8;
+  --text-muted: #64748b;
+  --accent-rb: #f59e0b;
+  --accent-rb-dim: rgba(245,158,11,0.15);
+  --accent-v6: #06b6d4;
+  --accent-v6-dim: rgba(6,182,212,0.15);
+  --accent-shared: #a78bfa;
+  --accent-shared-dim: rgba(167,139,250,0.15);
+  --strong: #22c55e;
+  --acceptable: #3b82f6;
+  --weak: #f59e0b;
+  --unsupported: #ef4444;
+  --green: #22c55e;
+  --red: #ef4444;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'IBM Plex Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:2rem; }
+
+.header { max-width:1400px; margin:0 auto 3rem; }
+.header h1 { font-family:'DM Serif Display',serif; font-size:2.4rem; letter-spacing:-0.02em; margin-bottom:0.5rem; }
+.header .subtitle { color:var(--text-dim); font-size:1.05rem; font-weight:300; max-width:700px; line-height:1.6; }
+
+.tabs { display:flex; gap:0; margin-bottom:2rem; max-width:1400px; margin-left:auto; margin-right:auto; border-bottom:1px solid var(--border); }
+.tab { padding:0.75rem 1.5rem; cursor:pointer; color:var(--text-muted); font-weight:500; font-size:0.95rem; border-bottom:2px solid transparent; transition:all 0.2s; user-select:none; }
+.tab:hover { color:var(--text-dim); }
+.tab.active { color:var(--text); border-bottom-color:var(--accent-shared); }
+
+.panel { display:none; max-width:1400px; margin:0 auto; }
+.panel.active { display:block; }
+
+.overview-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-bottom:3rem; }
+.system-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:2rem; position:relative; overflow:hidden; }
+.system-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.system-card.rb::before { background:var(--accent-rb); }
+.system-card.v6::before { background:var(--accent-v6); }
+.system-card h2 { font-family:'DM Serif Display',serif; font-size:1.5rem; margin-bottom:0.25rem; }
+.system-card .label { font-size:0.8rem; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:1rem; }
+.system-card .label.rb { color:var(--accent-rb); }
+.system-card .label.v6 { color:var(--accent-v6); }
+.stat-row { display:flex; justify-content:space-between; padding:0.6rem 0; border-bottom:1px solid var(--border); }
+.stat-row:last-child { border-bottom:none; }
+.stat-label { color:var(--text-dim); font-size:0.9rem; }
+.stat-value { font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:0.9rem; text-align:right; max-width:55%; }
+
+.mapping-section { margin-bottom:3rem; }
+.mapping-section h3 { font-family:'DM Serif Display',serif; font-size:1.3rem; margin-bottom:0.5rem; }
+.mapping-section .desc { color:var(--text-dim); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.5; }
+table { width:100%; border-collapse:collapse; background:var(--surface); border-radius:12px; overflow:hidden; }
+th { background:var(--surface2); padding:0.75rem 1rem; text-align:left; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-dim); font-weight:600; border-bottom:1px solid var(--border); }
+td { padding:0.65rem 1rem; border-bottom:1px solid var(--border); font-size:0.88rem; vertical-align:top; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:var(--surface2); }
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:500; font-family:'IBM Plex Mono',monospace; }
+.tag-rb { background:var(--accent-rb-dim); color:var(--accent-rb); }
+.tag-v6 { background:var(--accent-v6-dim); color:var(--accent-v6); }
+.tag-both { background:var(--accent-shared-dim); color:var(--accent-shared); }
+.tag-gap { background:rgba(239,68,68,0.15); color:var(--red); }
+.tag-ok { background:rgba(34,197,94,0.15); color:var(--green); }
+
+.weight-chart { margin-bottom:2rem; }
+.weight-row { display:grid; grid-template-columns:220px 50px 1fr 50px 1fr; gap:0.5rem; align-items:center; margin-bottom:0.4rem; }
+.weight-name { font-size:0.85rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.weight-pct { font-family:'IBM Plex Mono',monospace; font-size:0.8rem; text-align:right; }
+.weight-pct.rb { color:var(--accent-rb); }
+.weight-pct.v6 { color:var(--accent-v6); }
+.weight-bar-container { height:18px; background:var(--surface2); border-radius:3px; overflow:hidden; }
+.weight-bar { height:100%; border-radius:3px; transition:width 0.5s ease; }
+.weight-bar.rb { background:var(--accent-rb); }
+.weight-bar.v6 { background:var(--accent-v6); }
+
+.tradeoffs { display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-bottom:3rem; }
+.tradeoff-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
+.tradeoff-card h4 { font-size:1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+.tradeoff-list { list-style:none; }
+.tradeoff-list li { padding:0.5rem 0; border-bottom:1px solid var(--border); font-size:0.88rem; color:var(--text-dim); line-height:1.5; }
+.tradeoff-list li:last-child { border-bottom:none; }
+.pro { color:var(--green); font-weight:600; margin-right:0.3rem; }
+.con { color:var(--red); font-weight:600; margin-right:0.3rem; }
+
+.recommendation { background:var(--surface); border:1px solid var(--accent-shared); border-radius:12px; padding:2rem; margin-top:2rem; }
+.recommendation h3 { font-family:'DM Serif Display',serif; font-size:1.2rem; margin-bottom:1rem; color:var(--accent-shared); }
+.recommendation p { color:var(--text-dim); font-size:0.95rem; line-height:1.7; margin-bottom:0.75rem; }
+.recommendation strong { color:var(--text); }
+
+@media (max-width:900px) {
+  .overview-grid, .tradeoffs { grid-template-columns:1fr; }
+  .weight-row { grid-template-columns:1fr; }
+}
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.panel.active > * { animation: fadeUp 0.4s ease both; }
+.panel.active > *:nth-child(2) { animation-delay:0.05s; }
+.panel.active > *:nth-child(3) { animation-delay:0.1s; }
+.panel.active > *:nth-child(4) { animation-delay:0.15s; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Scoring System Comparison</h1>
+  <p class="subtitle">Two complete scoring systems exist. This tool presents both side-by-side so you can decide which to adopt, merge, or replace for the new platform.</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview')">Overview</div>
+  <div class="tab" onclick="switchTab('mapping')">Category Mapping</div>
+  <div class="tab" onclick="switchTab('weights')">Weight Comparison</div>
+  <div class="tab" onclick="switchTab('bands')">Scale &amp; Bands</div>
+  <div class="tab" onclick="switchTab('exclusive')">Exclusive Coverage</div>
+  <div class="tab" onclick="switchTab('tradeoffs')">Tradeoffs</div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="panel active" id="panel-overview">
+  <div class="overview-grid">
+    <div class="system-card rb">
+      <div class="label rb">RBv1 Analytical Engine</div>
+      <h2>Deliverable 4 Scoring Model</h2>
+      <div class="stat-row"><span class="stat-label">Scale</span><span class="stat-value">0 &ndash; 100</span></div>
+      <div class="stat-row"><span class="stat-label">Top-level groups</span><span class="stat-value">15 families</span></div>
+      <div class="stat-row"><span class="stat-label">Dimensions (scored)</span><span class="stat-value">73 dimensions</span></div>
+      <div class="stat-row"><span class="stat-label">Patterns feeding scores</span><span class="stat-value">89 scored + 7 finding-only</span></div>
+      <div class="stat-row"><span class="stat-label">Band system</span><span class="stat-value">Strong / Acceptable / Weak / Unsupported</span></div>
+      <div class="stat-row"><span class="stat-label">Overall property score</span><span class="stat-value" style="color:var(--red)">Not defined</span></div>
+      <div class="stat-row"><span class="stat-label">Support/confidence model</span><span class="stat-value" style="color:var(--green)">Full (4-tier each)</span></div>
+      <div class="stat-row"><span class="stat-label">Contradiction handling</span><span class="stat-value" style="color:var(--green)">0.85x multiplier + trust penalties</span></div>
+      <div class="stat-row"><span class="stat-label">Partial-data caps</span><span class="stat-value" style="color:var(--green)">Per-family max score caps</span></div>
+      <div class="stat-row"><span class="stat-label">Normalization</span><span class="stat-value">4 formula templates</span></div>
+      <div class="stat-row"><span class="stat-label">Config source</span><span class="stat-value">methodology_runtime_config_v1.json</span></div>
+      <div class="stat-row"><span class="stat-label">Benchmark citations</span><span class="stat-value" style="color:var(--red)">None (internal thresholds)</span></div>
+    </div>
+    <div class="system-card v6">
+      <div class="label v6">V6 ScoringEngine.gs</div>
+      <h2>19-Module Scoring System</h2>
+      <div class="stat-row"><span class="stat-label">Scale</span><span class="stat-value">0 &ndash; 10</span></div>
+      <div class="stat-row"><span class="stat-label">Top-level groups</span><span class="stat-value">19 modules</span></div>
+      <div class="stat-row"><span class="stat-label">Components (scored)</span><span class="stat-value">~80+ components</span></div>
+      <div class="stat-row"><span class="stat-label">Patterns feeding scores</span><span class="stat-value">66 patterns + rubric sheets</span></div>
+      <div class="stat-row"><span class="stat-label">Band system</span><span class="stat-value">Optimization / Repositioning / Turnaround / Custom</span></div>
+      <div class="stat-row"><span class="stat-label">Overall property score</span><span class="stat-value" style="color:var(--green)">Weighted module rollup</span></div>
+      <div class="stat-row"><span class="stat-label">Support/confidence model</span><span class="stat-value" style="color:var(--weak)">Basic (full / partial / insufficient)</span></div>
+      <div class="stat-row"><span class="stat-label">Contradiction handling</span><span class="stat-value" style="color:var(--red)">Not explicit</span></div>
+      <div class="stat-row"><span class="stat-label">Partial-data caps</span><span class="stat-value" style="color:var(--weak)">Weight redistribution only</span></div>
+      <div class="stat-row"><span class="stat-label">Normalization</span><span class="stat-value">Piecewise linear (4 anchors)</span></div>
+      <div class="stat-row"><span class="stat-label">Config source</span><span class="stat-value">SCORING_BENCHMARKS object in code</span></div>
+      <div class="stat-row"><span class="stat-label">Benchmark citations</span><span class="stat-value" style="color:var(--green)">NAA 2024, NMHC/Grace Hill 2024</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAPPING -->
+<div class="panel" id="panel-mapping">
+  <div class="mapping-section">
+    <h3>How V6 Modules Map to RBv1 Families</h3>
+    <p class="desc">Each row shows a V6 module and its closest RBv1 family equivalent. Some modules map cleanly; others split across families or have no equivalent.</p>
+    <table>
+      <thead><tr><th>V6 Module</th><th>V6 Wt</th><th>RBv1 Family</th><th>RBv1 Dimensions</th><th>Fit</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>M1: VDOM Performance</td><td>10%</td><td>F1: vacancy_turn_performance</td><td>5 dims (0.30 turn_duration lead)</td><td><span class="tag tag-ok">Strong</span></td><td>Core vacancy metrics align</td></tr>
+        <tr><td>M2: Pricing Strategy</td><td>10%</td><td>F5: pricing_rent_and_concessions</td><td>7 dims</td><td><span class="tag tag-ok">Strong</span></td><td>RBv1 adds concession efficiency, tenure penalty</td></tr>
+        <tr><td>M3: Occupancy Analysis</td><td>8%</td><td>F13: current_state_diagnostics</td><td>6 dims</td><td><span class="tag tag-both">Partial</span></td><td>RBv1 splits current vs historical; V6 blends</td></tr>
+        <tr><td>M4: Competitive Positioning</td><td>5%</td><td>F8: competitive_position_and_experience</td><td>5 dims</td><td><span class="tag tag-ok">Strong</span></td><td>Similar scope, RBv1 adds absorption fit</td></tr>
+        <tr><td>M5: Marketing & Listings</td><td>8%</td><td>F7: marketing_listing_and_marketability</td><td>7 dims</td><td><span class="tag tag-ok">Strong</span></td><td>RBv1 adds calendar handling, inventory hold</td></tr>
+        <tr><td>M6: Rent Roll Analysis</td><td>5%</td><td>F5: pricing (shared)</td><td>(shared with M2)</td><td><span class="tag tag-both">Partial</span></td><td>V6 separates rent roll from pricing; RBv1 merges</td></tr>
+        <tr><td>M7: VDOM & Turnover</td><td>8%</td><td>F1 + F6: vacancy + maintenance</td><td>(split across families)</td><td><span class="tag tag-both">Partial</span></td><td>V6 merges vacancy+turn; RBv1 separates</td></tr>
+        <tr><td>M8: Retention & Renewals</td><td>8%</td><td>F3: renewal_and_retention</td><td>6 dims</td><td><span class="tag tag-ok">Strong</span></td><td>RBv1 adds holdover pipeline, term strategy</td></tr>
+        <tr><td>M9: Financial Performance</td><td>10%</td><td>F11: financial_and_macro_economics</td><td>7 dims</td><td><span class="tag tag-ok">Strong</span></td><td>RBv1 adds acquisition vs retention economics</td></tr>
+        <tr><td>M10: Listing Operations</td><td>5%</td><td>F7: marketing (shared)</td><td>(shared with M5)</td><td><span class="tag tag-both">Partial</span></td><td>V6 separates listing ops from marketing</td></tr>
+        <tr><td>M11: Lead Management</td><td>5%</td><td>F2: leasing_funnel</td><td>6 dims</td><td><span class="tag tag-ok">Strong</span></td><td>RBv1 adds agent velocity, ghost penalty</td></tr>
+        <tr><td>M12: Leasing Team</td><td>5%</td><td>F2: leasing_funnel (shared)</td><td>(shared with M11)</td><td><span class="tag tag-both">Partial</span></td><td>V6 has separate team module</td></tr>
+        <tr><td>M13: Tour Experience</td><td>5%</td><td>F9: mystery_shop</td><td>4 dims</td><td><span class="tag tag-both">Partial</span></td><td>V6 scores from rubric; RBv1 from shop data</td></tr>
+        <tr><td>M14: Technology</td><td>3%</td><td>&mdash;</td><td>&mdash;</td><td><span class="tag tag-gap">V6 only</span></td><td>RBv1 excludes: no tech data in facts</td></tr>
+        <tr><td>M15: Organization</td><td>2%</td><td>&mdash;</td><td>&mdash;</td><td><span class="tag tag-gap">V6 only</span></td><td>RBv1 excludes: no staffing data</td></tr>
+        <tr><td>M16: Management</td><td>2%</td><td>&mdash;</td><td>&mdash;</td><td><span class="tag tag-gap">V6 only</span></td><td>Covered via condition/maintenance in RBv1</td></tr>
+        <tr><td>M17: Screening</td><td>1%</td><td>&mdash;</td><td>&mdash;</td><td><span class="tag tag-gap">V6 only</span></td><td>RBv1 excludes: no screening data</td></tr>
+        <tr><td>M18: Collections</td><td>1%</td><td>F4: delinquency_and_collections</td><td>5 dims</td><td><span class="tag tag-ok">Strong</span></td><td>RBv1 adds persistence, aging mix</td></tr>
+        <tr><td>M19: Pet Policy</td><td>1%</td><td>&mdash;</td><td>&mdash;</td><td><span class="tag tag-gap">V6 only</span></td><td>Low weight; no RBv1 equivalent</td></tr>
+        <tr style="background:var(--accent-rb-dim)"><td colspan="2" style="font-weight:600;color:var(--accent-rb)">RBv1-Only Families</td><td colspan="4"></td></tr>
+        <tr><td>&mdash;</td><td>&mdash;</td><td>F10: audit_and_field_validation</td><td>3 dims</td><td><span class="tag tag-rb">RBv1 only</span></td><td>Contradiction control, confirmation strength</td></tr>
+        <tr><td>&mdash;</td><td>&mdash;</td><td>F12: longitudinal_progress</td><td>4 dims</td><td><span class="tag tag-rb">RBv1 only</span></td><td>Cross-assessment trending</td></tr>
+        <tr><td>&mdash;</td><td>&mdash;</td><td>F14: micro_slice_diagnostics</td><td>4 dims</td><td><span class="tag tag-rb">RBv1 only</span></td><td>Unit type / building / staff divergence</td></tr>
+        <tr><td>&mdash;</td><td>&mdash;</td><td>F15: door_opener_hypothesis</td><td>5 dims</td><td><span class="tag tag-rb">RBv1 only</span></td><td>Pre-engagement anomaly density</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- WEIGHTS -->
+<div class="panel" id="panel-weights">
+  <div class="mapping-section">
+    <h3>Weight Distribution Comparison</h3>
+    <p class="desc">V6 assigns explicit module weights summing to 1.0 for the overall property score. RBv1 has internal dimension weights per family but no cross-family roll-up. V6 percentages shown are combined for thematically equivalent modules.</p>
+  </div>
+  <div class="weight-chart">
+    <div class="weight-row" style="margin-bottom:0.75rem;"><div class="weight-name" style="font-weight:600;font-size:0.8rem;color:var(--text-muted)">DOMAIN</div><div class="weight-pct rb" style="font-size:0.75rem">RBv1</div><div class="weight-bar-container" style="background:none"></div><div class="weight-pct v6" style="font-size:0.75rem">V6</div><div class="weight-bar-container" style="background:none"></div></div>
+    <div class="weight-row"><div class="weight-name">Vacancy & Turnover</div><div class="weight-pct rb">F1</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">18%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:90%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Leasing & CRM</div><div class="weight-pct rb">F2</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">15%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:75%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Retention & Renewals</div><div class="weight-pct rb">F3</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">8%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:40%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Delinquency & Collections</div><div class="weight-pct rb">F4</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">1%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:5%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Pricing & Revenue</div><div class="weight-pct rb">F5</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">15%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:75%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Maintenance & Make-Ready</div><div class="weight-pct rb">F6</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">~8%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:40%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Marketing & Listings</div><div class="weight-pct rb">F7</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">13%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:65%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Competitive Position</div><div class="weight-pct rb">F8</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">5%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:25%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Mystery Shop / Experience</div><div class="weight-pct rb">F9</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">5%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:25%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Audit & Field Validation</div><div class="weight-pct rb">F10</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">&mdash;</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:0%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Financial & Macro</div><div class="weight-pct rb">F11</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">10%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:50%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Longitudinal Progress</div><div class="weight-pct rb">F12</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">&mdash;</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:0%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Current State</div><div class="weight-pct rb">F13</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">8%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:40%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Micro-Slice</div><div class="weight-pct rb">F14</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">&mdash;</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:0%"></div></div></div>
+    <div class="weight-row"><div class="weight-name">Door Opener Hypothesis</div><div class="weight-pct rb">F15</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:100%"></div></div><div class="weight-pct v6">&mdash;</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:0%"></div></div></div>
+    <div class="weight-row"><div class="weight-name" style="color:var(--text-muted)">Technology & Systems</div><div class="weight-pct rb">&mdash;</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:0%"></div></div><div class="weight-pct v6">3%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:15%"></div></div></div>
+    <div class="weight-row"><div class="weight-name" style="color:var(--text-muted)">Organization & Staffing</div><div class="weight-pct rb">&mdash;</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:0%"></div></div><div class="weight-pct v6">2%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:10%"></div></div></div>
+    <div class="weight-row"><div class="weight-name" style="color:var(--text-muted)">Screening / Pet / Mgmt</div><div class="weight-pct rb">&mdash;</div><div class="weight-bar-container"><div class="weight-bar rb" style="width:0%"></div></div><div class="weight-pct v6">4%</div><div class="weight-bar-container"><div class="weight-bar v6" style="width:20%"></div></div></div>
+  </div>
+  <p style="color:var(--text-muted);font-size:0.82rem;margin-top:1rem;">RBv1 bars are full-width because each family is self-contained with no cross-family roll-up defined. V6 bars reflect actual module weight in the overall property score. The comparison is thematic, not mathematically equivalent.</p>
+</div>
+
+<!-- BANDS -->
+<div class="panel" id="panel-bands">
+  <div class="mapping-section">
+    <h3>Scale and Band Comparison</h3>
+    <p class="desc">Both systems map numeric scores to qualitative labels, but the scales, boundaries, and business meanings differ significantly.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-bottom:2.5rem;">
+    <div>
+      <div class="label rb" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-bottom:1rem;">RBv1: 0&ndash;100 Scale</div>
+      <div style="display:flex;gap:4px;height:44px;margin-bottom:0.5rem;">
+        <div style="flex:49;background:var(--unsupported);border-radius:4px 0 0 4px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-weight:500;">0&ndash;49</div>
+        <div style="flex:20;background:var(--weak);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-weight:500;color:#000;">50&ndash;69</div>
+        <div style="flex:15;background:var(--acceptable);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-weight:500;">70&ndash;84</div>
+        <div style="flex:16;background:var(--strong);border-radius:0 4px 4px 0;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-weight:500;color:#000;">85&ndash;100</div>
+      </div>
+      <div style="display:flex;gap:4px;">
+        <div style="flex:49;text-align:center;font-size:0.78rem;color:var(--text-muted);">Unsupported</div>
+        <div style="flex:20;text-align:center;font-size:0.78rem;color:var(--text-muted);">Weak</div>
+        <div style="flex:15;text-align:center;font-size:0.78rem;color:var(--text-muted);">Acceptable</div>
+        <div style="flex:16;text-align:center;font-size:0.78rem;color:var(--text-muted);">Strong</div>
+      </div>
+    </div>
+    <div>
+      <div class="label v6" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-bottom:1rem;">V6: 0&ndash;10 Scale (Business Tiers)</div>
+      <div style="display:flex;gap:4px;height:44px;margin-bottom:0.5rem;">
+        <div style="flex:30;background:var(--unsupported);border-radius:4px 0 0 4px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-weight:500;">0&ndash;2.99</div>
+        <div style="flex:25;background:var(--weak);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-weight:500;color:#000;">3.0&ndash;5.49</div>
+        <div style="flex:25;background:var(--acceptable);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-weight:500;">5.5&ndash;7.99</div>
+        <div style="flex:20;background:var(--strong);border-radius:0 4px 4px 0;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-weight:500;color:#000;">8.0&ndash;10</div>
+      </div>
+      <div style="display:flex;gap:4px;">
+        <div style="flex:30;text-align:center;font-size:0.78rem;color:var(--text-muted);">Custom</div>
+        <div style="flex:25;text-align:center;font-size:0.78rem;color:var(--text-muted);">Turnaround ($60K)</div>
+        <div style="flex:25;text-align:center;font-size:0.78rem;color:var(--text-muted);">Repositioning ($40K)</div>
+        <div style="flex:20;text-align:center;font-size:0.78rem;color:var(--text-muted);">Optimization ($25K)</div>
+      </div>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>Aspect</th><th>RBv1</th><th>V6</th><th>Implication</th></tr></thead>
+    <tbody>
+      <tr><td>Scale range</td><td>0&ndash;100</td><td>0&ndash;10</td><td>RBv1 has 10x finer granularity</td></tr>
+      <tr><td>Normalization</td><td>4 formula templates (upper-bound, lower-bound, delta, rate penalty)</td><td>Piecewise linear between 4 anchors (excellent/good/concern/poor)</td><td>V6 is simpler to audit; RBv1 is mathematically explicit per dimension</td></tr>
+      <tr><td>Business tiers</td><td>Not defined</td><td>4 tiers with fee levels ($25K / $40K / $60K / custom)</td><td>V6 ties scores directly to engagement pricing</td></tr>
+      <tr><td>Confidence separation</td><td>Score, support, and confidence are 3 independent values</td><td>Confidence is a simple label (full / partial / insufficient)</td><td>RBv1 prevents weak data from masquerading as strong conclusions</td></tr>
+      <tr><td>Missing data</td><td>Exclude + reweight + cap max score per family</td><td>Exclude + redistribute weight; warns if scored &lt; 70%</td><td>RBv1 is more conservative (caps prevent false positives)</td></tr>
+      <tr><td>Contradictions</td><td>0.85x multiplier on affected dimensions + trust penalty</td><td>Not modeled</td><td>RBv1 handles field-vs-system disagreement natively</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- EXCLUSIVE -->
+<div class="panel" id="panel-exclusive">
+  <div class="mapping-section">
+    <h3>Exclusive Coverage</h3>
+    <p class="desc">Capabilities present in one system but absent from the other.</p>
+  </div>
+  <div class="tradeoffs">
+    <div class="tradeoff-card" style="border-top:3px solid var(--accent-rb);">
+      <h4 style="color:var(--accent-rb)">RBv1 Only</h4>
+      <ul class="tradeoff-list">
+        <li><strong>Audit & Field Validation (F10)</strong> &mdash; Scores contradiction control, confirmation strength, domain consistency from field audits</li>
+        <li><strong>Longitudinal Progress (F12)</strong> &mdash; Tracks score changes, metric balance, persistent weakness reduction across assessments</li>
+        <li><strong>Micro-Slice Diagnostics (F14)</strong> &mdash; Detects divergence by unit type, building/floor, and staff member</li>
+        <li><strong>Door Opener Hypothesis (F15)</strong> &mdash; Anomaly density scoring for pre-engagement public-data assessments</li>
+        <li><strong>Contradiction penalties</strong> &mdash; 0.85x multiplier + trust degradation when field and system data disagree</li>
+        <li><strong>Score caps on missing data</strong> &mdash; Per-family max scores when critical dimensions are absent</li>
+        <li><strong>4-tier support + confidence model</strong> &mdash; Coverage %, contradiction ratio, sample size determine trust independently</li>
+        <li><strong>Finding-only pattern classification</strong> &mdash; Patterns that inform findings but intentionally do not move scores</li>
+        <li><strong>Cross-family pattern folding</strong> &mdash; VTP patterns placed in maintenance, retention, or marketing based on causal ownership</li>
+      </ul>
+    </div>
+    <div class="tradeoff-card" style="border-top:3px solid var(--accent-v6);">
+      <h4 style="color:var(--accent-v6)">V6 Only</h4>
+      <ul class="tradeoff-list">
+        <li><strong>Overall property score</strong> &mdash; Single 0-10 number from weighted module rollup</li>
+        <li><strong>Business tier + fee assignment</strong> &mdash; Optimization / Repositioning / Turnaround / Custom with fee levels</li>
+        <li><strong>Technology & Systems (M14)</strong> &mdash; Coverage, depth, integration, automation scoring</li>
+        <li><strong>Organization & Staffing (M15)</strong> &mdash; Training, coaching, staffing capacity</li>
+        <li><strong>Management Quality (M16)</strong> &mdash; Maintenance + condition from assessment sheets</li>
+        <li><strong>Resident Screening (M17)</strong> &mdash; Screening process quality</li>
+        <li><strong>Pet Policy (M19)</strong> &mdash; Pet revenue and policy effectiveness</li>
+        <li><strong>Industry benchmark citations</strong> &mdash; NAA 2024, NMHC/Grace Hill 2024</li>
+        <li><strong>Assessment sheet integration</strong> &mdash; Reads scores from 6 Google Sheets assessment tabs</li>
+        <li><strong>200+ rubric VLOOKUP keys</strong> &mdash; Form-driven scoring for amenities, marketing, leasing, condition</li>
+        <li><strong>VDOM anchor KPI</strong> &mdash; Dedicated vacancy-days-on-market anchor metric</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- TRADEOFFS -->
+<div class="panel" id="panel-tradeoffs">
+  <div class="mapping-section">
+    <h3>Tradeoff Summary</h3>
+    <p class="desc">Key considerations for choosing or merging the two systems.</p>
+  </div>
+  <div class="tradeoffs">
+    <div class="tradeoff-card">
+      <h4><span style="color:var(--accent-rb)">&#9670;</span> RBv1 Strengths</h4>
+      <ul class="tradeoff-list">
+        <li><span class="pro">+</span> Analytically deeper: 96 patterns vs ~66, more dimensions per family</li>
+        <li><span class="pro">+</span> Handles uncertainty honestly: support, confidence, and score are separate</li>
+        <li><span class="pro">+</span> Contradiction-aware: field-vs-system disagreement impacts scores</li>
+        <li><span class="pro">+</span> Score caps prevent over-claiming when data is incomplete</li>
+        <li><span class="pro">+</span> Cross-family pattern folding prevents double-counting</li>
+        <li><span class="pro">+</span> Door opener and longitudinal families are first-class</li>
+        <li><span class="pro">+</span> Micro-slice analysis catches building/unit-type/staff-level problems</li>
+        <li><span class="pro">+</span> Config-driven thresholds (JSON) are deployment-friendly</li>
+      </ul>
+    </div>
+    <div class="tradeoff-card">
+      <h4><span style="color:var(--accent-rb)">&#9670;</span> RBv1 Weaknesses</h4>
+      <ul class="tradeoff-list">
+        <li><span class="con">&minus;</span> No overall property score or tier classification</li>
+        <li><span class="con">&minus;</span> No industry benchmark citations</li>
+        <li><span class="con">&minus;</span> Cannot score Tech, Org, Staffing, Screening, Pet Policy</li>
+        <li><span class="con">&minus;</span> More complex to explain to clients</li>
+        <li><span class="con">&minus;</span> No form/rubric-based scoring for intake-driven assessments</li>
+      </ul>
+    </div>
+    <div class="tradeoff-card">
+      <h4><span style="color:var(--accent-v6)">&#9670;</span> V6 Strengths</h4>
+      <ul class="tradeoff-list">
+        <li><span class="pro">+</span> Single property score and business tier with fee linkage</li>
+        <li><span class="pro">+</span> Industry-cited benchmarks (NAA, NMHC/Grace Hill)</li>
+        <li><span class="pro">+</span> Form-driven rubric scoring for intake/observation data</li>
+        <li><span class="pro">+</span> Simpler 0-10 scale; easier client communication</li>
+        <li><span class="pro">+</span> Covers technology, staffing, screening, management</li>
+        <li><span class="pro">+</span> Working code exists (ScoringEngine.gs)</li>
+        <li><span class="pro">+</span> Piecewise linear normalization is intuitive</li>
+      </ul>
+    </div>
+    <div class="tradeoff-card">
+      <h4><span style="color:var(--accent-v6)">&#9670;</span> V6 Weaknesses</h4>
+      <ul class="tradeoff-list">
+        <li><span class="con">&minus;</span> No contradiction handling</li>
+        <li><span class="con">&minus;</span> Simpler confidence model</li>
+        <li><span class="con">&minus;</span> No score caps for missing data</li>
+        <li><span class="con">&minus;</span> No longitudinal or door-opener scoring</li>
+        <li><span class="con">&minus;</span> No micro-slice analysis</li>
+        <li><span class="con">&minus;</span> 7 rubric sections have acknowledged gaps</li>
+        <li><span class="con">&minus;</span> Coupled to Google Sheets (not API-first)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="recommendation">
+    <h3>Decision Framework</h3>
+    <p><strong>V6</strong> was built for a Google Sheets workflow: intake forms, rubric VLOOKUP keys, and quick module scores for a working engagement tool. <strong>RBv1</strong> was designed as the analytical engine for a purpose-built platform: config-driven, pattern-based, with explicit uncertainty handling.</p>
+    <p>Key questions to decide:</p>
+    <p><strong>1. Do you need an overall property score and tier?</strong> If yes, the new system needs a cross-family roll-up added to RBv1's 15 families (straightforward) or V6's weighted module approach adopted.</p>
+    <p><strong>2. Do you need rubric-based intake scoring?</strong> V6's amenity, marketing, leasing ops, and technology rubrics capture information not from PM/CRM data. If those assessments matter, the rubric system needs to coexist with the analytical engine.</p>
+    <p><strong>3. Which scale for client communication?</strong> 0&ndash;100 with letter grades is common in education; 0&ndash;10 is simpler. The tier names (Optimization / Repositioning / Turnaround) carry business meaning. Either scale works; the choice is presentation.</p>
+    <p><strong>4. Is contradiction handling essential?</strong> If field audits are a core differentiator of your methodology, then RBv1's contradiction penalties and trust model are not optional.</p>
+    <p>A <strong>hybrid approach</strong> would use RBv1's 15-family analytical engine (96 patterns, contradiction handling, confidence model) as the core, add V6's rubric-based scoring for intake/observation domains (tech, staffing, amenities), define an overall property roll-up, and adopt V6's benchmark citations where available.</p>
+  </div>
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+</script>
+</body>
+</html>

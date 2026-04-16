@@ -1,0 +1,109 @@
+---
+description: Phase 3 — Core Diagnostics. Rules for building the metric engine, scoring engine, finding compiler, impact engine, and domain diagnostic packages.
+globs:
+  - src/services/metric_engine/**
+  - src/services/scoring_engine/**
+  - src/services/finding_compiler/**
+  - src/services/impact_engine/**
+alwaysApply: false
+---
+
+# Phase 3 Rules — Core Diagnostics
+
+## What This Phase Builds
+
+- Metric registry and benchmark registry (124 KPIs from the Basic Analytic Data Set)
+- 7 domain diagnostic packages: vacancy/turnover, make-ready/maintenance, leasing/CRM, listing quality, pricing/revenue, competitive position, property condition
+- Scoring engine implementing the 12-area, 65-item, 315-sub-item scoring structure
+- Contradiction engine detecting PM-vs-field and cross-source mismatches
+- Impact engine with 10 reusable financial impact models
+- Evidence-backed finding compiler producing the finding graph
+
+## Prerequisites
+
+Phase 2 must be complete: `fact_unit_day` materialized, vacancy and make-ready cycles built, all ClickHouse fact tables populated, unit-day spine queryable for every unit for every day in scope.
+
+## Authoritative References
+
+Before writing any code, read these documents:
+
+1. `rbv2-project.mdc` — Master project rules (always applies)
+2. `Code_Patterns_Specification.md` — Exact code templates. Follow the patterns established in prior phase code.
+3. `Analytical_Engine_Specification.md` — 5-layer architecture: Pre-Computation/BADS (line 94), Layer 1 Scoring (line 145), Layer 2 Cohort Profiling (line 217), Layer 3 Correlative Diagnostics (line 278), Layer 4 Emergent Pattern Detection (line 335), Layer 5 Unified Impact Summary (line 371), AI Analysis Layer (line 415, advisory only — not in scope)
+3. `Service_Interface_Contracts.md` — Metric Engine (line 230), Scoring Engine (line 267), Finding Compiler (line 317), Impact Engine (line 360)
+4. `Scoring_Model_Specification.md` — Scoring structure, methodology, 12 areas, 65 items, design principles
+5. `scoring_config.json` — Machine-readable scoring structure (12 areas with items, thresholds, weights, sub-items)
+6. `Scoring_Weights_Final_Update.json` — Locked weights: 12 `aw__` area weights, 65 `iw__` item weights, 315 `sp__` sub-item point budgets
+7. `Scoring_Thresholds_Calibration.md` — Piecewise linear interpolation breakpoints for Data and Comparative items
+8. `Computation_Rules_DATA.json` — Computation method, data source, input format per scored item
+9. `Basic_Analytic_Data_Set.md` — 124 KPIs: calculations, benchmarks, categories (line 301 confirms total)
+10. `Analytical_Question_Inventory.md` — 16 diagnostic question categories feeding the finding compiler
+11. `Database_Schema_Specification.md` — DDL for scoring/finding/impact tables and ClickHouse score marts
+
+## Metric Engine Rules
+
+- The Metric Engine computes 124 KPIs defined in `Basic_Analytic_Data_Set.md`. Each KPI has a defined calculation and benchmark.
+- Every metric returns 5 components: `metric_value`, `confidence_score`, `coverage_score`, `evidence_count`, `benchmark_basis` (Service_Interface_Contracts.md lines 257-262).
+- Metrics read from ClickHouse fact tables. The Metric Engine does not read raw PostgreSQL canonical tables directly.
+- Metrics are registered in the `MetricRegistry`. Use `register_metric` to add, `list_metrics` to enumerate.
+- `validate_inputs` checks whether sufficient data exists before computing a package's metrics.
+
+## Scoring Engine Rules
+
+- Three input types, one output (0–10 score):
+  - **Data** (20 items): continuous numerical values scored via piecewise linear interpolation between 4 breakpoints (Excellent, Good, Concern, Poor). Direction: higher-is-better (↑) or lower-is-better (↓).
+  - **Checklist** (38 items): sub-items share a 100-point budget. Y/N sub-items earn full points or zero. Tiered sub-items earn a percentage based on tier achieved. Points earned / 100 × 10 = score.
+  - **Comparative** (7 items): subject vs comp set average, scored via same piecewise linear interpolation as Data items.
+- Three-level weighting: sub-item points (sum to 100 per checklist item) → item weights (sum to 100% per area) → area weights (sum to 100% across all 12 areas).
+- All weights are user-configurable. Locked defaults are in `Scoring_Weights_Final_Update.json`.
+- Missing items are excluded from the weighted average, not scored as zero. Track coverage percentage per area.
+- Area 8 (Financials) scores against the owner's stated financial targets/budget — not generic industry benchmarks.
+- Every `ScoreResult` stores: `metric_value`, `normalized_score` (0-100), `weight`, `weighted_score`, `benchmark_type`, `benchmark_reference`, `confidence_score`, `coverage_score`, `grade_letter` (Service_Interface_Contracts.md lines 293-298).
+- Three views per score: performance score, confidence score, scope flag (Service_Interface_Contracts.md lines 306-312).
+
+## Finding Compiler Rules
+
+- Findings are generated from diagnostic rule packages. Each package returns one of: `PASS`, `WATCH`, `FAIL`, `OUT_OF_SCOPE` (Service_Interface_Contracts.md line 344).
+- Each finding includes: `coverage_pct`, `confidence_score`, `evidence_count`, `benchmark_basis`, `financial_impact_status` (line 346).
+- The finding graph connects findings to units, agents, listings, and impacts via nodes and edges with evidence links.
+- Findings must trace back to specific data fields and specific analytical rules. No finding without evidence.
+
+## Contradiction Engine Rules
+
+- Contradictions detect mismatches between data sources (e.g., PM says occupied, field audit says vacant).
+- Each contradiction record includes: source A, source B, matching rule, contradiction type, severity, evidence links, affected domains, trust penalty multiplier (Service_Interface_Contracts.md lines 349-355).
+- Contradiction detection is a separate operation (`detect_contradictions`) from finding compilation.
+
+## Impact Engine Rules
+
+- 10 reusable impact models: `vacancy_loss`, `avoidable_turn_delay`, `below_market_rent_loss`, `concession_leakage`, `retention_failure_cost`, `collections_loss_risk`, `maintenance_overspend`, `vendor_rework_cost`, `marketing_waste`, `pricing_misposition_cost` (Service_Interface_Contracts.md line 385).
+- Every `ImpactEstimate` returns: low/base/high dollars, annualized equivalent, per-unit or per-incident breakdown, formula trace, assumption trace, confidence (lines 389-394).
+- Double-counting prevention: related impacts grouped under `impact_family_id` with `primary_driver_share` and `contributing_driver_share`. Totals sum only net attributable amounts (lines 397-399).
+- `simulate_optimal_budget` produces a budget allocation with projected ROI given constraints.
+
+## Domain Package Rules
+
+- The 7 domain packages from spec_1 (lines 1329-1336): vacancy/turnover, make-ready/maintenance, leasing/CRM, listing quality, pricing/revenue, competitive position, property condition.
+- Each domain package lives in its own module under the service that runs it.
+- Each package must declare its required input metrics and minimum coverage thresholds.
+- Packages that cannot run due to insufficient data return `OUT_OF_SCOPE`, not partial results.
+- Note: The 12 scoring areas and 7 domain packages do not have a 1:1 mapping documented in any source file. Some areas (e.g., Marketing, Operations, Financials, Retention, Collections) do not have a named domain package in spec_1. Consult `scoring_config.json` and `Computation_Rules_DATA.json` when determining which metrics feed which areas.
+
+## Testing Rules
+
+- Scoring engine must be tested against known-correct scores for all three input types (Data, Checklist, Comparative).
+- Piecewise linear interpolation must be tested at each breakpoint and between breakpoints.
+- Checklist 100-point budget must be verified: sub-item points sum to 100 for every checklist item.
+- Weight hierarchy must be verified: item weights sum to 100% per area, area weights sum to 100%.
+- Missing data handling must be tested: excluded items do not drag scores to zero.
+- Contradiction engine must be tested with known conflicting source data.
+- Impact engine must be tested for double-counting prevention: related impacts must not sum beyond net attributable amount.
+- All tests use **pytest**. Shared fixtures in `tests/conftest.py`.
+
+## What NOT To Build In This Phase
+
+- Do not implement the AI Analysis Layer — that is advisory-only infrastructure, not a Phase 3 deliverable.
+- Do not implement the workspace UI (studies, snapshots, comparison boards) — that's Phase 4.
+- Do not implement report rendering or templates — that's Phase 4.
+- Do not implement the client portal — that's Phase 5.
+- Do not implement any frontend UI — that's Phase 4+.

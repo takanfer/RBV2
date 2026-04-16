@@ -1,0 +1,90 @@
+---
+description: Phase 5 — Client Portal and Longitudinal Tracking. Rules for building the client-facing portal and trend/trajectory services.
+globs:
+  - src/services/client_portal/**
+  - src/services/trend_trajectory/**
+  - src/api/routes/portal/**
+  - db/clickhouse/migrations/**
+alwaysApply: false
+---
+
+# Phase 5 Rules — Client Portal and Longitudinal Tracking
+
+## What This Phase Builds
+
+- Client Portal Service: curated, approved-only view for clients
+  - Executive overview: overall scores, trends, top findings, financial opportunity
+  - Domain scorecards: leasing, vacancy, pricing, retention, etc.
+  - Finding detail: evidence-backed issues and recommendations
+  - Progress tracking: cross-assessment by domain and recommendation
+  - Report library: delivered reports and exports
+  - Limited explore: pre-approved filters and comparisons only
+- Trend & Trajectory Service: longitudinal analysis infrastructure
+  - Trend mart materialization in ClickHouse
+  - Score trajectory tracking across assessments
+  - Recurring finding detection
+  - Recommendation adoption tracking
+  - Property trajectory dashboards
+  - Chronic unit detection
+- Assessment comparison views (before/after across engagements)
+- Recommendation tracking as structured objects
+
+## Prerequisites
+
+Phase 4 must be complete: workspace functional (studies, snapshots, reports), report templates operational, at least one full assessment completed through the diagnostic pipeline and report generation.
+
+## Authoritative References
+
+Before writing any code, read these documents:
+
+1. `rbv2-project.mdc` — Master project rules (always applies)
+2. `Code_Patterns_Specification.md` — Exact code templates. Follow the patterns established in prior phase code.
+3. `Service_Interface_Contracts.md` — Client Portal Service (line 509), Trend & Trajectory Service (line 555)
+3. `UI_UX_Specification.md` — Client portal modules 1-6, consultant workspace module 8 (Assessment Compare)
+4. `Database_Schema_Specification.md` — DDL for trend-ready ClickHouse tables: `fact_assessment_score` (line 2731), `fact_assessment_finding` (line 2750), `fact_recommendation_status` (line 2769), `fact_property_kpi_period` (line 2787), `fact_unit_chronicity` (line 2804). PostgreSQL: `recommendation` (line 2111).
+5. `spec_1` §11.2 (client portal modules, lines 1053-1064), §14 (longitudinal tracking, lines 1161-1202), §16.1 (security/access, lines 1227-1233)
+
+## Client Portal Rules
+
+- Every portal operation enforces: client can only see their own properties, only approved/published outputs are returned, draft and consultant-only data is excluded.
+- PII masking applied per tenant policy on all portal responses.
+- Clients must never see consultant-only working notes, draft hypotheses, or unrestricted underlying PII (spec_1 §11.2, line 1064).
+- "Limited explore" provides only pre-approved filters and comparisons — no raw SQL, no unrestricted pivots.
+- The portal reads from the same data stores as the consultant workspace but applies a strict approval filter.
+
+## Trend & Trajectory Rules
+
+- Trend marts in ClickHouse are materialized per-property after each assessment completes.
+- 5 trend-ready fact tables (ORDER BY from DDL):
+  - `fact_assessment_score` — score per area per assessment, ORDER BY `(property_id, assessment_date)` (DDL line 2741)
+  - `fact_assessment_finding` — finding persistence per domain per assessment, ORDER BY `(property_id, assessment_date)` (DDL line 2760)
+  - `fact_recommendation_status` — recommendation status changes, ORDER BY `(property_id, status_date)` (DDL line 2778)
+  - `fact_property_kpi_period` — period-level KPIs, ORDER BY `(property_id, period_start, kpi_name)` (DDL line 2795)
+  - `fact_unit_chronicity` — chronic vacancy/issue/turnover per unit, ORDER BY `(property_id, unit_id)` (DDL line 2813). Column is `chronic_type` (not `chronicity_type`).
+- Recurring finding detection: a finding is "recurring" if the same domain + finding_type appears in 2+ assessments for the same property.
+- Chronic unit detection: a unit is "chronic" based on configurable thresholds (e.g., vacant > 90 days, 3+ turnovers in 12 months).
+- Assessment comparison requires both assessments to be for the same property. Cross-property comparison is not supported.
+
+## Recommendation Tracking Rules
+
+- Recommendations are structured objects with: domain, target_entity_type, target_entity_id, priority (critical/high/medium/low), title, description, expected_impact, owner, due_date, status (open/in_progress/completed/deferred/rejected), verification_evidence (spec_1 §14.3, lines 1192-1201).
+- Status transitions must be validated: not all transitions are allowed (e.g., cannot go from `completed` back to `open`).
+- Each status update stores verification evidence (what changed, who verified, evidence links).
+- The next assessment evaluates both operational performance and execution discipline (whether recommendations were followed).
+
+## Testing Rules
+
+- Client portal: test that client users cannot see consultant-only data, draft outputs, or other clients' data.
+- Client portal: test each module returns only approved content.
+- Trend marts: test materialization produces correct row counts per assessment.
+- Recurring findings: test detection with 1 assessment (no recurrence), 2 assessments (same finding = recurring), 2 assessments (different findings = not recurring).
+- Recommendation tracking: test all valid status transitions and verify invalid transitions are rejected.
+- Assessment comparison: test that comparing assessments for different properties returns `DifferentProperties` error.
+- Chronic unit detection: test with units above and below chronicity thresholds.
+- All tests use **pytest**. Shared fixtures in `tests/conftest.py`.
+
+## What NOT To Build In This Phase
+
+- Do not implement the door opener assessment type — that's Phase 6.
+- Do not implement the extension SDK — that's Phase 6.
+- Do not modify the scoring engine or diagnostic pipeline — those are Phase 3 deliverables. This phase consumes their outputs.

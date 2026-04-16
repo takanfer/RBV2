@@ -1,0 +1,86 @@
+---
+description: Phase 2 — Temporal Unit Spine. Rules for building the dense daily state model, interval resolvers, and cycle facts.
+globs:
+  - src/services/temporal_state/**
+  - db/postgresql/migrations/versions/**
+  - db/clickhouse/migrations/**
+alwaysApply: false
+---
+
+# Phase 2 Rules — Temporal Unit Spine
+
+## What This Phase Builds
+
+- Interval resolvers for occupancy, notice, readiness, listing, and pricing states
+- Dense `fact_unit_day` materialization (one row per unit per day of existence)
+- Vacancy cycle construction from move-out to move-in
+- Make-ready cycle construction with phase boundaries
+- ClickHouse fact tables: `fact_unit_day`, `fact_lease_interval`, `fact_vacancy_cycle`
+- Validation against sample properties including units with no events
+
+Note: The `unit`, `unit_version`, `unit_existence_interval`, and `unit_alias` tables are Layer B canonical tables created in Phase 1. This phase builds the temporal logic and materialization on top of those tables.
+
+## Prerequisites
+
+Phase 1 must be complete: canonical entity schemas for all 6 domains deployed, import framework functional, entity resolution working, at least one PM connector operational.
+
+## Authoritative References
+
+Before writing any code, read these documents:
+
+1. `rbv2-project.mdc` — Master project rules (always applies)
+2. `Code_Patterns_Specification.md` — Exact code templates. Follow the patterns established in Phase 0/1 code.
+3. `Database_Schema_Specification.md` — DDL for temporal tables: `unit` (line 344), `unit_version` (line 360), `unit_existence_interval` (line 387), `unit_alias` (line 407), `calendar_day` (line 429), `vacancy_cycle` (line 878), `make_ready_cycle` (line 846). ClickHouse: `fact_unit_day` (line 2512), `fact_lease_interval` (line 2541), `fact_vacancy_cycle` (line 2564).
+3. `Service_Interface_Contracts.md` — Temporal State Builder contract (lines 190-227): 5 operations, models, `fact_unit_day` construction rules.
+4. `spec_1` §3.3 (lines 251-293) — Unit spine design principles and key core tables.
+
+## Temporal Modeling Rules
+
+- Every unit with an `unit_existence_interval` must have a `fact_unit_day` row for every day in that interval. No gaps. A unit that sat idle for 180 days gets 180 rows.
+- `fact_unit_day` columns reflect joined state from multiple interval sources: `occupancy_state`, `readiness_state`, `marketing_state`, `active_lease_id`, `active_listing_id`, `days_vacant`, `asking_rent`, `effective_rent`, `concession_value`, `condition_score`.
+- Carry forward last-known state only where logically valid. Do not carry forward across move-out boundaries or existence gaps.
+- Mark unknowns explicitly when evidence is missing. Use `evidence_coverage` JSON field to track which sources contributed to each row.
+- `contradiction_flags` stores detected conflicts between sources (e.g., PM says occupied but field audit says vacant).
+
+## Interval Resolver Rules
+
+- Occupancy intervals derive from `lease` + `lease_interval` tables.
+- Notice intervals derive from lease notice dates.
+- Readiness intervals derive from `make_ready_cycle` phase dates.
+- Listing intervals derive from `listing_observation` records.
+- Pricing intervals derive from `lease_interval` rent fields and `listing_observation` asking rents.
+- When intervals from different sources overlap with conflicting states, flag the contradiction — do not silently pick one.
+
+## Cycle Construction Rules
+
+- A `vacancy_cycle` spans from `vacancy_start` (move-out date) to `vacancy_end` (next move-in date). `vacancy_end` is NULL if the unit is still vacant.
+- `days_vacant`, `prior_rent`, `new_rent`, and `vacancy_cost` are derived, not manually entered.
+- A `make_ready_cycle` tracks the full turnover pipeline: notice → move-out → make-ready start → make-ready complete → ready → listed → toured → applied → leased → move-in.
+- `make_ready_scope` values: `standard`, `heavy`, `full_renovation`.
+- Every cycle links to `prior_lease_id` and `new_lease_id` where applicable.
+
+## ClickHouse Materialization Rules
+
+- PostgreSQL is the source of truth for canonical data. ClickHouse stores denormalized analytical facts.
+- `fact_unit_day` in ClickHouse uses `MergeTree()` engine ordered by `(property_id, unit_id, day_date)`.
+- `fact_lease_interval` ordered by `(property_id, unit_id, interval_start)`.
+- `fact_vacancy_cycle` ordered by `(property_id, unit_id, vacancy_start)`.
+- Materialization is triggered per-property via `build_unit_day_spine(property_id, date_range)`.
+- After new data ingestion, `refresh_after_ingestion(assessment_id, changed_unit_ids)` incrementally updates affected rows.
+- All ClickHouse migrations are versioned SQL files in `db/clickhouse/migrations/`. No Alembic for ClickHouse.
+
+## Testing Rules
+
+- `build_unit_day_spine` must be tested with: a property with normal occupancy transitions, a property with units that have no events (existence interval only), a property with overlapping intervals, a property with units offline for renovation.
+- Vacancy cycle tests must verify correct `days_vacant` calculation, handling of still-vacant units (NULL end), and prior/new rent linkage.
+- Make-ready cycle tests must verify all phase date fields populate correctly from source data.
+- ClickHouse fact tables must be tested for row count correctness (every unit-day accounted for) and state accuracy (joined states match source intervals).
+- All tests use **pytest**. Shared fixtures in `tests/conftest.py`.
+
+## What NOT To Build In This Phase
+
+- Do not implement metric computation or KPI calculation — that's Phase 3 (Metric Engine).
+- Do not implement scoring logic — that's Phase 3 (Scoring Engine).
+- Do not implement finding compilation or contradiction detection as diagnostic outputs — that's Phase 3. (Contradiction *flags* in `fact_unit_day` are in scope; the contradiction *engine* that generates findings is not.)
+- Do not implement any frontend UI — that's Phase 4+.
+- Do not implement report generation — that's Phase 4.
