@@ -2937,3 +2937,152 @@ ORDER BY (property_id, unit_id);
 | §9 Financial Data | budget_actual_line |
 | §10 Competitive Set | competitive_set, competitive_set_member, comp_listing_observation, comp_marketing_assessment |
 | §11 Technology | tech_platform, tech_summary |
+
+---
+
+## Row-Level Security (RLS) Policies
+
+All tenant-scoped PostgreSQL tables must have RLS enabled and enforced. RLS provides defense-in-depth at the database layer: even if application code has a bug, one tenant's data cannot leak to another.
+
+Source: `spec_1` §16.1 — "row-level access at the transactional layer"; `phase-0-foundations.mdc` — `SET app.current_tenant_id`.
+
+### Mechanism
+
+The auth middleware sets a PostgreSQL session variable on every request:
+
+```sql
+SET app.current_tenant_id = '<tenant_uuid>';
+```
+
+RLS policies reference this variable to filter rows automatically.
+
+### Strategy
+
+**Direct tenant tables** (7 tables with `tenant_id` column): Simple equality policy on `tenant_id`.
+
+**Indirect tenant tables** (97 tables in PostgreSQL reachable via FK chains): These tables do not have their own `tenant_id` column. Two strategies exist:
+
+1. **Join-based policies** — RLS WHERE clause joins to a parent table. PostgreSQL supports this but it can be expensive for deep chains.
+2. **Denormalized `tenant_id`** — Add `tenant_id` to every tenant-scoped table at the DDL level. This is the recommended approach for performance.
+
+**Recommended approach:** Denormalize `tenant_id` onto all tenant-scoped tables. This is a schema change that should be applied during Phase 0 migrations.
+
+**Non-tenant tables** (global reference data, not RLS-enabled):
+- `tenant` (the tenant table itself)
+- `benchmark_version` — system-wide scoring benchmark versions
+- `scoring_rubric_version` — system-wide rubric versions
+- `metric_registry` — system-wide metric definitions
+- `impact_model_catalog` — system-wide impact models
+- `calendar_day` — utility calendar table
+- `diagnostic_package` — system-wide diagnostic templates
+
+**ClickHouse fact tables** (15 tables): Not RLS-enabled. ClickHouse does not support PostgreSQL RLS. Application-layer filtering via `enforce_row_filter` (see `Authorization_Model_Specification.md` §8) provides tenant isolation for analytical queries. All 15 fact tables have an `assessment_id` column that resolves to a tenant through the assessment→property→tenant chain; the application layer must filter explicitly.
+
+### Policy Definitions — Direct Tenant Tables
+
+Applied to the 7 tables with a `tenant_id` column: `source_system`, `user_account`, `audit_log`, `client`, `property`, `vendor`, `assessment`.
+
+```sql
+-- Template: repeat for each direct-tenant table
+ALTER TABLE {table_name} ENABLE ROW LEVEL SECURITY;
+ALTER TABLE {table_name} FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON {table_name}
+  USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+```
+
+Expanded for all 7:
+
+```sql
+-- source_system
+ALTER TABLE source_system ENABLE ROW LEVEL SECURITY;
+ALTER TABLE source_system FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON source_system
+  USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+
+-- user_account
+ALTER TABLE user_account ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_account FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON user_account
+  USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+
+-- audit_log
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_log FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON audit_log
+  USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+
+-- client
+ALTER TABLE client ENABLE ROW LEVEL SECURITY;
+ALTER TABLE client FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON client
+  USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+
+-- property
+ALTER TABLE property ENABLE ROW LEVEL SECURITY;
+ALTER TABLE property FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON property
+  USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+
+-- vendor
+ALTER TABLE vendor ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vendor FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON vendor
+  USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+
+-- assessment
+ALTER TABLE assessment ENABLE ROW LEVEL SECURITY;
+ALTER TABLE assessment FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON assessment
+  USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+```
+
+### Policy Definitions — Indirect Tenant Tables (After Denormalization)
+
+Once `tenant_id` is denormalized onto all tenant-scoped tables, the same policy template applies:
+
+```sql
+ALTER TABLE {table_name} ENABLE ROW LEVEL SECURITY;
+ALTER TABLE {table_name} FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON {table_name}
+  USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+```
+
+### Indirect Tenant Tables Requiring `tenant_id` Denormalization
+
+The following 97 tables (in PostgreSQL) are tenant-scoped through FK chains but do not currently have a `tenant_id` column. Each needs `tenant_id uuid not null` added, populated from the nearest parent with `tenant_id`, and an RLS policy applied:
+
+**Via property (property_id → property.tenant_id):**
+building, unit, unit_alias, unit_version, unit_amenity, unit_existence_interval, floor_plan, property_amenity, portfolio, competitive_set, market_context
+
+**Via assessment (assessment_id → assessment.tenant_id):**
+assessment_data_coverage, score_result, scorecard, finding, recommendation, contradiction, impact_estimate, evidence_bundle, result_snapshot, report, comparison_board, study, analysis_run, annotation, saved_query, source_ingestion, mapping_rule, mapping_review_queue, field_validation
+
+**Via unit (unit_id → unit → property → tenant):**
+vacancy_cycle, lease, move_event
+
+**Via lease (lease_id → lease → unit → property → tenant):**
+lease_interval, lease_charge, lease_event, notice_event, payment_event, renewal_offer, delinquency_snapshot
+
+**Via source_ingestion (source_ingestion_id → source_ingestion → assessment → tenant):**
+source_asset, source_record_raw
+
+**Via assessment (deeper chains through assessment-scoped tables):**
+resident, lead, lead_event, lead_source, campaign, campaign_spend, marketing_channel, marketing_observation, application_event, tour_event, tour_observation, mystery_shop, conversion_metric_snapshot, leasing_model_snapshot, staffing_snapshot, staff_member, renewal_retention_snapshot, resident_interview, resident_event_program, budget_actual_line, work_order, work_order_line_item, work_order_status_event, make_ready_cycle, listing, listing_observation, listing_asset, listing_content_assessment, listing_photo_assessment, reputation_observation, social_observation, google_business_observation, website_observation, partnership_referral_snapshot, fire_safety_observation, property_condition_observation, capital_asset_observation, deferred_maintenance_item, unit_condition_observation, back_of_house_observation, vacant_unit_audit, tech_platform, tech_summary, competitive_set_member, comp_property_observation, comp_listing_observation, comp_marketing_assessment, comp_floorplan, agent, crm_assignment_interval, communication_event, report_render, report_section, study_item, diagnostic_package
+
+### Service Account Bypass
+
+Service accounts (migrations, background tasks, system operations) must bypass RLS. Two approaches:
+
+1. **BYPASSRLS role:** Create a PostgreSQL role with `BYPASSRLS` privilege for service connections.
+2. **Separate connection pool:** Service accounts use a connection pool authenticated as the superuser or a BYPASSRLS role, separate from the application pool.
+
+The application connection pool uses a role WITHOUT `BYPASSRLS`, ensuring RLS is always enforced for user-facing requests.
+
+### Implementation Notes
+
+1. `FORCE ROW LEVEL SECURITY` ensures RLS applies even to the table owner. Without FORCE, the table owner bypasses RLS.
+2. The session variable `app.current_tenant_id` must be set BEFORE any query. If not set, the policy will fail (comparison against NULL), blocking all access. This is a safe default.
+3. The `tenant_id` denormalization migration should be run as a Phase 0 task, populating `tenant_id` from parent FKs in a single migration.
+4. After denormalization, add `NOT NULL` and a foreign key constraint: `REFERENCES tenant(tenant_id)`.
+5. Add an index on `(tenant_id)` for every table that gets the denormalized column, to support RLS filter performance.

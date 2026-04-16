@@ -435,49 +435,56 @@
               "type": "Tiered",
               "points": 15.0,
               "source": "PM System / CRM",
-              "method": "Tours scheduled / total leads received"
+              "method": "Tours scheduled / total leads received",
+              "tiers": "≥50%→25; 35-49→20; 25-34→15; 15-24→8; <15→3"
             },
             {
               "name": "Tour-to-App %",
               "type": "Tiered",
               "points": 15.0,
               "source": "PM System / CRM",
-              "method": "Applications submitted / tours completed"
+              "method": "Applications submitted / tours completed",
+              "tiers": "≥55%→25; 40-54→20; 30-39→15; 20-29→8; <20→3"
             },
             {
               "name": "App-to-Lease %",
               "type": "Tiered",
               "points": 10.0,
               "source": "PM System / CRM",
-              "method": "Leases signed / applications submitted"
+              "method": "Leases signed / applications submitted",
+              "tiers": "≥85%→20; 75-84→16; 60-74→12; 50-59→6; <50→2"
             },
             {
               "name": "Tour-to-Lease %",
               "type": "Tiered",
               "points": 20.0,
               "source": "PM System / CRM",
-              "method": "Leases signed / tours completed"
+              "method": "Leases signed / tours completed",
+              "tiers": "≥45%→15; 30-44→12; 18-29→8; 10-17→4; <10→0"
             },
             {
               "name": "Lead-to-Lease %",
               "type": "Tiered",
               "points": 20.0,
               "source": "PM System / CRM",
-              "method": "Leases signed / total leads received"
+              "method": "Leases signed / total leads received",
+              "tiers": "≥30%→15; 20-29→12; 10-19→8; 5-9→4; <5→0"
             },
             {
               "name": "Cancel Rate",
               "type": "Tiered",
               "points": 10.0,
               "source": "PM System / CRM",
-              "method": "Scheduled tours cancelled by prospect before appointment / total scheduled tours"
+              "method": "Scheduled tours cancelled by prospect before appointment / total scheduled tours",
+              "tiers": "<10%→15; 10-19→12; 20-29→8; 30-39→4; ≥40→0"
             },
             {
               "name": "Ghost Rate",
               "type": "Tiered",
               "points": 10.0,
               "source": "PM System / CRM",
-              "method": "Scheduled tours where prospect did not show and did not cancel / total scheduled tours (excludes cancellations)"
+              "method": "Scheduled tours where prospect did not show and did not cancel / total scheduled tours (excludes cancellations)",
+              "tiers": "<10%→15; 10-19→12; 20-29→8; 30-39→4; ≥40→0"
             }
           ]
         },
@@ -843,7 +850,8 @@
               "type": "Tiered",
               "points": 2.5,
               "source": "Mystery Shop",
-              "method": "Secret shopper — time from arrival to acknowledgment"
+              "method": "Secret shopper — time from arrival to acknowledgment",
+              "tiers": "<5m; <10m; <15m; ≥15m"
             },
             {
               "name": "Tour: Showed Model or Available Unit",
@@ -920,7 +928,8 @@
               "type": "Tiered",
               "points": 2.0,
               "source": "Mystery Shop",
-              "method": "Secret shopper — total tour duration"
+              "method": "Secret shopper — total tour duration",
+              "tiers": "<30m; <45m; <60m; ≥60m"
             },
             {
               "name": "Close: Asked for the Lease",
@@ -997,49 +1006,56 @@
               "type": "Tiered",
               "points": 20.0,
               "source": "Audit / Mystery Shop",
-              "method": "Send test email inquiry, measure response time"
+              "method": "Send test email inquiry, measure response time",
+              "tiers": "<30m→20; 30-60m→17; 1-2h→14; 2-4h→10; 4-8h→5; >8h→0"
             },
             {
               "name": "Phone Response Time",
               "type": "Tiered",
               "points": 20.0,
               "source": "Audit / Mystery Shop",
-              "method": "Place test call, measure callback time if not answered"
+              "method": "Place test call, measure callback time if not answered",
+              "tiers": "<15m→20; 15-30→17; 30-60→14; 1-2h→10; 2-4h→5; >4h→0"
             },
             {
               "name": "Follow-Up System",
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "Is follow-up documented and/or automated?"
+              "method": "Is follow-up documented and/or automated?",
+              "tiers": "Doc+Auto→20; Doc only→12; Neither→0"
             },
             {
               "name": "Follow-Up Volume",
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "How many follow-up touches in the nurture sequence?"
+              "method": "How many follow-up touches in the nurture sequence?",
+              "tiers": "8+→15; 5-7→12; 3-4→8; 1-2→3; 0→0"
             },
             {
               "name": "After-Hours Handling",
               "type": "Tiered",
               "points": 10.0,
               "source": "Audit / Mystery Shop",
-              "method": "Call after hours — what happens?"
+              "method": "Call after hours — what happens?",
+              "tiers": "Auto→10; Answering→8; VM→3; None→0"
             },
             {
               "name": "Weekend Handling",
               "type": "Tiered",
               "points": 10.0,
               "source": "Audit / Mystery Shop",
-              "method": "Call/visit on weekend — what's available?"
+              "method": "Call/visit on weekend — what's available?",
+              "tiers": "In-person→10; Auto→5; Answering→3; VM→2; None→0"
             },
             {
               "name": "Advanced Programs",
               "type": "Tiered",
               "points": 10.0,
               "source": "Audit / Management Interview",
-              "method": "Nurture drip and/or re-engagement campaigns in place?"
+              "method": "Nurture drip and/or re-engagement campaigns in place?",
+              "tiers": "Nurture+Re-engage→15; One→8; Neither→0"
             }
           ]
         },
@@ -1214,28 +1230,32 @@
               "type": "Tiered",
               "points": 4.0,
               "source": "PM System / Management Interview",
-              "method": "Average time from application submission to processing complete"
+              "method": "Average time from application submission to processing complete",
+              "tiers": "Same day→8; 1-2d→6; 3-5d→3; 5+→0"
             },
             {
               "name": "Screening Processing Speed",
               "type": "Tiered",
               "points": 4.0,
               "source": "PM System / Management Interview",
-              "method": "Average time for screening results"
+              "method": "Average time for screening results",
+              "tiers": "Same day→8; 1-2d→6; 3-5d→3; 5+→0"
             },
             {
               "name": "Approval Speed",
               "type": "Tiered",
               "points": 4.0,
               "source": "PM System / Management Interview",
-              "method": "Average time from screening to approval decision"
+              "method": "Average time from screening to approval decision",
+              "tiers": "Same day→8; 1-2d→4; 3+→0"
             },
             {
               "name": "Lease Turnaround",
               "type": "Tiered",
               "points": 4.0,
               "source": "PM System / Management Interview",
-              "method": "Average time from approval to executed lease"
+              "method": "Average time from approval to executed lease",
+              "tiers": "Same day→8; 1-3d→6; 3-5d→3; 5+→0"
             }
           ]
         },
@@ -1256,21 +1276,24 @@
               "type": "Tiered",
               "points": 5.0,
               "source": "Audit / Management Interview",
-              "method": "Length of new hire onboarding program"
+              "method": "Length of new hire onboarding program",
+              "tiers": "<3d→0; 3-5→5; 6-10→10; 11-15→12; 16+→15"
             },
             {
               "name": "Ongoing Frequency",
               "type": "Tiered",
               "points": 5.0,
               "source": "Audit / Management Interview",
-              "method": "How often ongoing training occurs"
+              "method": "How often ongoing training occurs",
+              "tiers": "Weekly→15; Monthly→12; Quarterly→8; Annual→3; Never→0"
             },
             {
               "name": "Coaching Frequency",
               "type": "Tiered",
               "points": 3.0,
               "source": "Audit / Management Interview",
-              "method": "How often one-on-one coaching sessions occur"
+              "method": "How often one-on-one coaching sessions occur",
+              "tiers": "Weekly→10; Monthly→7; Quarterly→4; Never→0"
             },
             {
               "name": "Certifications Required",
@@ -1326,7 +1349,8 @@
               "type": "Tiered",
               "points": 40.0,
               "source": "Audit Observation",
-              "method": "Count of available scheduling methods (phone, email, online, walk-in)"
+              "method": "Count of available scheduling methods (phone, email, online, walk-in)",
+              "tiers": "All 4→20; 3→15; 2→10; 1→5"
             },
             {
               "name": "Online Self-Booking",
@@ -1340,7 +1364,8 @@
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "Tours available weekends and/or evenings?"
+              "method": "Tours available weekends and/or evenings?",
+              "tiers": "Both→20; One→10; Neither→0"
             },
             {
               "name": "Broker Scheduling Access",
@@ -1354,7 +1379,8 @@
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "Same-day tours and/or walk-ins accepted?"
+              "method": "Same-day tours and/or walk-ins accepted?",
+              "tiers": "Both→20; One→10; Neither→0"
             }
           ]
         },
@@ -1368,14 +1394,16 @@
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit Observation",
-              "method": "Parking availability + signage/wayfinding to leasing office"
+              "method": "Parking availability + signage/wayfinding to leasing office",
+              "tiers": "Parking+Signage→15; One→8"
             },
             {
               "name": "Hours Coverage",
               "type": "Tiered",
               "points": 20.0,
               "source": "Audit Observation",
-              "method": "Days per week office is open"
+              "method": "Days per week office is open",
+              "tiers": "7d→20; 6→15; 5→10; <5→5"
             },
             {
               "name": "Seating Available",
@@ -1410,7 +1438,8 @@
               "type": "Tiered",
               "points": 10.0,
               "source": "Audit Observation",
-              "method": "Leasing office has marketing materials + technology setup"
+              "method": "Leasing office has marketing materials + technology setup",
+              "tiers": "Materials+Tech→15; One→8"
             },
             {
               "name": "Wayfinding Signage",
@@ -1438,14 +1467,16 @@
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit Observation",
-              "method": "Model unit furnishing and staging level"
+              "method": "Model unit furnishing and staging level",
+              "tiers": "Fully furnished→15; Partial→8; None→0"
             },
             {
               "name": "Model Positioning",
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit Observation",
-              "method": "Does model represent a typical unit or the best-case scenario?"
+              "method": "Does model represent a typical unit or the best-case scenario?",
+              "tiers": "Typical→15; Best-case→10; Aspirational→5"
             }
           ]
         }
@@ -1467,35 +1498,40 @@
               "type": "Tiered",
               "points": 35.0,
               "source": "Audit Observation",
-              "method": "Count platforms where property is actively listed"
+              "method": "Count platforms where property is actively listed",
+              "tiers": "0-2→0; 3→10; 4→15; 5→20; 6→25; 7→30"
             },
             {
               "name": "ILS Coverage",
               "type": "Tiered",
               "points": 25.0,
               "source": "Audit Observation",
-              "method": "Presence on Apartments.com and Zillow specifically"
+              "method": "Presence on Apartments.com and Zillow specifically",
+              "tiers": "Both Apts+Zillow→20; One→10; Neither→0"
             },
             {
               "name": "Update Frequency",
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "How often listings are updated (real-time sync vs manual)"
+              "method": "How often listings are updated (real-time sync vs manual)",
+              "tiers": "Real-time→15; Daily→12; Weekly→8; Manual→3"
             },
             {
               "name": "Management Quality",
               "type": "Tiered",
               "points": 10.0,
               "source": "Audit / Management Interview",
-              "method": "Who manages listings (in-house, PM company, external agency)"
+              "method": "Who manages listings (in-house, PM company, external agency)",
+              "tiers": "In-house→10; PM→7; External→10; Mix→5"
             },
             {
               "name": "Syndication Method",
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "Centralized feed vs partial vs manual per-platform"
+              "method": "Centralized feed vs partial vs manual per-platform",
+              "tiers": "Centralized→15; Partial→8; Manual→3"
             }
           ]
         },
@@ -1530,7 +1566,8 @@
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit Observation",
-              "method": "Percentage of amenities photographed"
+              "method": "Percentage of amenities photographed",
+              "tiers": "100%→20; 75-99→15; 50-74→10; <50→5"
             },
             {
               "name": "Lifestyle Shots (5+)",
@@ -1551,7 +1588,8 @@
               "type": "Tiered",
               "points": 10.0,
               "source": "Audit / Management Interview",
-              "method": "When were listing photos last updated?"
+              "method": "When were listing photos last updated?",
+              "tiers": "<3mo→5; 3-6→3; 6-12→1; >12→0"
             }
           ]
         },
@@ -2023,14 +2061,16 @@
               "type": "Tiered",
               "points": 5.0,
               "source": "Audit / Management Interview",
-              "method": "How many days before lease expiration does renewal outreach begin?"
+              "method": "How many days before lease expiration does renewal outreach begin?",
+              "tiers": "120+d→10; 90d→7; 60d→4; 30d→0"
             },
             {
               "name": "NTV Response Speed",
               "type": "Tiered",
               "points": 5.0,
               "source": "Audit / Management Interview",
-              "method": "How quickly does management respond to a Notice to Vacate?"
+              "method": "How quickly does management respond to a Notice to Vacate?",
+              "tiers": "Same day→10; 1-3d→7; 3-5d→3; 5+→0"
             }
           ]
         }
@@ -2153,21 +2193,24 @@
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "Count of technology categories in use"
+              "method": "Count of technology categories in use",
+              "tiers": "13-16→20; 9-12→15; 5-8→10; 1-4→5"
             },
             {
               "name": "Capability Depth",
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "Auditor assesses how fully each system is utilized"
+              "method": "Auditor assesses how fully each system is utilized",
+              "tiers": "≥80%→20; 60-79→15; 40-59→10; 20-39→5"
             },
             {
               "name": "Integration Quality",
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "Count of system-to-system integrations"
+              "method": "Count of system-to-system integrations",
+              "tiers": "8+→25; 5-7→20; 3-4→12; 1-2→5"
             },
             {
               "name": "Staff Mobile Access",
@@ -2188,21 +2231,24 @@
               "type": "Tiered",
               "points": 15.0,
               "source": "Audit / Management Interview",
-              "method": "Level of workflow automation"
+              "method": "Level of workflow automation",
+              "tiers": "High→20; Moderate→12; Low→5; Minimal→0"
             },
             {
               "name": "System Efficiency",
               "type": "Tiered",
               "points": 10.0,
               "source": "Audit / Management Interview",
-              "method": "Level of system redundancy"
+              "method": "Level of system redundancy",
+              "tiers": "No redundancy→10; Some→5; Many→0"
             },
             {
               "name": "Tech Spend ROI",
               "type": "Tiered",
               "points": 10.0,
               "source": "PM System / Management Interview",
-              "method": "Total technology spend / total units"
+              "method": "Total technology spend / total units",
+              "tiers": "<$100/unit→10; $100-200→7; $200-300→4; >$300→0"
             }
           ]
         },
@@ -2566,14 +2612,16 @@
               "type": "Tiered",
               "points": 20.0,
               "source": "PM System",
-              "method": "Average time from emergency work order submission to first response"
+              "method": "Average time from emergency work order submission to first response",
+              "tiers": "<2h→25; 2-4→20; 4-8→12; 8-24→5; >24→0"
             },
             {
               "name": "Routine Response Time",
               "type": "Tiered",
               "points": 20.0,
               "source": "PM System",
-              "method": "Average time from routine work order submission to first response"
+              "method": "Average time from routine work order submission to first response",
+              "tiers": "<4h→20; 4-24→15; 24-48→10; 48-72→5; >72→0"
             },
             {
               "name": "Work Order Completion Rate",
@@ -2720,35 +2768,40 @@
               "type": "Tiered",
               "points": 20.0,
               "source": "Audit Observation",
-              "method": "Auditor's overall assessment of property physical condition"
+              "method": "Auditor's overall assessment of property physical condition",
+              "tiers": "Excellent→25; Good→20; Fair→12; Poor→5; Critical→0"
             },
             {
               "name": "Common Areas Rating",
               "type": "Tiered",
               "points": 20.0,
               "source": "Audit Observation",
-              "method": "Condition of lobbies, hallways, stairwells, laundry rooms"
+              "method": "Condition of lobbies, hallways, stairwells, laundry rooms",
+              "tiers": "Excellent→20; Good→15; Fair→9; Poor→3; Critical→0"
             },
             {
               "name": "Exterior Presentation",
               "type": "Tiered",
               "points": 20.0,
               "source": "Audit Observation",
-              "method": "Grounds, parking, signage, lighting, landscaping, facades"
+              "method": "Grounds, parking, signage, lighting, landscaping, facades",
+              "tiers": "Excellent→20; Good→15; Fair→9; Poor→3; Critical→0"
             },
             {
               "name": "Amenities Condition Rating",
               "type": "Tiered",
               "points": 20.0,
               "source": "Audit Observation",
-              "method": "Condition of pool, gym, clubhouse, dog park, playgrounds, business center"
+              "method": "Condition of pool, gym, clubhouse, dog park, playgrounds, business center",
+              "tiers": "Excellent→20; Good→15; Fair→9; Poor→3; Critical→0"
             },
             {
               "name": "Issues Count",
               "type": "Tiered",
               "points": 20.0,
               "source": "Audit Observation",
-              "method": "Count of observable physical issues during site walk"
+              "method": "Count of observable physical issues during site walk",
+              "tiers": "0→15; 1-2→12; 3-5→8; 6-10→3; >10→0"
             }
           ]
         },
@@ -2849,7 +2902,8 @@
               "type": "Tiered",
               "points": 50.0,
               "source": "Audit Observation",
-              "method": "Count of distinct deferred maintenance items identified during site walk"
+              "method": "Count of distinct deferred maintenance items identified during site walk",
+              "tiers": "0→best; 1-2; 3-5; 6-10; >10→worst"
             },
             {
               "name": "Critical Systems Affected",
@@ -2877,70 +2931,80 @@
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "Walls / Paint",
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "Kitchen Cabinets & Countertops",
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "Kitchen Appliances",
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "Bathroom Fixtures & Tile",
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "Windows & Blinds",
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "Doors & Hardware",
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "Lighting Fixtures",
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "HVAC (in-unit)",
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "Overall Cleanliness",
               "type": "Tiered",
               "points": 9.0,
               "source": "Audit Observation",
-              "method": "Average rating across all sampled vacant units"
+              "method": "Average rating across all sampled vacant units",
+              "tiers": "Excellent; Good; Fair; Poor"
             },
             {
               "name": "General Finish Level",
