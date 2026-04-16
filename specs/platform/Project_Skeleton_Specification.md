@@ -112,7 +112,8 @@ Locked technical decisions, monorepo structure, naming conventions, toolchain, t
 │   │   ├── db/                      # Shared connection factories
 │   │   │   ├── __init__.py
 │   │   │   ├── postgres.py          # SQLAlchemy Core engine/session
-│   │   │   └── clickhouse.py        # clickhouse-connect client
+│   │   │   ├── clickhouse.py        # clickhouse-connect client
+│   │   │   └── tables.py            # SQLAlchemy Core Table definitions (generated from DDL)
 │   │   ├── config/
 │   │   │   ├── __init__.py
 │   │   │   └── settings.py          # Pydantic Settings (single Settings class)
@@ -143,7 +144,8 @@ Locked technical decisions, monorepo structure, naming conventions, toolchain, t
 │   │   ├── engagement/              # Engagement Service
 │   │   │   ├── __init__.py
 │   │   │   ├── service.py
-│   │   │   └── repository.py
+│   │   │   ├── repository.py
+│   │   │   └── exceptions.py
 │   │   ├── import_mapping/          # Import & Mapping Service
 │   │   │   ├── __init__.py
 │   │   │   ├── service.py

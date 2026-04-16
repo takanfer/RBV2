@@ -157,8 +157,10 @@ Source: `Service_Interface_Contracts.md` lines 490-501
 | Permission | 403 | `permission_denied`, `tenant_mismatch` |
 | Validation | 400 | `schema_validation_error`, `invalid_query`, `invalid_resolution` |
 | State | 409 | `invalid_status_transition`, `unresolved_review_items` |
-| Upstream | 422 | `metrics_not_computed`, `no_findings`, `insufficient_data` |
+| Prerequisite | 424 | `metrics_not_computed`, `no_findings`, `insufficient_data` |
 | Infrastructure | 500 | `storage_error`, `render_error`, `execution_error` |
+
+**Note:** HTTP 422 is reserved for FastAPI's automatic request body validation errors (Pydantic validation). Application-level prerequisite failures (missing upstream data) use 424 (Failed Dependency).
 
 ### Error Code Format
 

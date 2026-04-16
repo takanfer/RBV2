@@ -167,7 +167,7 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
   - What: Implement audit logging to `audit_log` table for all state-changing operations. Log user_id, action, entity_type, entity_id, old/new values, timestamp.
   - Files: `src/shared/audit.py`
   - Refs: `Code_Patterns_Specification.md` §7 (audit log helper pattern), `Observability_Specification.md` (audit logging rules, what gets audited), `Database_Schema_Specification.md` — `audit_log` (line 207), `Service_Interface_Contracts.md` line 505 (audit logging cross-cutting), `spec_1` Phase 0 item 4 (line 1311: "Implement audit logging and version registries")
-  - Depends on: P0-T08 (audit_log table), P0-T04 (PG connection)
+  - Depends on: P0-T08 (audit_log table), P0-T04 (PG connection), P0-T12 (AuthZ service), P0-T13 (Engagement service)
   - Done when: All AuthZ and Engagement service mutations produce audit log entries, log entries are queryable by entity
 
 ---
@@ -214,7 +214,7 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
   - What: Alembic migration for Asset Hierarchy tables (13 tables) with RLS policies and indexes
   - Files: `db/postgresql/migrations/versions/003_asset_domain.py`
   - Refs: `Database_Schema_Specification.md` — Asset Hierarchy (13 tables per verification summary line 2826). Cross-ref spec_1 §3.2 Domain 1 (line 244)
-  - Depends on: P0-T08
+  - Depends on: P0-T08, P0-CK3 (pattern lock)
   - Done when: All 13 asset tables created, FK constraints correct, indexes match DDL, RLS policies applied
 
 - [ ] **P1-T02: Resident and Lease domain migration**
@@ -269,7 +269,7 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
 - [ ] **P1-T09: Workspace domain migration**
   - What: Alembic migration for Workspace (Studies/Reports) tables (10 tables: study, saved_query, result_snapshot, study_item, comparison_board, annotation, evidence_bundle, report, report_section, report_render)
   - Files: `db/postgresql/migrations/versions/011_workspace_domain.py`
-  - Refs: `Database_Schema_Specification.md` — Domain 11 (line 2135). Tables listed at §9 Workspace (line 2869: 7 tables) + §12 Reporting (line 2871: report, report_section, report_render). Note: verification summary line 2837 says 8 but physical table count in Domain 11 section is 10.
+  - Refs: `Database_Schema_Specification.md` — Domain 11 (line 2135). Tables: study, saved_query, result_snapshot, study_item, comparison_board, annotation, evidence_bundle, report, report_section, report_render (10 tables).
   - Depends on: P1-T08
   - Done when: All 10 Domain 11 tables created, FK constraints correct, indexes match DDL
 

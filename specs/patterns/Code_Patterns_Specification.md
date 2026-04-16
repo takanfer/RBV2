@@ -104,7 +104,7 @@ async def list_assessments(
 - `tenant: TenantContext = Depends(get_tenant_context)` is the standard auth dependency (sets RLS automatically).
 - Use `get_current_user` only when the route does not need full tenant scoping (rare).
 - All parameters must have type hints.
-- All route decorators must include `response_model`, `status_code`, `summary`, and `tags`.
+- All route decorators must include `response_model`, `status_code`, and `summary`. Tags are set once on the `APIRouter` constructor, not repeated on individual route decorators.
 
 ---
 

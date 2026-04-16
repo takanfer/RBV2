@@ -41,7 +41,7 @@ Before writing any code, read these documents:
 ## Schema Migration Rules
 
 - All canonical entity tables go through **Alembic** migrations.
-- Each entity domain gets its own migration file (e.g., `002_asset_domain.py`, `003_resident_lease_domain.py`).
+- Each entity domain gets its own migration file (e.g., `003_asset_domain.py`, `004_resident_lease_domain.py`).
 - Foreign key constraints must be defined in the migration.
 - Indexes from `Database_Schema_Specification.md` must be included in the migration.
 - RLS policies must be created for every new tenant-scoped table.

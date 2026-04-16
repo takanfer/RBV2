@@ -20,7 +20,7 @@ alwaysApply: false
 ## What This Phase Builds
 
 - Multi-tenant identity, authentication, and authorization (AuthZ / Tenant Policy Service)
-- PostgreSQL canonical database with tenancy, property, and assessment tables
+- PostgreSQL canonical database with tenancy, identity, and raw evidence layer tables
 - ClickHouse analytical warehouse with initial schema
 - Object storage (S3) configuration for raw evidence
 - Source registry and ingestion job model
