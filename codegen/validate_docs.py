@@ -1665,6 +1665,144 @@ def pass_19_section_refs(report: ValidationReport, files: list[Path]):
                             f"Valid: {sorted(valid_sections, key=lambda x: [int(p) for p in x.split('.')])[:20]}...")
 
 
+# ── PASS 20: Scoring Weight Invariants ─────────────────────────────────────
+
+
+def pass_20_weight_invariants(report: ValidationReport,
+                              scoring_config_path: Path,
+                              weights_path: Path):
+    config = json.loads(scoring_config_path.read_text(encoding="utf-8"))
+    weights = json.loads(weights_path.read_text(encoding="utf-8"))
+
+    areas = config.get("areas", [])
+
+    area_weight_sum = sum(a.get("weight", 0) for a in areas)
+    report.check()
+    if abs(area_weight_sum - 100.0) > 0.01:
+        report.error("Weight Invariants", "scoring_config.json", 0,
+                     f"Area weights sum to {area_weight_sum}, expected 100.0", "")
+
+    aw_sum = sum(float(v) for k, v in weights.items() if k.startswith("aw__"))
+    report.check()
+    if abs(aw_sum - 100.0) > 0.01:
+        report.error("Weight Invariants", "Scoring_Weights_Final_Update.json", 0,
+                     f"aw__ weights sum to {aw_sum}, expected 100.0", "")
+
+    for area in areas:
+        area_name = area.get("name", "?")
+        items = area.get("items", [])
+        weights_present = [it for it in items if "weight" in it]
+        if not weights_present:
+            continue
+        item_weight_sum = sum(it.get("weight", 0) for it in items)
+        report.check()
+        if abs(item_weight_sum - 100.0) > 0.01:
+            report.error("Weight Invariants", "scoring_config.json", 0,
+                         f"Area '{area_name}': item weights sum to "
+                         f"{item_weight_sum}, expected 100.0", "")
+
+    for area in areas:
+        area_name = area.get("name", "?")
+        for item in area.get("items", []):
+            if item.get("type") != "Checklist":
+                continue
+            sub_items = item.get("sub_items", [])
+            if not sub_items:
+                continue
+            point_sum = sum(si.get("points", 0) for si in sub_items)
+            report.check()
+            if abs(point_sum - 100.0) > 0.01:
+                report.error("Weight Invariants", "scoring_config.json", 0,
+                             f"Area '{area_name}', item '{item.get('name', '?')}': "
+                             f"sub-item points sum to {point_sum}, expected 100.0",
+                             "")
+
+    for area in areas:
+        area_num = area.get("number", "?")
+        area_slug = f"{area_num}_{_slugify(area.get('name', ''))}"
+        aw_key = f"aw__{area_slug}"
+        config_weight = area.get("weight", 0)
+        if aw_key in weights:
+            report.check()
+            if abs(float(weights[aw_key]) - config_weight) > 0.01:
+                report.error("Weight Invariants", "Scoring_Weights_Final_Update.json", 0,
+                             f"Weight for '{aw_key}' is {weights[aw_key]}, "
+                             f"scoring_config says {config_weight}", "")
+
+
+# ── PASS 21: Scoring Type Distribution ─────────────────────────────────────
+
+
+def pass_21_type_distribution(report: ValidationReport, scoring_gt: ScoringGroundTruth,
+                              files: list[Path]):
+    expected_types = scoring_gt.item_types
+    if not expected_types:
+        return
+
+    type_count_pat = re.compile(
+        r"(\d+)\s+(Data|Checklist|Comparative)\s+items?", re.IGNORECASE)
+
+    for fpath in files:
+        text = fpath.read_text(encoding="utf-8")
+        rel = str(fpath.relative_to(ROOT))
+        in_code = False
+
+        for i, line in enumerate(text.split("\n"), 1):
+            if line.strip().startswith("```"):
+                in_code = not in_code
+                continue
+            if in_code:
+                continue
+
+            for m in type_count_pat.finditer(line):
+                claimed = int(m.group(1))
+                item_type = m.group(2)
+                item_type_norm = item_type[0].upper() + item_type[1:].lower()
+                expected = expected_types.get(item_type_norm, None)
+                if expected is None:
+                    continue
+                report.check()
+                if claimed != expected:
+                    report.error("Type Distribution", rel, i,
+                                 f"Claims {claimed} {item_type_norm} items, "
+                                 f"scoring_config has {expected}", "")
+
+
+# ── PASS 22: Task Dependency Validation ────────────────────────────────────
+
+
+def pass_22_task_deps(report: ValidationReport):
+    tasks_path = _gt_path("planning/Implementation_Tasks.md")
+    if not tasks_path.exists():
+        return
+
+    text = tasks_path.read_text(encoding="utf-8")
+    lines = text.split("\n")
+
+    task_id_def_pat = re.compile(r"\*\*(P\d+-(?:T|CK)\d+)")
+    dep_pat = re.compile(r"P\d+-(?:T|CK)\d+")
+    depends_line_pat = re.compile(r"^\s*-\s*Depends on:")
+
+    defined_tasks: set[str] = set()
+    for line in lines:
+        for m in task_id_def_pat.finditer(line):
+            defined_tasks.add(m.group(1))
+
+    if not defined_tasks:
+        return
+
+    for i, line in enumerate(lines, 1):
+        if not depends_line_pat.match(line):
+            continue
+        for m in dep_pat.finditer(line):
+            dep_id = m.group(0)
+            report.check()
+            if dep_id not in defined_tasks:
+                report.error("Task Deps", "Implementation_Tasks.md", i,
+                             f"Dependency `{dep_id}` not defined as a task",
+                             f"Defined tasks nearby: {sorted(t for t in defined_tasks if t[:3] == dep_id[:3])[:10]}")
+
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
@@ -1780,6 +1918,14 @@ def main():
          lambda: pass_18_line_content(report, files)),
         ("PASS 19: Section Heading References",
          lambda: pass_19_section_refs(report, files)),
+        ("PASS 20: Scoring Weight Invariants",
+         lambda: pass_20_weight_invariants(
+             report, _gt_path("config/scoring_config.json"),
+             _gt_path("config/Scoring_Weights_Final_Update.json"))),
+        ("PASS 21: Scoring Type Distribution",
+         lambda: pass_21_type_distribution(report, scoring_gt, files)),
+        ("PASS 22: Task Dependency Validation",
+         lambda: pass_22_task_deps(report)),
     ]
 
     prev_total = 0
