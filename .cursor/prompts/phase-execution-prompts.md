@@ -61,66 +61,69 @@ BEFORE WRITING ANY CODE, read these files:
 5. specs/patterns/Code_Patterns_Specification.md
 6. specs/platform/Database_Schema_Specification.md (all PostgreSQL domains)
 7. specs/platform/Shared_Type_Definitions.md
-8. specs/platform/Service_Interface_Contracts.md (§3 Import & Mapping, §4 Entity Resolution, §5 Temporal State Builder)
+8. specs/platform/Service_Interface_Contracts.md (§3 Import & Mapping, §4 Entity Resolution)
 9. specs/data/Data_Onramp_Specification.md
 10. specs/data/Complete_Data_Inventory.md
 11. planning/Implementation_Tasks.md (Phase 1 section)
 
-Begin with the first incomplete Phase 1 task. Work sequentially through P1-T01 to P1-T16.
+Begin with the first incomplete Phase 1 task. Work sequentially through P1-T01 to P1-T20.
 
 After completing all tasks, produce a Phase 1 Gate Report.
 ```
 
 ---
 
-## Phase 2 Prompt — Metric Engine
+## Phase 2 Prompt — Temporal Spine
 
 ```
-You are implementing Phase 2 (Metric Engine) of the RBv2 platform.
+You are implementing Phase 2 (Temporal Unit Spine) of the RBv2 platform.
 
 PREREQUISITE: Phase 1 gate passed and approved.
 
 BEFORE WRITING ANY CODE, read these files:
 1. .cursor/rules/agent-behavior.mdc
 2. .cursor/rules/execution-protocol.mdc
-3. .cursor/rules/phase-2-metric-engine.mdc
+3. .cursor/rules/phase-2-temporal-spine.mdc
 4. .cursor/rules/rbv2-project.mdc
 5. specs/patterns/Code_Patterns_Specification.md
-6. specs/engine/Basic_Analytic_Data_Set.md (all 124 KPIs)
-7. specs/engine/BADS_Edge_Case_Rules.md
-8. specs/platform/Service_Interface_Contracts.md (§6 Metric Engine)
-9. specs/platform/Database_Schema_Specification.md (ClickHouse fact tables)
+6. specs/platform/Database_Schema_Specification.md (temporal tables + ClickHouse fact tables)
+7. specs/platform/Service_Interface_Contracts.md (§5 Temporal State Builder)
+8. specs/engine/Basic_Analytic_Data_Set.md (all 124 KPIs)
+9. specs/engine/BADS_Edge_Case_Rules.md
 10. planning/Implementation_Tasks.md (Phase 2 section)
 
-Begin with the first incomplete Phase 2 task. Work sequentially.
+Begin with the first incomplete Phase 2 task. Work sequentially through P2-T01 to P2-T12.
 
 After completing all tasks, produce a Phase 2 Gate Report.
 ```
 
 ---
 
-## Phase 3 Prompt — Analytical Engine
+## Phase 3 Prompt — Core Diagnostics
 
 ```
-You are implementing Phase 3 (Analytical Engine) of the RBv2 platform.
+You are implementing Phase 3 (Core Diagnostics) of the RBv2 platform.
 
 PREREQUISITE: Phase 2 gate passed and approved.
 
 BEFORE WRITING ANY CODE, read these files:
 1. .cursor/rules/agent-behavior.mdc
 2. .cursor/rules/execution-protocol.mdc
-3. .cursor/rules/phase-3-analytical-engine.mdc
+3. .cursor/rules/phase-3-core-diagnostics.mdc
 4. .cursor/rules/rbv2-project.mdc
 5. specs/patterns/Code_Patterns_Specification.md
 6. specs/scoring/Scoring_Algorithm_Specification.md
 7. specs/scoring/Scoring_Model_Specification.md
 8. specs/scoring/Scoring_Thresholds_Calibration.md
 9. config/scoring_config.json
-10. specs/engine/Analytical_Engine_Specification.md
-11. specs/platform/Service_Interface_Contracts.md (§7 Scoring Engine, §8 Finding Compiler, §9 Impact Engine)
-12. planning/Implementation_Tasks.md (Phase 3 section)
+10. config/Scoring_Weights_Final_Update.json
+11. specs/engine/Analytical_Engine_Specification.md
+12. specs/engine/Analytical_Engine_Algorithm_Specifications.md
+13. specs/engine/Analytical_Question_Inventory.md
+14. specs/platform/Service_Interface_Contracts.md (§6 Metric Engine, §7 Scoring Engine, §8 Finding Compiler, §9 Impact Engine)
+15. planning/Implementation_Tasks.md (Phase 3 section)
 
-Begin with the first incomplete Phase 3 task. Work sequentially.
+Begin with the first incomplete Phase 3 task. Work sequentially through P3-T01 to P3-T25.
 
 After completing all tasks, produce a Phase 3 Gate Report.
 ```
@@ -152,41 +155,53 @@ After completing all tasks, produce a Phase 4 Gate Report.
 
 ---
 
-## Phase 5 Prompt — Door Opener
+## Phase 5 Prompt — Client Portal & Longitudinal Tracking
 
 ```
-You are implementing Phase 5 (Door Opener Assessment) of the RBv2 platform.
+You are implementing Phase 5 (Client Portal and Longitudinal Tracking) of the RBv2 platform.
 
 PREREQUISITE: Phase 4 gate passed and approved.
 
 BEFORE WRITING ANY CODE, read these files:
 1. .cursor/rules/agent-behavior.mdc
 2. .cursor/rules/execution-protocol.mdc
-3. .cursor/rules/phase-5-door-opener.mdc
+3. .cursor/rules/phase-5-client-portal.mdc
 4. .cursor/rules/rbv2-project.mdc
-5. specs/scoring/Door_Opener_Applicability_Matrix.md
-6. specs/platform/Service_Interface_Contracts.md (§12 Door Opener Pipeline)
-7. planning/Implementation_Tasks.md (Phase 5 section)
+5. specs/patterns/Code_Patterns_Specification.md
+6. specs/ui/UI_UX_Specification.md
+7. specs/platform/Service_Interface_Contracts.md (§12 Client Portal Service, §13 Trend & Trajectory Service)
+8. specs/platform/Database_Schema_Specification.md (trend-ready ClickHouse tables, recommendation table)
+9. planning/Implementation_Tasks.md (Phase 5 section)
 
-Begin with the first incomplete Phase 5 task.
+Begin with the first incomplete Phase 5 task. Work sequentially through P5-T01 to P5-T15.
+
+After completing all tasks, produce a Phase 5 Gate Report.
 ```
 
 ---
 
-## Phase 6 Prompt — Extensibility
+## Phase 6 Prompt — Door Opener & Extensibility
 
 ```
-You are implementing Phase 6 (Extensibility & Extensions) of the RBv2 platform.
+You are implementing Phase 6 (Door Opener and Extensibility) of the RBv2 platform.
 
 PREREQUISITE: Phase 5 gate passed and approved.
 
 BEFORE WRITING ANY CODE, read these files:
 1. .cursor/rules/agent-behavior.mdc
 2. .cursor/rules/execution-protocol.mdc
-3. .cursor/rules/phase-6-extensibility.mdc
+3. .cursor/rules/phase-6-door-opener.mdc
 4. .cursor/rules/rbv2-project.mdc
-5. specs/platform/Service_Interface_Contracts.md (§13-§15 Extension services)
-6. planning/Implementation_Tasks.md (Phase 6 section)
+5. specs/patterns/Code_Patterns_Specification.md
+6. specs/scoring/Door_Opener_Applicability_Matrix.md
+7. specs/platform/Service_Interface_Contracts.md (§14 Door Opener Service, §15 Extension SDK)
+8. specs/data/Data_Onramp_Specification.md
+9. specs/data/Audit_Workbook_Specification.md
+10. specs/ui/Report_Template_Specification.md
+11. specs/platform/Database_Schema_Specification.md (door opener columns in assessment/scorecard/report tables)
+12. planning/Implementation_Tasks.md (Phase 6 section)
 
-Begin with the first incomplete Phase 6 task.
+Begin with the first incomplete Phase 6 task. Work sequentially through P6-T01 to P6-T12.
+
+After completing all tasks, produce a Phase 6 Gate Report.
 ```

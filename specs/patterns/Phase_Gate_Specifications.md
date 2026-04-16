@@ -93,14 +93,14 @@ PROCEED to Phase {N+1} / HOLD for {reason}
 
 ## Phase 1 Gate — Canonical Core
 
-**Prerequisite:** Tasks P1-T01 through P1-T16 all marked `[x]`. Phase 0 gate passed.
+**Prerequisite:** Tasks P1-T01 through P1-T20 all marked `[x]`. Phase 0 gate passed.
 
 ### Schema Checks
 
 | # | Check | Command | Expected Output |
 |---|-------|---------|-----------------|
 | 1 | All PostgreSQL tables exist | `psql -c "SELECT count(*) FROM pg_tables WHERE schemaname='public'"` | 110 tables |
-| 2 | ClickHouse temporal facts exist | Query `SHOW TABLES` in partners DB | Phase 2 fact tables present |
+| 2 | ClickHouse schema exists | Query `SHOW TABLES` in partners DB | Phase 1 ClickHouse tables present (from P1 migrations) |
 | 3 | All indexes created | `psql -c "SELECT count(*) FROM pg_indexes WHERE schemaname='public'"` | Matches DDL index count |
 | 4 | All Pydantic models generated | `ls src/shared/models/*.py \| wc -l` | 14 modules |
 | 5 | Model field count | `python -c "... count fields ..."` | 1,393 fields |
@@ -134,9 +134,9 @@ PROCEED to Phase {N+1} / HOLD for {reason}
 
 ---
 
-## Phase 2 Gate — Metric Engine
+## Phase 2 Gate — Temporal Spine
 
-**Prerequisite:** Tasks P2-T01 through P2-T16 all marked `[x]`. Phase 1 gate passed.
+**Prerequisite:** Tasks P2-T01 through P2-T12 all marked `[x]`. Phase 1 gate passed.
 
 ### Metric Computation Checks
 
@@ -157,7 +157,7 @@ PROCEED to Phase {N+1} / HOLD for {reason}
 
 ---
 
-## Phase 3 Gate — Analytical Engine
+## Phase 3 Gate — Core Diagnostics
 
 **Prerequisite:** All Phase 3 tasks marked `[x]`. Phase 2 gate passed.
 
@@ -186,7 +186,7 @@ PROCEED to Phase {N+1} / HOLD for {reason}
 
 ## Phases 4–6 Gates
 
-Phase 4 (Workspace & Reporting), Phase 5 (Door Opener), and Phase 6 (Extensibility) follow the same pattern: all tasks complete, all tests pass, all specifications verified. Detailed gate checklists for these phases should be created at the start of each phase based on the task list and service contracts.
+Phase 4 (Workspace & Reporting), Phase 5 (Client Portal & Longitudinal Tracking), and Phase 6 (Door Opener & Extensibility) follow the same pattern: all tasks complete, all tests pass, all specifications verified. Detailed gate checklists for these phases should be created at the start of each phase based on the task list and service contracts.
 
 ---
 
@@ -196,5 +196,8 @@ Phase 4 (Workspace & Reporting), Phase 5 (Door Opener), and Phase 6 (Extensibili
 - `Code_Patterns_Specification.md` — Code quality standards
 - `Database_Schema_Specification.md` — DDL for schema verification
 - `Scoring_Algorithm_Specification.md` — Scoring correctness criteria
+- `Analytical_Engine_Algorithm_Specifications.md` — Layer 2–5 algorithm definitions
 - `Basic_Analytic_Data_Set.md` — 124 KPI definitions
 - `BADS_Edge_Case_Rules.md` — Edge case handling rules
+- `.cursor/prompts/phase-execution-prompts.md` — Ready-to-use prompts for starting each phase
+- `planning/Session_Handoff_Protocol.md` — Session handoff format and protocol

@@ -495,7 +495,7 @@ Source: `Scoring_Model_Specification.md` line 564 ("scores are averaged across a
 
 ## 7. Complete Threshold Reference
 
-All threshold values are sourced from `Scoring_Thresholds_Calibration.md` lines 26–328. The summary table at lines 288–328 lists all 38 threshold sets.
+All threshold values are sourced from `Scoring_Thresholds_Calibration.md` lines 26–328. The summary table at lines 288–328 lists all 33 threshold sets.
 
 This document does not reproduce the full threshold table — it is defined authoritatively in `Scoring_Thresholds_Calibration.md` and encoded in `scoring_config.json`. Implementors MUST read both source files.
 

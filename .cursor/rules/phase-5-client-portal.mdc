@@ -40,9 +40,9 @@ Before writing any code, read these documents:
 1. `rbv2-project.mdc` — Master project rules (always applies)
 2. `Code_Patterns_Specification.md` — Exact code templates. Follow the patterns established in prior phase code.
 3. `Service_Interface_Contracts.md` — Client Portal Service (line 509), Trend & Trajectory Service (line 555)
-3. `UI_UX_Specification.md` — Client portal modules 1-6, consultant workspace module 8 (Assessment Compare)
-4. `Database_Schema_Specification.md` — DDL for trend-ready ClickHouse tables: `fact_assessment_score` (line 2731), `fact_assessment_finding` (line 2750), `fact_recommendation_status` (line 2769), `fact_property_kpi_period` (line 2787), `fact_unit_chronicity` (line 2804). PostgreSQL: `recommendation` (line 2111).
-5. `spec_1` §11.2 (client portal modules, lines 1053-1064), §14 (longitudinal tracking, lines 1161-1202), §16.1 (security/access, lines 1227-1233)
+4. `UI_UX_Specification.md` — Client portal modules 1-6, consultant workspace module 8 (Assessment Compare)
+5. `Database_Schema_Specification.md` — DDL for trend-ready ClickHouse tables: `fact_assessment_score` (line 2731), `fact_assessment_finding` (line 2750), `fact_recommendation_status` (line 2769), `fact_property_kpi_period` (line 2787), `fact_unit_chronicity` (line 2804). PostgreSQL: `recommendation` (line 2111).
+6. `spec_1` §11.2 (client portal modules, lines 1053-1064), §14 (longitudinal tracking, lines 1161-1202), §16.1 (security/access, lines 1227-1233)
 
 ## Client Portal Rules
 

@@ -126,7 +126,7 @@ Before ending a session:
 1. **Commit all work.** No uncommitted changes should remain.
 2. **Update task status** in `planning/Implementation_Tasks.md`.
 3. **Run the validator:** `python codegen/validate_docs.py` — confirm zero errors.
-4. **Write a session summary** (see Session Handoff Protocol) documenting:
+4. **Write a session summary** at `planning/session-handoff.md` (see `planning/Session_Handoff_Protocol.md`) documenting:
    - Tasks completed (with commit hashes)
    - Tasks in progress (with status)
    - Known blockers

@@ -31,8 +31,8 @@ Before writing any code, read these documents:
 1. `rbv2-project.mdc` — Master project rules (always applies)
 2. `Code_Patterns_Specification.md` — Exact code templates. Follow the patterns established in Phase 0/1 code.
 3. `Database_Schema_Specification.md` — DDL for temporal tables: `unit` (line 344), `unit_version` (line 360), `unit_existence_interval` (line 387), `unit_alias` (line 407), `calendar_day` (line 429), `vacancy_cycle` (line 878), `make_ready_cycle` (line 846). ClickHouse: `fact_unit_day` (line 2512), `fact_lease_interval` (line 2541), `fact_vacancy_cycle` (line 2564).
-3. `Service_Interface_Contracts.md` — Temporal State Builder contract (lines 190-227): 5 operations, models, `fact_unit_day` construction rules.
-4. `spec_1` §3.3 (lines 251-293) — Unit spine design principles and key core tables.
+4. `Service_Interface_Contracts.md` — Temporal State Builder contract (lines 190-227): 5 operations, models, `fact_unit_day` construction rules.
+5. `spec_1` §3.3 (lines 251-293) — Unit spine design principles and key core tables.
 
 ## Temporal Modeling Rules
 

@@ -30,15 +30,16 @@ Before writing any code, read these documents:
 1. `rbv2-project.mdc` — Master project rules (always applies)
 2. `Code_Patterns_Specification.md` — Exact code templates. Follow the patterns established in prior phase code.
 3. `Analytical_Engine_Specification.md` — 5-layer architecture: Pre-Computation/BADS (line 94), Layer 1 Scoring (line 145), Layer 2 Cohort Profiling (line 217), Layer 3 Correlative Diagnostics (line 278), Layer 4 Emergent Pattern Detection (line 335), Layer 5 Unified Impact Summary (line 371), AI Analysis Layer (line 415, advisory only — not in scope)
-3. `Service_Interface_Contracts.md` — Metric Engine (line 230), Scoring Engine (line 267), Finding Compiler (line 317), Impact Engine (line 360)
-4. `Scoring_Model_Specification.md` — Scoring structure, methodology, 12 areas, 65 items, design principles
-5. `scoring_config.json` — Machine-readable scoring structure (12 areas with items, thresholds, weights, sub-items)
-6. `Scoring_Weights_Final_Update.json` — Locked weights: 12 `aw__` area weights, 65 `iw__` item weights, 315 `sp__` sub-item point budgets
-7. `Scoring_Thresholds_Calibration.md` — Piecewise linear interpolation breakpoints for Data and Comparative items
-8. `Computation_Rules_DATA.json` — Computation method, data source, input format per scored item
-9. `Basic_Analytic_Data_Set.md` — 124 KPIs: calculations, benchmarks, categories (line 301 confirms total)
-10. `Analytical_Question_Inventory.md` — 16 diagnostic question categories feeding the finding compiler
-11. `Database_Schema_Specification.md` — DDL for scoring/finding/impact tables and ClickHouse score marts
+4. `Service_Interface_Contracts.md` — Metric Engine (line 230), Scoring Engine (line 267), Finding Compiler (line 317), Impact Engine (line 360)
+5. `Scoring_Model_Specification.md` — Scoring structure, methodology, 12 areas, 65 items, design principles
+6. `scoring_config.json` — Machine-readable scoring structure (12 areas with items, thresholds, weights, sub-items)
+7. `Scoring_Weights_Final_Update.json` — Locked weights: 12 `aw__` area weights, 65 `iw__` item weights, 315 `sp__` sub-item point budgets
+8. `Scoring_Thresholds_Calibration.md` — Piecewise linear interpolation breakpoints for Data and Comparative items
+9. `Computation_Rules_DATA.json` — Computation method, data source, input format per scored item
+10. `Basic_Analytic_Data_Set.md` — 124 KPIs: calculations, benchmarks, categories (line 301 confirms total)
+11. `Analytical_Question_Inventory.md` — 16 diagnostic question categories feeding the finding compiler
+12. `Analytical_Engine_Algorithm_Specifications.md` — Layer 2–5 algorithm pseudocode (cohort profiling, diagnostics, pattern detection, impact summary)
+13. `Database_Schema_Specification.md` — DDL for scoring/finding/impact tables and ClickHouse score marts
 
 ## Metric Engine Rules
 

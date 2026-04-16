@@ -34,12 +34,12 @@ Before writing any code, read these documents:
 1. `rbv2-project.mdc` — Master project rules (always applies)
 2. `Code_Patterns_Specification.md` — Exact code templates. Follow the patterns established in prior phase code.
 3. `Service_Interface_Contracts.md` — Door Opener Service (line 598), Extension SDK (line 652)
-3. `Door_Opener_Applicability_Matrix.md` — Definitive 65-item matrix: 11 items applicable, 54 not applicable. Strict interpretation: if any sub-item requires non-public data, the entire item is not applicable.
-4. `Database_Schema_Specification.md` — `assessment.assessment_type` supports `'door_opener'` (line 1921), `scorecard.scorecard_type` supports `'door_opener'` (line 1982), `report.report_type` supports `'door_opener'` (line 2278)
-5. `spec_1` §13 (door openers, lines 1119-1159), §15 (extensibility, lines 1204-1223)
-6. `Audit_Workbook_Specification.md` — Sections marked `[DOOR OPENER]`: §2 (Pre-Audit Digital Review, line 110), §2A (Online Reputation, line 116), §10A-10K (competitor observations, line 1315)
-7. `Report_Template_Specification.md` — Door opener report template (standard template #7)
-8. `Data_Onramp_Specification.md` — `VendorAdapter` protocol that new connectors must implement
+4. `Door_Opener_Applicability_Matrix.md` — Definitive 65-item matrix: 11 items applicable, 54 not applicable. Strict interpretation: if any sub-item requires non-public data, the entire item is not applicable.
+5. `Database_Schema_Specification.md` — `assessment.assessment_type` supports `'door_opener'` (line 1921), `scorecard.scorecard_type` supports `'door_opener'` (line 1982), `report.report_type` supports `'door_opener'` (line 2278)
+6. `spec_1` §13 (door openers, lines 1119-1159), §15 (extensibility, lines 1204-1223)
+7. `Audit_Workbook_Specification.md` — Sections marked `[DOOR OPENER]`: §2 (Pre-Audit Digital Review, line 110), §2A (Online Reputation, line 116), §10A-10K (competitor observations, line 1315)
+8. `Report_Template_Specification.md` — Door opener report template (standard template #7)
+9. `Data_Onramp_Specification.md` — `VendorAdapter` protocol that new connectors must implement
 
 ## Door Opener Rules
 

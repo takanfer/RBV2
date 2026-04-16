@@ -980,18 +980,20 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
 
 **Marking tasks complete:**
 ```markdown
-- [x] **P0-T01: Project skeleton** — completed (commit abc1234)
+- [x] **P0-T01: Project skeleton** — abc1234
 ```
 
 **Marking tasks in progress:**
 ```markdown
-- [ ] **P0-T02: Docker Compose** — IN PROGRESS (agent: session-xyz)
+- [~] **P0-T02: Docker Compose** — agent: session-xyz
 ```
 
 **Marking tasks blocked:**
 ```markdown
-- [ ] **P1-T14: Yardi adapter** — BLOCKED (waiting on sample Yardi export files)
+- [!] **P1-T14: Yardi adapter** — waiting on sample Yardi export files
 ```
+
+Status markers follow `execution-protocol.mdc`: `[ ]` pending, `[~]` in progress, `[x]` complete (with commit hash), `[!]` blocked (with reason).
 
 ---
 

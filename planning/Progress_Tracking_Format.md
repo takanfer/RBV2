@@ -48,7 +48,9 @@ Update this line whenever a task status changes.
 
 ## Session Progress File
 
-After each session, create or update a progress file at `planning/progress.md`:
+After each session, create or update the session handoff file at `planning/session-handoff.md` per the Session Handoff Protocol (`planning/Session_Handoff_Protocol.md`). That file is the single post-session artifact — do not create a separate progress file.
+
+The session handoff file includes task completion tables, blocker lists, and next steps. The format below shows the phase progress summary that should be maintained in the `Implementation_Tasks.md` phase headers:
 
 ```markdown
 # Implementation Progress
