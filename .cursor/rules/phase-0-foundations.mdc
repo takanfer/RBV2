@@ -20,11 +20,11 @@ alwaysApply: false
 ## What This Phase Builds
 
 - Multi-tenant identity, authentication, and authorization (AuthZ / Tenant Policy Service)
-- PostgreSQL canonical database with tenancy, identity, and raw evidence layer tables
+- PostgreSQL canonical database with tenancy, identity, property/assessment model, and raw evidence layer tables
 - ClickHouse analytical warehouse with initial schema
 - Object storage (S3) configuration for raw evidence
 - Source registry and ingestion job model
-- Audit logging and version registries
+- Audit logging
 - Project skeleton: Docker Compose, CI pipeline, shared types
 
 ## Authoritative References
@@ -38,9 +38,10 @@ Before writing any code, read these documents:
 5. `Infrastructure_Specification.md` — Environment variables, Docker Compose, S3 bucket structure
 6. `Observability_Specification.md` — Structured logging, correlation IDs, health checks, audit logging
 7. `Project_Skeleton_Specification.md` — Repository structure, naming conventions, code quality standards
-8. `Database_Schema_Specification.md` — DDL for all tables (implement Layer A raw evidence + tenancy/identity tables in this phase)
+8. `Database_Schema_Specification.md` — DDL for all tables (Phase 0 DDL scope: Domain 1, Layer A, client/portfolio/property from Domain 2, assessment/assessment_data_coverage from Domain 10 — see Deployment_Roadmap.md)
 9. `Service_Interface_Contracts.md` — AuthZ and Engagement Service contracts
 10. `docs/adrs/` — All locked technology decisions
+11. `Deployment_Roadmap.md` — Phase scope authority, DDL scope per phase
 
 ## Technology Constraints
 
@@ -53,7 +54,7 @@ Before writing any code, read these documents:
 - **Pydantic Settings** for configuration. All config via environment variables.
 - **Docker Compose** for local development: PostgreSQL 16, ClickHouse, MinIO, Redis.
 - **Celery + Redis** for background task execution and pipeline orchestration (ADR-014). Worker entry point at `src/worker.py`. Long-running operations (imports, temporal spine builds, scoring runs, report renders) are Celery tasks. Short-lived operations remain synchronous.
-- **Managed auth provider** for authentication (ADR-015). The platform does not store passwords. A JWT middleware in `src/api/dependencies/auth.py` validates tokens issued by the auth provider and extracts the user identity. The AuthZ service then enforces authorization for that identity.
+- **AWS Cognito** for authentication (ADR-015). The platform does not store passwords. A JWT middleware in `src/api/dependencies/auth.py` validates Cognito-issued JWTs and extracts the user identity. The AuthZ service then enforces authorization for that identity.
 
 ## Schema Rules
 
@@ -80,7 +81,7 @@ Before writing any code, read these documents:
 
 ## What NOT To Build In This Phase
 
-- Do not implement canonical entity schemas beyond tenancy/property/assessment (that's Phase 1).
+- Do not implement canonical entity schemas beyond those listed in the Deployment Roadmap Phase 0 DDL scope (remaining Domain 2+ entities are Phase 1).
 - Do not implement import/mapping logic (that's Phase 1).
 - Do not implement temporal modeling (that's Phase 2).
 - Do not implement scoring or diagnostics (that's Phase 3).

@@ -39,7 +39,7 @@ PROCEED to Phase {N+1} / HOLD for {reason}
 
 ## Phase 0 Gate — Foundations
 
-**Prerequisite:** Tasks P0-T01 through P0-T18 all marked `[x]`.
+**Prerequisite:** Tasks P0-T01 through P0-T18 (including P0-T09a and P0-T09b) all marked `[x]`.
 
 ### Infrastructure Checks
 

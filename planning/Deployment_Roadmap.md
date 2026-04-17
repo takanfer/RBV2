@@ -2,6 +2,8 @@
 
 Complete deployment roadmap for the RBv2 Multifamily Property Assessment Platform. Every claim in this document cites a specific source file. Nothing is elaborated beyond what the source documents state.
 
+> **Authority:** This document is the authoritative source for phase scope. It defines which services, DDL domains, and capabilities belong to each phase. If `Implementation_Tasks.md` conflicts with this document, this document wins.
+
 **Supersedes:** `Version 6/Working Docs/Planning Docs/Remaining_Work_Plan.md` (V6 Google Apps Script system -- deprecated, reference only)
 
 ---
@@ -52,7 +54,7 @@ Every file below was confirmed to exist on disk as of 2026-04-13.
 
 | File | Verified Content | Source Verification |
 |------|-----------------|---------------------|
-| `Code_Patterns_Specification.md` | 10 literal code templates: service module structure, route functions, service functions, repository functions, exceptions, tests, audit logging, Celery tasks, Pydantic Settings, FastAPI app initialization | File created, read in full |
+| `Code_Patterns_Specification.md` | 18 literal code templates: service module structure, route functions, service functions, repository functions, exceptions, tests, audit logging, Celery tasks, Pydantic Settings, FastAPI app initialization, PostgreSQL connection factory, get_db dependency, ClickHouse client factory, table definitions, S3 wrapper, Celery app factory, worker entry point, auth routes | File created, read in full |
 | `API_Design_Specification.md` | URL conventions, HTTP methods, cursor-based pagination, error envelope shape, filtering/sorting, auth header, OpenAPI rules | File created, read in full |
 | `Authentication_Middleware_Specification.md` | JWT claims schema (6 claims), 8-step middleware flow, FastAPI dependency chain, JWKS caching, CORS config, 8 error response codes | File created, read in full |
 | `Infrastructure_Specification.md` | 22 environment variables, Docker Compose services, S3 bucket key structure, secrets management boundary, production AWS topology, ECS service definitions | File created, read in full |
@@ -62,9 +64,9 @@ Every file below was confirmed to exist on disk as of 2026-04-13.
 
 | Artifact | Verified Content |
 |----------|-----------------|
-| `docs/adrs/` | 16 ADR files: ADR-001 through ADR-016 + README.md. ADR-014 (Celery + Redis), ADR-015 (managed auth provider), ADR-016 (WeasyPrint + python-pptx) added for workflow orchestration, authentication, and report rendering. |
-| `.cursor/rules/rbv2-project.mdc` | 20-document authoritative hierarchy, scoring constraints, tech stack, naming conventions, working principles including "DDL is the source of truth" (lines 1-169, read in full) |
-| `.cursor/rules/phase-0-foundations.mdc` | Phase 0 implementation rules: what to build, technology constraints, schema rules, testing rules, what NOT to build (lines 1-87, read in full) |
+| `docs/adrs/` | 16 ADR files: ADR-001 through ADR-016 + README.md. ADR-014 (Celery + Redis), ADR-015 (AWS Cognito), ADR-016 (WeasyPrint + python-pptx) added for workflow orchestration, authentication, and report rendering. |
+| `.cursor/rules/rbv2-project.mdc` | 21-document authoritative hierarchy, scoring constraints, tech stack, naming conventions, working principles including "DDL is the source of truth" (lines 1-171, read in full) |
+| `.cursor/rules/phase-0-foundations.mdc` | Phase 0 implementation rules: what to build, technology constraints, schema rules, testing rules, what NOT to build (lines 1-89, read in full) |
 | `.cursor/rules/phase-1-canonical-core.mdc` | Phase 1 implementation rules: canonical entities, import framework, connector rules, entity resolution rules, idempotency (lines 1-87, read in full) |
 | `codegen/generate_models.py` | DDL-to-Pydantic generation script using sqlglot parser (file exists, confirmed) |
 | `codegen/test_ddl.sql` | Test DDL for 4 Asset domain tables (file exists, confirmed) |
@@ -91,7 +93,7 @@ All previously identified documentation gaps have been closed:
 - `Report_Template_Specification.md` — report composition model, rendering pipeline, 7+ standard templates (structural framework; template content to be defined during Phase 4)
 - `Door_Opener_Applicability_Matrix.md` — 11 of 65 items scorable from public data, strict interpretation
 - `UI_UX_Specification.md` — module inventory, user roles, data dependencies, user flows, access boundaries (structural framework; visual design and component specs to be defined during Phase 4)
-- `Code_Patterns_Specification.md` — 10 literal code templates preventing pattern drift across agent sessions
+- `Code_Patterns_Specification.md` — 18 literal code templates preventing pattern drift across agent sessions
 - `API_Design_Specification.md` — REST API conventions (URL patterns, pagination, error shapes, auth headers)
 - `Authentication_Middleware_Specification.md` — JWT claims, FastAPI dependency chain, tenant resolution flow, CORS
 - `Infrastructure_Specification.md` — environment variables, Docker Compose, S3 bucket structure, secrets management, production topology
@@ -101,13 +103,13 @@ All previously identified documentation gaps have been closed:
 
 ## Governance Model
 
-Source: `rbv2-project.mdc` lines 150-169 (Model Generation Pipeline, Working Principles)
+Source: `rbv2-project.mdc` lines 151-170 (Model Generation Pipeline, Working Principles)
 
 ### DDL-First Pipeline
 
-The DDL in `Database_Schema_Specification.md` is the single source of truth for all data structures (rbv2-project.mdc line 168: "DDL is the source of truth").
+The DDL in `Database_Schema_Specification.md` is the single source of truth for all data structures (rbv2-project.mdc line 169: "DDL is the source of truth").
 
-Pipeline (rbv2-project.mdc lines 152-158):
+Pipeline (rbv2-project.mdc lines 153-159):
 1. DDL is written/modified in `Database_Schema_Specification.md`
 2. `codegen/generate_models.py` parses the DDL and generates Pydantic models
 3. Generated `.py` files are copied to `src/shared/models/`
@@ -134,6 +136,8 @@ Source: `spec_1` lines 1305-1358. Reproduced verbatim below -- no elaboration, n
 4. Implement audit logging and version registries.
 
 **Services built in this phase:** AuthZ, Engagement (Service_Interface_Contracts.md line 706)
+
+**Authentication provider:** AWS Cognito (ADR-015). Handles user login, registration, password management, and JWT issuance. The platform validates Cognito-issued JWTs and enforces authorization via the AuthZ service.
 
 **Relevant cursor rule:** `phase-0-foundations.mdc`
 
@@ -275,6 +279,21 @@ Source: Service_Interface_Contracts.md lines 702-712 (Phase Summary table). Repr
 
 ---
 
+## DDL Scope Per Phase
+
+Derived from spec_1 Phase definitions, Service Interface Contracts, and Database Schema Specification domain structure.
+
+| Phase | DDL Scope | Source |
+|-------|-----------|--------|
+| 0 | **PostgreSQL:** Domain 1 — tenant, user_account, audit_log (tenancy + identity). Raw evidence store (Layer&nbsp;A) — source_system, source_ingestion, source_asset, source_record_raw, mapping_rule, mapping_review_queue. Domain 2 partial — client, portfolio, property (property model per spec_1 line 1308). Domain 10 partial — assessment, assessment_data_coverage (assessment model per spec_1 line 1308). | spec_1 line 1308 "tenancy, identity, auth, and property/assessment model"; line 1310 "source registry, ingestion job model, and raw evidence store" |
+| 1 | **PostgreSQL:** Remaining Domain 2 (building, floor_plan, unit, unit_version, unit_existence_interval, unit_alias, calendar_day, property_amenity, unit_amenity, market_context). Domains 3-9 (Resident/Lease, Operations, Demand, Listing/Marketing, Market/Competition, Mystery Shop, Technology Stack). Domain 12 (Staffing). Domain 13 (Scoring Configuration). | spec_1 line 1314 "Build canonical asset, lease, resident, vendor, and staff schemas" |
+| 2 | **ClickHouse:** fact_unit_day, fact_lease_interval, fact_lead_funnel_event, fact_listing_observation, fact_marketing_presence_day, fact_comp_listing_observation (temporal facts). | spec_1 line 1322 "Materialize fact_unit_day" + related temporal facts |
+| 3 | **PostgreSQL:** Remaining Domain 10 (analysis_run, scorecard, score_result, finding, impact_estimate, contradiction, recommendation). **ClickHouse:** fact_score_result, fact_finding_impact, fact_assessment_score, fact_assessment_finding, fact_recommendation_status, fact_property_kpi_period, fact_unit_chronicity (score/finding/impact facts). | spec_1 lines 1327-1339 (core diagnostics + scorecards + findings) |
+| 4 | **PostgreSQL:** Domain 11 (study, saved_query, result_snapshot, study_item, comparison_board, annotation, evidence_bundle, report, report_section, report_render). | spec_1 lines 1341-1346 (workspace and reporting) |
+| 5-6 | No new DDL expected. Uses existing tables. | spec_1 lines 1348-1358 (client portal + door opener use existing models) |
+
+---
+
 ## Milestones
 
 Source: spec_1 lines 1370-1403. Reproduced verbatim.
@@ -334,9 +353,9 @@ Derived from spec_1 phase steps and milestone exit criteria:
 
 ## What to Do Next
 
-Phase 0 can begin immediately. All prerequisite documentation for Phase 0 is complete per `phase-0-foundations.mdc` (lines 30-41: "Before writing any code, read these documents").
+Phase 0 can begin immediately. All prerequisite documentation for Phase 0 is complete per `phase-0-foundations.mdc` (lines 30-44: "Before writing any code, read these documents").
 
-**Task-level implementation plan:** `Implementation_Tasks.md` contains 123 sequenced, dependency-aware tasks across all 7 phases with checkbox progress tracking. Use it as the working checklist for implementation.
+**Task-level implementation plan:** `Implementation_Tasks.md` contains 125 sequenced, dependency-aware tasks across all 7 phases with checkbox progress tracking. Use it as the working checklist for implementation.
 
 **Post-Phase 0 checkpoint (mandatory before Phase 1):**
 
@@ -354,8 +373,8 @@ After Phase 0 is complete, a pattern-lock checkpoint must occur before any Phase
 |----------|-------------------------------|
 | `spec_1` lines 1305-1403 | Phase definitions and milestone exit criteria |
 | `Service_Interface_Contracts.md` lines 702-712 | Service-to-phase mapping |
-| `rbv2-project.mdc` lines 147-163 | DDL-first pipeline and governance model |
-| `phase-0-foundations.mdc` lines 30-41 | Phase 0 prerequisites |
+| `rbv2-project.mdc` lines 148-164 | DDL-first pipeline and governance model |
+| `phase-0-foundations.mdc` lines 30-44 | Phase 0 prerequisites |
 | `phase-1-canonical-core.mdc` lines 24-35 | Phase 1 prerequisites |
 | `Analytical_Engine_Specification.md` lines 94-415 | 5-layer engine architecture (context for Phase 3) |
 | `Data_Onramp_Specification.md` lines 13, 57 | Two data streams, four intake channels |
@@ -364,7 +383,7 @@ After Phase 0 is complete, a pattern-lock checkpoint must occur before any Phase
 | `Database_Schema_Specification.md` | 125 tables (110 PG + 15 CH), 1,393 columns |
 | `Shared_Type_Definitions.md` lines 12-13 | 125 models, 1,393 fields, 14 domain modules |
 | `Scoring_Weights_Final_Update.json` | 12 area weights, 65 item weights, 315 sub-item budgets |
-| `Code_Patterns_Specification.md` | 10 code templates for agent consistency |
+| `Code_Patterns_Specification.md` | 18 code templates for agent consistency |
 | `API_Design_Specification.md` | REST API conventions |
 | `Authentication_Middleware_Specification.md` | JWT auth middleware patterns |
 | `Infrastructure_Specification.md` | Environment, containers, S3, secrets, production topology |

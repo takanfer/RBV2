@@ -213,5 +213,6 @@ When information conflicts, the document higher in this list wins. Full hierarch
 | 11 | `Database_Schema_Specification.md` | Migration-ready DDL for all PostgreSQL (110 tables) and ClickHouse (15 fact tables) |
 | 12 | `Shared_Type_Definitions.md` | Pydantic model reference — generated from DDL via `codegen/generate_models.py` (14 domain modules) |
 | 13 | `Service_Interface_Contracts.md` | Service interfaces for 15 services (Phases 0-6), data shapes, error conditions |
-| 14 | `Data_Onramp_Specification.md` | Two data streams, intake channels, vendor adapters, column mapping, review queue |
-| 15 | `scoring_config.json` | Machine-readable scoring structure (12 areas, 65 items, 315 sub-items, weights, tiers) |
+| 14 | `Deployment_Roadmap.md` | Phase scope authority: which services, DDL domains, and capabilities belong to each phase |
+| 15 | `Data_Onramp_Specification.md` | Two data streams, intake channels, vendor adapters, column mapping, review queue |
+| 16 | `scoring_config.json` | Machine-readable scoring structure (12 areas, 65 items, 315 sub-items, weights, tiers) |

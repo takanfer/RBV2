@@ -3,17 +3,17 @@
 Defines the JWT authentication middleware, claims schema, tenant resolution flow, and CORS configuration. Every agent implementing auth-related code must follow these patterns exactly.
 
 **Sources:**
-- `ADR-015-authentication.md` — managed auth provider, JWT issuance, role mapping (line 31), provider selection criteria
+- `ADR-015-authentication.md` — AWS Cognito, JWT issuance, role mapping (line 31), provider selection criteria
 - `Service_Interface_Contracts.md` §1 — AuthZ / Tenant Policy: `check_access`, `get_tenant_context`, `enforce_row_filter` (lines 36-72)
 - `Database_Schema_Specification.md` — `user_account` table (line 187): `user_id`, `tenant_id`, `email`, `role`, `auth_provider_id`
-- `phase-0-foundations.mdc` — JWT middleware at `src/api/dependencies/auth.py` (line 51), tenant context via `SET app.current_tenant_id` (line 57)
+- `phase-0-foundations.mdc` — JWT middleware at `src/api/dependencies/auth.py` (line 57), tenant context via `SET app.current_tenant_id` (line 63)
 - `Implementation_Tasks.md` — P0-T14 (FastAPI + JWT middleware), P0-T17 (auth provider integration)
 
 ---
 
 ## Authentication vs Authorization Boundary
 
-**Authentication** (this spec): Proving who the user is. The managed auth provider handles login, password management, MFA, and JWT issuance. The platform validates the JWT and extracts the user identity.
+**Authentication** (this spec): Proving who the user is. AWS Cognito (ADR-015) handles login, password management, MFA, and JWT issuance. The platform validates the Cognito-issued JWT and extracts the user identity.
 
 **Authorization** (Service_Interface_Contracts.md §1): Determining what the user can do. The AuthZ service checks permissions against the user's role, tenant, client, and assessment scope.
 
@@ -23,18 +23,22 @@ The middleware performs authentication. It does not perform authorization. Autho
 
 ## JWT Claims Schema
 
-The JWT issued by the auth provider must contain these claims:
+The JWT issued by AWS Cognito must contain these claims:
 
 | Claim | Type | Source | Description |
 |-------|------|--------|-------------|
-| `sub` | string (UUID) | Auth provider | User ID — maps to `user_account.user_id` via `auth_provider_id` |
-| `email` | string | Auth provider | User's email address |
-| `iss` | string | Auth provider | Issuer URL (validated against `AUTH_ISSUER_URL` env var) |
-| `aud` | string | Auth provider | Audience (validated against `AUTH_AUDIENCE` env var) |
-| `exp` | int (Unix timestamp) | Auth provider | Token expiration |
-| `iat` | int (Unix timestamp) | Auth provider | Token issued-at |
+| `sub` | string (UUID) | Cognito User Pool | User ID — maps to `user_account.user_id` via `auth_provider_id` |
+| `email` | string | Cognito User Pool | User's email address |
+| `iss` | string | Cognito | Issuer URL: `https://cognito-idp.{region}.amazonaws.com/{userPoolId}` |
+| `aud` | string | Cognito | App Client ID (validated against `COGNITO_APP_CLIENT_ID` env var) |
+| `exp` | int (Unix timestamp) | Cognito | Token expiration |
+| `iat` | int (Unix timestamp) | Cognito | Token issued-at |
 
-**Note on custom claims:** The auth provider's `sub` claim contains the provider-side user ID. The middleware resolves this to the platform's `user_account` record via the `auth_provider_id` column (`Database_Schema_Specification.md` line 193). Role and tenant_id are NOT in the JWT — they are looked up from the `user_account` table to prevent stale JWT claims from granting incorrect access.
+**Note on custom claims:** Cognito's `sub` claim contains the Cognito User Pool user ID. The middleware resolves this to the platform's `user_account` record via the `auth_provider_id` column (`Database_Schema_Specification.md` line 193). Role and tenant_id are NOT in the JWT — they are looked up from the `user_account` table to prevent stale JWT claims from granting incorrect access.
+
+**Cognito-specific URL derivation:** The issuer URL and JWKS URL are computed from `COGNITO_REGION` and `COGNITO_USER_POOL_ID`:
+- Issuer: `https://cognito-idp.{COGNITO_REGION}.amazonaws.com/{COGNITO_USER_POOL_ID}`
+- JWKS: `{issuer}/.well-known/jwks.json`
 
 ---
 
@@ -47,9 +51,9 @@ File: `src/api/dependencies/auth.py`
 ```
 1. Extract `Authorization: Bearer <token>` header
 2. Decode and validate JWT:
-   - Verify signature against JWKS keys from `AUTH_JWKS_URL`
-   - Verify `iss` matches `AUTH_ISSUER_URL`
-   - Verify `aud` matches `AUTH_AUDIENCE`
+   - Verify signature against JWKS keys from Cognito JWKS endpoint
+   - Verify `iss` matches computed Cognito issuer URL
+   - Verify `aud` matches `COGNITO_APP_CLIENT_ID`
    - Verify `exp` is in the future
 3. Extract `sub` (provider user ID) from validated claims
 4. Look up `user_account` by `auth_provider_id = sub`
@@ -67,7 +71,7 @@ File: `src/api/dependencies/auth.py`
    - role
    - scope restrictions
 7. Set PostgreSQL session variable: `SET app.current_tenant_id = '<tenant_id>'`
-   (enables RLS policies — phase-0-foundations.mdc line 57)
+   (enables RLS policies — phase-0-foundations.mdc line 63)
 ```
 
 ### FastAPI Dependency Chain
@@ -124,13 +128,13 @@ Source: `Database_Schema_Specification.md` line 192 — the DDL column is singul
 
 ## JWKS Key Caching
 
-The middleware fetches the auth provider's JWKS (JSON Web Key Set) from `AUTH_JWKS_URL` to validate JWT signatures. Keys are cached in memory with a TTL of 1 hour. On signature validation failure, the middleware refreshes the JWKS cache once before returning 401.
+The middleware fetches the Cognito JWKS (JSON Web Key Set) from `https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json` to validate JWT signatures. Keys are cached in memory with a TTL of 1 hour. On signature validation failure, the middleware refreshes the JWKS cache once before returning 401.
 
 ---
 
 ## Token Expiry and Refresh
 
-The platform does not handle token refresh. The auth provider manages refresh tokens. The client (frontend) is responsible for obtaining a new access token before the current one expires. If a request arrives with an expired JWT, the middleware returns 401 with code `token_expired`. The frontend then refreshes and retries.
+The platform does not handle token refresh. AWS Cognito manages refresh tokens. The client (frontend) is responsible for obtaining a new access token before the current one expires using the Cognito SDK or hosted UI. If a request arrives with an expired JWT, the middleware returns 401 with code `token_expired`. The frontend then refreshes and retries.
 
 ---
 

@@ -13,7 +13,7 @@ This document covers **authorization** (what can this user do?). For **authentic
 - `Database_Schema_Specification.md` line 187–198 — `user_account` table (role enum: admin, consultant, analyst, client_viewer)
 - `UI_UX_Specification.md` lines 16–22 — Role definitions and access scopes
 - `spec_1` §16.1 (lines 1227–1233) — Tenant and data security: scopes, role-based permissions, row-level access, restricted marts
-- `phase-0-foundations.mdc` lines 60–62 — RLS policies, tenant context via session variable
+- `phase-0-foundations.mdc` lines 61–63 — RLS policies, tenant context via session variable
 
 ---
 

@@ -9,10 +9,10 @@ Defines the exact code patterns every agent must follow when implementing any se
 - `Authentication_Middleware_Specification.md` — dependency chain, CurrentUser, TenantContext
 - `Observability_Specification.md` — structured logging, correlation IDs, audit logging
 - `Infrastructure_Specification.md` — environment variables, Pydantic Settings
-- `phase-0-foundations.mdc` — SQLAlchemy Core (line 42), Pydantic Settings (line 48), testing rules (lines 62-67), code quality (lines 69-74)
+- `phase-0-foundations.mdc` — SQLAlchemy Core (line 48), Pydantic Settings (line 54), testing rules (lines 68-73), code quality (lines 75-80)
 - `ADR-002-api-framework.md` — FastAPI, Pydantic-native schemas, dependency injection
 - `ADR-014-task-queue.md` — Celery tasks co-located with services (line 45)
-- `rbv2-project.mdc` — DDL-first pipeline (lines 145-154), working principles (lines 156-164)
+- `rbv2-project.mdc` — DDL-first pipeline (lines 146-155), working principles (lines 157-165)
 
 ---
 
@@ -209,7 +209,7 @@ async def update_assessment_status(
 
 ## 4. Repository Function Pattern
 
-Source: `phase-0-foundations.mdc` line 42 (SQLAlchemy Core, not ORM)
+Source: `phase-0-foundations.mdc` line 48 (SQLAlchemy Core, not ORM)
 
 File location: `src/services/{name}/repository.py`
 
@@ -361,7 +361,7 @@ async def service_error_handler(request: Request, exc: ServiceError):
 
 ## 6. Test Pattern
 
-Source: `Project_Skeleton_Specification.md` §6 (lines 314-334), `phase-0-foundations.mdc` lines 62-67
+Source: `Project_Skeleton_Specification.md` §6 (lines 314-334), `phase-0-foundations.mdc` lines 68-73
 
 ### Unit Test
 
@@ -544,7 +544,7 @@ def run_import_pipeline(self, ingestion_id: str, correlation_id: str | None = No
 
 ## 9. Pydantic Settings Pattern
 
-Source: `phase-0-foundations.mdc` line 48, `Infrastructure_Specification.md`
+Source: `phase-0-foundations.mdc` line 54, `Infrastructure_Specification.md`
 
 File location: `src/shared/config/settings.py`
 
@@ -575,6 +575,9 @@ class Settings(BaseSettings):
     auth_issuer_url: str = ""
     auth_audience: str = ""
     auth_jwks_url: str = ""
+    cognito_user_pool_id: str = ""
+    cognito_region: str = ""
+    cognito_app_client_id: str = ""
 
     log_level: str = "INFO"
     log_format: str = "json"
@@ -656,3 +659,382 @@ app.include_router(engagements.router)
 - The `ServiceError` exception handler is registered on the app, catching all service exceptions uniformly.
 - Route modules are included via `app.include_router()` at the bottom.
 - The `lifespan` context manager handles startup/shutdown (DB pool initialization, cleanup).
+
+---
+
+## 11. PostgreSQL Connection Factory
+
+Source: `phase-0-foundations.mdc` line 48 (SQLAlchemy Core), `Infrastructure_Specification.md`
+
+File location: `src/shared/db/postgres.py`
+
+```python
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+
+from src.shared.config.settings import settings
+
+_engine: AsyncEngine | None = None
+_session_factory: async_sessionmaker[AsyncSession] | None = None
+
+
+def get_engine() -> AsyncEngine:
+    global _engine
+    if _engine is None:
+        _engine = create_async_engine(
+            settings.database_url,
+            pool_size=settings.database_pool_size,
+            max_overflow=settings.database_max_overflow,
+            echo=False,
+        )
+    return _engine
+
+
+def get_session_factory() -> async_sessionmaker[AsyncSession]:
+    global _session_factory
+    if _session_factory is None:
+        _session_factory = async_sessionmaker(
+            get_engine(),
+            class_=AsyncSession,
+            expire_on_commit=False,
+        )
+    return _session_factory
+
+
+async def dispose_engine() -> None:
+    global _engine, _session_factory
+    if _engine is not None:
+        await _engine.dispose()
+        _engine = None
+        _session_factory = None
+```
+
+### Rules
+
+- One engine per process. Created lazily on first use.
+- `expire_on_commit=False` because we use SQLAlchemy Core (no ORM identity map to expire).
+- `dispose_engine()` is called from the FastAPI lifespan shutdown handler.
+- Pool size and overflow are sourced from `Settings` (§9), not hardcoded.
+- The `database_url` must use the `postgresql+asyncpg://` scheme for async support.
+
+---
+
+## 12. get_db Dependency and Tenant Context
+
+Source: `Authentication_Middleware_Specification.md`, `phase-0-foundations.mdc` line 63
+
+File location: `src/api/dependencies/db.py`
+
+```python
+from collections.abc import AsyncGenerator
+
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.shared.db.postgres import get_session_factory
+
+
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    factory = get_session_factory()
+    async with factory() as session:
+        yield session
+```
+
+Tenant context injection (in `src/api/dependencies/auth.py`, called by `get_tenant_context`):
+
+```python
+async def _set_tenant_context(db: AsyncSession, tenant_id: str) -> None:
+    await db.execute(text(f"SET app.current_tenant_id = '{tenant_id}'"))
+```
+
+This is called within the `get_tenant_context` dependency after JWT validation, before the route handler runs. It enables RLS policies for the entire request.
+
+### Rules
+
+- `get_db` yields a single session per request (FastAPI dependency lifecycle).
+- The session is NOT committed inside `get_db`. Service functions own the transaction boundary (§3).
+- Tenant context is set via `SET app.current_tenant_id` on the PostgreSQL session, enabling RLS.
+- Use parameterized queries for all data operations, but `SET` is a session variable assignment (not a data query) and uses string formatting.
+
+---
+
+## 13. ClickHouse Client Factory
+
+Source: `phase-0-foundations.mdc` line 49 (clickhouse-connect), `Infrastructure_Specification.md`
+
+File location: `src/shared/db/clickhouse.py`
+
+```python
+import clickhouse_connect
+from clickhouse_connect.driver import Client
+
+from src.shared.config.settings import settings
+
+_client: Client | None = None
+
+
+def get_clickhouse_client() -> Client:
+    global _client
+    if _client is None:
+        _client = clickhouse_connect.get_client(
+            host=settings.clickhouse_host,
+            port=settings.clickhouse_port,
+            database=settings.clickhouse_database,
+            username=settings.clickhouse_user,
+            password=settings.clickhouse_password,
+        )
+    return _client
+
+
+def close_clickhouse_client() -> None:
+    global _client
+    if _client is not None:
+        _client.close()
+        _client = None
+```
+
+### Rules
+
+- One client per process. Created lazily on first use.
+- `close_clickhouse_client()` is called from the FastAPI lifespan shutdown handler.
+- ClickHouse is read-heavy. Most writes are bulk inserts from ETL pipelines (Celery tasks), not request-scoped.
+- All connection parameters come from `Settings` (§9).
+- ClickHouse does not use SQLAlchemy. All queries use the `clickhouse_connect` client API directly.
+
+---
+
+## 14. SQLAlchemy Core Table Definitions
+
+Source: `Database_Schema_Specification.md`, `phase-0-foundations.mdc` line 48
+
+File location: `src/shared/db/tables.py`
+
+```python
+import sqlalchemy as sa
+
+metadata = sa.MetaData()
+
+tenant_table = sa.Table(
+    "tenant",
+    metadata,
+    sa.Column("tenant_id", sa.dialects.postgresql.UUID, primary_key=True),
+    sa.Column("name", sa.Text, nullable=False),
+    sa.Column("slug", sa.Text, nullable=False, unique=True),
+    sa.Column("is_active", sa.Boolean, nullable=False, server_default="true"),
+    sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
+    sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
+)
+
+user_account_table = sa.Table(
+    "user_account",
+    metadata,
+    sa.Column("user_id", sa.dialects.postgresql.UUID, primary_key=True),
+    sa.Column("tenant_id", sa.dialects.postgresql.UUID, sa.ForeignKey("tenant.tenant_id"), nullable=False),
+    sa.Column("email", sa.Text, nullable=False),
+    sa.Column("role", sa.Text, nullable=False),
+    sa.Column("display_name", sa.Text),
+    sa.Column("auth_provider_id", sa.Text),
+    sa.Column("is_active", sa.Boolean, nullable=False, server_default="true"),
+    sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
+    sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
+)
+
+audit_log_table = sa.Table(
+    "audit_log",
+    metadata,
+    sa.Column("log_id", sa.dialects.postgresql.UUID, primary_key=True),
+    sa.Column("tenant_id", sa.dialects.postgresql.UUID, sa.ForeignKey("tenant.tenant_id"), nullable=False),
+    sa.Column("user_id", sa.dialects.postgresql.UUID),
+    sa.Column("action", sa.Text, nullable=False),
+    sa.Column("entity_type", sa.Text, nullable=False),
+    sa.Column("entity_id", sa.dialects.postgresql.UUID, nullable=False),
+    sa.Column("before_value", sa.dialects.postgresql.JSONB),
+    sa.Column("after_value", sa.dialects.postgresql.JSONB),
+    sa.Column("reason", sa.Text),
+    sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
+)
+```
+
+### Rules
+
+- One shared `metadata` object. All tables are defined in this file.
+- Table objects are hand-written to match the DDL in `Database_Schema_Specification.md` exactly. Column names, types, and constraints must be verified against the DDL.
+- This file is NOT generated by `codegen/generate_models.py`. The generator produces Pydantic models, not SQLAlchemy table definitions.
+- Add tables incrementally as each migration creates them: Phase 0 adds Domain 1 + Layer A + Phase 0 Domain 2/10 tables; Phase 1 adds Domains 2-13.
+- Repository functions import specific tables from this module (see §4).
+
+---
+
+## 15. S3 Storage Wrapper
+
+Source: `phase-0-foundations.mdc` line 50 (boto3, MinIO), `Infrastructure_Specification.md`
+
+File location: `src/shared/storage/s3.py`
+
+```python
+from typing import BinaryIO
+
+import boto3
+from botocore.exceptions import ClientError
+
+from src.shared.config.settings import settings
+
+_s3_client = None
+
+
+def _get_client():
+    global _s3_client
+    if _s3_client is None:
+        _s3_client = boto3.client(
+            "s3",
+            endpoint_url=settings.s3_endpoint_url,
+            aws_access_key_id=settings.s3_access_key,
+            aws_secret_access_key=settings.s3_secret_key,
+        )
+    return _s3_client
+
+
+def upload_file(
+    bucket: str, key: str, body: BinaryIO, content_type: str = "application/octet-stream"
+) -> str:
+    _get_client().upload_fileobj(
+        body, bucket, key, ExtraArgs={"ContentType": content_type}
+    )
+    return f"s3://{bucket}/{key}"
+
+
+def download_file(bucket: str, key: str) -> bytes:
+    response = _get_client().get_object(Bucket=bucket, Key=key)
+    return response["Body"].read()
+
+
+def file_exists(bucket: str, key: str) -> bool:
+    try:
+        _get_client().head_object(Bucket=bucket, Key=key)
+        return True
+    except ClientError:
+        return False
+
+
+def list_objects(bucket: str, prefix: str) -> list[str]:
+    response = _get_client().list_objects_v2(Bucket=bucket, Prefix=prefix)
+    return [obj["Key"] for obj in response.get("Contents", [])]
+```
+
+### Rules
+
+- S3 client is created lazily. Local dev uses MinIO (S3-compatible) via `endpoint_url`.
+- `upload_file` returns the full `s3://` URI for storage in database columns.
+- All S3 operations are synchronous (boto3 default). For large uploads in request handlers, delegate to a Celery task.
+- Bucket names come from `Settings` (§9). Key structure follows `Infrastructure_Specification.md` (e.g., `{tenant_id}/evidence/{assessment_id}/{filename}`).
+
+---
+
+## 16. Celery App Factory
+
+Source: `ADR-014-task-queue.md`, `phase-0-foundations.mdc` line 56
+
+File location: `src/shared/celery_app.py`
+
+```python
+from celery import Celery
+
+from src.shared.config.settings import settings
+
+celery_app = Celery(
+    "partners",
+    broker=settings.redis_url,
+    backend=settings.celery_result_backend,
+)
+
+celery_app.conf.update(
+    task_serializer="json",
+    result_serializer="json",
+    accept_content=["json"],
+    timezone="UTC",
+    enable_utc=True,
+    task_track_started=True,
+    task_acks_late=True,
+    worker_prefetch_multiplier=1,
+)
+
+celery_app.autodiscover_tasks(
+    [
+        "src.services.engagement",
+        "src.services.import_mapping",
+        "src.services.temporal_state",
+        "src.services.metric_engine",
+        "src.services.scoring_engine",
+        "src.services.finding_compiler",
+        "src.services.impact_engine",
+        "src.services.report_rendering",
+    ]
+)
+```
+
+### Rules
+
+- One `celery_app` instance imported by all task modules.
+- `autodiscover_tasks` lists all services that define `tasks.py` files. Update this list as new services are added in later phases.
+- `task_acks_late=True` and `worker_prefetch_multiplier=1` ensure tasks are not lost if a worker crashes mid-execution.
+- Broker and backend URLs come from `Settings` (§9).
+- JSON serialization only (no pickle) for security and debuggability.
+
+---
+
+## 17. Worker Entry Point
+
+Source: `ADR-014-task-queue.md`, `phase-0-foundations.mdc` line 56
+
+File location: `src/worker.py`
+
+```python
+from src.shared.celery_app import celery_app  # noqa: F401
+```
+
+Started via: `celery -A src.worker worker --loglevel=info`
+
+### Rules
+
+- The worker entry point imports the celery app, which triggers `autodiscover_tasks`.
+- The file contains only the import. No additional logic.
+- The `# noqa: F401` suppresses the unused-import lint warning (the import has the side effect of registering tasks).
+
+---
+
+## 18. Auth Routes
+
+Source: `Authentication_Middleware_Specification.md`, `API_Design_Specification.md`
+
+File location: `src/api/routes/auth.py`
+
+```python
+from fastapi import APIRouter, Depends
+
+from src.api.dependencies.auth import get_current_user, CurrentUser
+
+router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+
+@router.get(
+    "/me",
+    response_model=CurrentUser,
+    status_code=200,
+    summary="Get current authenticated user",
+)
+async def get_me(
+    user: CurrentUser = Depends(get_current_user),
+):
+    return user
+```
+
+### Rules
+
+- `GET /api/auth/me` is the only auth route in the platform API. Login/registration are handled by AWS Cognito (ADR-015).
+- This endpoint validates that the JWT is valid and returns the decoded user identity.
+- Used by the frontend to confirm authentication state on page load.
+- The `CurrentUser` model is defined in `src/api/dependencies/auth.py` and contains: `user_id`, `tenant_id`, `email`, `role`, `display_name`.

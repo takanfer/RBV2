@@ -20,5 +20,5 @@ This directory contains all locked technology and architecture decisions for the
 | [ADR-012](ADR-012-ci-cd.md) | GitHub Actions | Accepted |
 | [ADR-013](ADR-013-cloud-provider.md) | AWS (RDS, S3, ClickHouse Cloud, ECS) | Accepted |
 | [ADR-014](ADR-014-task-queue.md) | Celery + Redis | Accepted |
-| [ADR-015](ADR-015-authentication.md) | Managed auth provider (JWT) | Accepted |
+| [ADR-015](ADR-015-authentication.md) | AWS Cognito (JWT) | Accepted |
 | [ADR-016](ADR-016-report-rendering.md) | WeasyPrint + python-pptx | Accepted |

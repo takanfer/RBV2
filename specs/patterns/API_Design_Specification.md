@@ -7,7 +7,7 @@ Defines the HTTP API surface conventions for all FastAPI endpoints. Every agent 
 - `Service_Interface_Contracts.md` — 15 services, 85 operations, cross-cutting error categories (lines 490-501)
 - `Project_Skeleton_Specification.md` — route files in `src/api/routes/` (line 114), one module per domain
 - `ADR-015-authentication.md` — JWT validation, role mapping
-- `phase-0-foundations.mdc` — FastAPI at `src/api/main.py` (line 47)
+- `phase-0-foundations.mdc` — FastAPI at `src/api/main.py` (line 53)
 
 ---
 

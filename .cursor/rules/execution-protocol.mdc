@@ -13,9 +13,10 @@ This rule governs how an agent picks up tasks, implements them, verifies complet
 
 1. **Read the task definition** from `planning/Implementation_Tasks.md`. Identify the exact task ID, "What," "Files," "Refs," "Depends on," and "Done when" fields.
 2. **Verify all dependencies are complete.** Check that every task listed in "Depends on" has been marked complete with a commit hash. If any dependency is incomplete, STOP and report the blocker.
-3. **Read every file listed in "Refs."** Not from memory. Open each file and read the relevant sections cited in the task. This is mandatory — see `agent-behavior.mdc` "Do The Research."
-4. **Read the phase rule.** Load the relevant `.cursor/rules/phase-N-*.mdc` file for the current phase.
-5. **State your plan.** Before writing any code, state:
+3. **Check for conflicts.** If a task in `Implementation_Tasks.md` contradicts the `Deployment_Roadmap.md` or any specification document listed in `rbv2-project.mdc`, STOP and flag the conflict. Do not follow the task — the upstream document wins.
+4. **Read every file listed in "Refs."** Not from memory. Open each file and read the relevant sections cited in the task. This is mandatory — see `agent-behavior.mdc` "Do The Research."
+5. **Read the phase rule.** Load the relevant `.cursor/rules/phase-N-*.mdc` file for the current phase.
+6. **State your plan.** Before writing any code, state:
    - What you will create or modify (exact file paths)
    - What patterns you will follow (cite the Code Patterns section number)
    - What you will test

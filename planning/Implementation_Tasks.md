@@ -11,7 +11,7 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
 
 | Phase | Total | Done | In Progress | Not Started |
 |-------|-------|------|-------------|-------------|
-| 0 — Foundations | 18 | 0 | 0 | 18 |
+| 0 — Foundations | 20 | 0 | 0 | 20 |
 | 0-CK — Post-Phase 0 Checkpoint | 3 | 0 | 0 | 3 |
 | 1 — Canonical Core & Import | 20 | 0 | 0 | 20 |
 | 2 — Temporal Unit Spine | 12 | 0 | 0 | 12 |
@@ -19,7 +19,7 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
 | 4 — Workspace & Reporting | 18 | 0 | 0 | 18 |
 | 5 — Client Portal & Longitudinal | 15 | 0 | 0 | 15 |
 | 6 — Door Opener & Extensibility | 12 | 0 | 0 | 12 |
-| **Total** | **123** | **0** | **0** | **123** |
+| **Total** | **125** | **0** | **0** | **125** |
 
 ---
 
@@ -54,49 +54,49 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
 - [ ] **P0-T02: Docker Compose local dev stack**
   - What: Create `docker-compose.yml` with PostgreSQL 16, ClickHouse, MinIO, and Redis for local development
   - Files: `docker/docker-compose.yml`, `docker/docker-compose.test.yml`
-  - Refs: `Infrastructure_Specification.md` (Docker Compose service definitions, ports, images), `Project_Skeleton_Specification.md` §5.2 (lines 292-304), `phase-0-foundations.mdc` line 49, `ADR-008` (Docker Compose), `ADR-014` (Celery + Redis)
+  - Refs: `Infrastructure_Specification.md` (Docker Compose service definitions, ports, images), `Development_Environment_Specification.md` §1 (Docker Compose template), `Project_Skeleton_Specification.md` §5.2 (lines 292-304), `phase-0-foundations.mdc` line 55, `ADR-008` (Docker Compose), `ADR-014` (Celery + Redis)
   - Depends on: P0-T01
   - Done when: `docker compose up` starts all 4 services (PG, CH, MinIO, Redis), health checks pass, can connect to each
 
 - [ ] **P0-T03: Environment configuration**
   - What: Create `.env.example` and Pydantic Settings config module for all connection strings, Redis URL, and auth provider settings (issuer URL, audience, JWKS URL)
   - Files: `.env.example`, `src/shared/config/__init__.py`, `src/shared/config/settings.py`
-  - Refs: `Infrastructure_Specification.md` (complete env var inventory, defaults, secrets boundary), `Code_Patterns_Specification.md` §9 (Pydantic Settings pattern), `phase-0-foundations.mdc` line 48 (Pydantic Settings, env vars), `Project_Skeleton_Specification.md` §2 (line 62, .env), `ADR-014` (Redis connection), `ADR-015` (auth provider config)
+  - Refs: `Infrastructure_Specification.md` (complete env var inventory, defaults, secrets boundary), `Code_Patterns_Specification.md` §9 (Pydantic Settings pattern), `phase-0-foundations.mdc` line 54 (Pydantic Settings, env vars), `Project_Skeleton_Specification.md` §2 (line 62, .env), `ADR-014` (Redis connection), `ADR-015` (AWS Cognito config)
   - Depends on: P0-T01
   - Done when: Settings load from environment variables, all connection strings configurable, Redis URL and auth provider settings present
 
 - [ ] **P0-T04: PostgreSQL connection factory**
   - What: SQLAlchemy Core engine and session factory with tenant context support
   - Files: `src/shared/db/__init__.py`, `src/shared/db/postgres.py`
-  - Refs: `phase-0-foundations.mdc` line 40 (SQLAlchemy Core, not ORM), line 53 (tenant context via `SET app.current_tenant_id`)
+  - Refs: `phase-0-foundations.mdc` line 48 (SQLAlchemy Core, not ORM), line 63 (tenant context via `SET app.current_tenant_id`), `Code_Patterns_Specification.md` §11 (PostgreSQL connection factory)
   - Depends on: P0-T02, P0-T03
   - Done when: Can create engine, get session, set tenant context, execute queries against local PG
 
 - [ ] **P0-T05: ClickHouse connection factory**
   - What: clickhouse-connect client factory
   - Files: `src/shared/db/clickhouse.py`
-  - Refs: `phase-0-foundations.mdc` line 41 (clickhouse-connect)
+  - Refs: `phase-0-foundations.mdc` line 49 (clickhouse-connect), `Code_Patterns_Specification.md` §13 (ClickHouse client factory)
   - Depends on: P0-T02, P0-T03
   - Done when: Can create client, execute queries against local ClickHouse
 
 - [ ] **P0-T06: S3 storage wrapper**
   - What: boto3 wrapper for raw evidence storage, using MinIO for local dev
   - Files: `src/shared/storage/__init__.py`, `src/shared/storage/s3.py`
-  - Refs: `phase-0-foundations.mdc` line 42 (boto3, MinIO)
+  - Refs: `phase-0-foundations.mdc` line 50 (boto3, MinIO), `Code_Patterns_Specification.md` §15 (S3 storage wrapper)
   - Depends on: P0-T02, P0-T03
   - Done when: Can upload/download/list objects against local MinIO
 
 - [ ] **P0-T07: Alembic initialization**
   - What: Set up Alembic for PostgreSQL migrations
   - Files: `db/postgresql/migrations/env.py`, `db/postgresql/migrations/alembic.ini`, `db/postgresql/migrations/versions/`
-  - Refs: `phase-0-foundations.mdc` line 43 (Alembic for PG migrations), `Project_Skeleton_Specification.md` §2 (lines 83-89)
+  - Refs: `phase-0-foundations.mdc` line 51 (Alembic for PG migrations), `Development_Environment_Specification.md` §3 (Alembic workflow, env.py, alembic.ini templates), `Project_Skeleton_Specification.md` §2 (lines 83-89)
   - Depends on: P0-T04
   - Done when: `alembic upgrade head` and `alembic downgrade -1` run without error on empty database
 
 - [ ] **P0-T08: Tenancy and identity migration**
   - What: Alembic migration for `tenant`, `user_account`, `audit_log` tables (3 tables) with RLS policies
   - Files: `db/postgresql/migrations/versions/001_tenancy_identity.py`
-  - Refs: `Database_Schema_Specification.md` — `tenant` (line 166 heading, DDL line 171), `user_account` (line 187), `audit_log` (line 207). `phase-0-foundations.mdc` lines 51-56 (schema rules: tenant_id, RLS, uuid, timestamptz, bitemporal)
+  - Refs: `Database_Schema_Specification.md` — `tenant` (line 166 heading, DDL line 171), `user_account` (line 187), `audit_log` (line 207). `phase-0-foundations.mdc` lines 59-66 (schema rules: tenant_id, RLS, uuid, timestamptz, bitemporal)
   - Depends on: P0-T07
   - Done when: Migration runs up/down cleanly, RLS policies enforced, tenant isolation verified
 
@@ -107,66 +107,80 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
   - Depends on: P0-T08
   - Done when: Migration runs up/down cleanly, all 6 tables created with indexes
 
+- [ ] **P0-T09a: Property model migration**
+  - What: Alembic migration for property model tables from Domain 2: `client`, `portfolio`, `property` (3 tables) with RLS policies
+  - Files: `db/postgresql/migrations/versions/003_property_model.py`
+  - Refs: `Database_Schema_Specification.md` — `client` (DDL line 232), `portfolio` (DDL line 252), `property` (DDL line 267). `Deployment_Roadmap.md` DDL Scope Per Phase (Phase 0: Domain 2 partial). `phase-0-foundations.mdc` lines 59-66 (schema rules)
+  - Depends on: P0-T08
+  - Done when: Migration runs up/down cleanly, RLS policies enforced on all 3 tables, tenant isolation verified
+
+- [ ] **P0-T09b: Assessment model migration**
+  - What: Alembic migration for assessment tables from Domain 10: `assessment`, `assessment_data_coverage` (2 tables) with RLS policies
+  - Files: `db/postgresql/migrations/versions/004_assessment_model.py`
+  - Refs: `Database_Schema_Specification.md` — `assessment` (DDL line 1916), `assessment_data_coverage` (DDL line 1941). `Deployment_Roadmap.md` DDL Scope Per Phase (Phase 0: Domain 10 partial). `phase-0-foundations.mdc` lines 59-66 (schema rules)
+  - Depends on: P0-T09a (property FK required by assessment)
+  - Done when: Migration runs up/down cleanly, RLS policies enforced, assessment.property_id FK references property table
+
 - [ ] **P0-T10: ClickHouse initial schema**
   - What: Versioned SQL migration creating the ClickHouse database and initial configuration
   - Files: `db/clickhouse/migrations/001_initial_schema.sql`
-  - Refs: `phase-0-foundations.mdc` line 44 (CH migrations are versioned SQL, no Alembic), `Database_Schema_Specification.md` Layer C (line 2500)
+  - Refs: `phase-0-foundations.mdc` line 52 (CH migrations are versioned SQL, no Alembic), `Database_Schema_Specification.md` Layer C (line 2500)
   - Depends on: P0-T05
   - Done when: Migration runs, database exists, can create and query test table
 
 - [ ] **P0-T11: Generate Pydantic models for Phase 0 tables**
-  - What: Run `codegen/generate_models.py` to generate models for tenancy/identity and raw evidence tables, copy to `src/shared/models/`
-  - Files: `src/shared/models/infrastructure.py`, `src/shared/models/raw_evidence.py`
-  - Refs: `Project_Skeleton_Specification.md` §8 (lines 363-389, model generation pipeline), `rbv2-project.mdc` lines 148-153 (DDL-first pipeline)
-  - Depends on: P0-T08, P0-T09
-  - Done when: Generated models match DDL, import without error, all fields present
+  - What: Run `codegen/generate_models.py` to generate models for tenancy/identity, raw evidence, property model, and assessment tables, copy to `src/shared/models/`
+  - Files: `src/shared/models/infrastructure.py`, `src/shared/models/raw_evidence.py`, `src/shared/models/asset.py`, `src/shared/models/assessment.py`
+  - Refs: `Project_Skeleton_Specification.md` §8 (lines 363-389, model generation pipeline), `rbv2-project.mdc` lines 149-154 (DDL-first pipeline)
+  - Depends on: P0-T08, P0-T09, P0-T09a, P0-T09b
+  - Done when: Generated models match DDL for all Phase 0 tables, import without error, all fields present
 
 - [ ] **P0-T12: AuthZ service**
   - What: Implement AuthZ / Tenant Policy service with 3 operations: `check_access`, `get_tenant_context`, `enforce_row_filter`
-  - Files: `src/services/authz/__init__.py`, `src/services/authz/service.py`, `src/services/authz/repository.py`
-  - Refs: `Code_Patterns_Specification.md` §1 (service module structure), §3 (service function pattern), §4 (repository function pattern), §5 (exception pattern), `Service_Interface_Contracts.md` §1 (lines 36-72) — 3 operations, security model, scope levels
-  - Depends on: P0-T04, P0-T08, P0-T11
+  - Files: `src/services/authz/__init__.py`, `src/services/authz/service.py`, `src/services/authz/repository.py`, `src/services/authz/exceptions.py`
+  - Refs: `Code_Patterns_Specification.md` §1 (service module structure), §3 (service function pattern), §4 (repository function pattern), §5 (exception pattern), §14 (table definitions), `Service_Interface_Contracts.md` §1 (lines 36-72) — 3 operations, security model, scope levels
+  - Depends on: P0-T04, P0-T08, P0-T09a, P0-T11
   - Done when: All 3 operations implemented, tenant isolation enforced, error conditions handled
 
 - [ ] **P0-T13: Engagement service**
   - What: Implement Engagement service with 6 operations: `create_assessment`, `update_assessment_status`, `get_assessment`, `update_data_coverage`, `configure_comp_set`, `get_run_status`
-  - Files: `src/services/engagement/__init__.py`, `src/services/engagement/service.py`, `src/services/engagement/repository.py`
-  - Refs: `Code_Patterns_Specification.md` §1 (service module structure), §3 (service function pattern), §4 (repository function pattern), §5 (exception pattern), `Service_Interface_Contracts.md` §2 (lines 75-109) — 6 operations, assessment types, status lifecycle
-  - Depends on: P0-T04, P0-T08, P0-T11, P0-T12
+  - Files: `src/services/engagement/__init__.py`, `src/services/engagement/service.py`, `src/services/engagement/repository.py`, `src/services/engagement/exceptions.py`
+  - Refs: `Code_Patterns_Specification.md` §1 (service module structure), §3 (service function pattern), §4 (repository function pattern), §5 (exception pattern), §14 (table definitions), `Service_Interface_Contracts.md` §2 (lines 75-109) — 6 operations, assessment types, status lifecycle
+  - Depends on: P0-T04, P0-T09b, P0-T11, P0-T12
   - Done when: All 6 operations implemented, status transitions validated, error conditions handled
 
 - [ ] **P0-T14: FastAPI app and API routes**
   - What: Create FastAPI app entry point with JWT auth middleware and route modules for AuthZ and Engagement services
-  - Files: `src/api/main.py`, `src/api/dependencies/__init__.py`, `src/api/dependencies/auth.py`, `src/api/routes/__init__.py`, `src/api/routes/auth.py`, `src/api/routes/engagements.py`
-  - Refs: `Code_Patterns_Specification.md` §2 (route function pattern), §5 (exception pattern), §10 (FastAPI app initialization), `API_Design_Specification.md` (URL patterns, pagination, error envelope, OpenAPI rules), `Authentication_Middleware_Specification.md` (JWT claims, dependency chain, CORS, error codes), `phase-0-foundations.mdc` line 47 (FastAPI, `src/api/main.py`), `ADR-015` (JWT middleware validates tokens, extracts user_id), `Service_Interface_Contracts.md` cross-cutting error categories (lines 490-501), audit logging (line 505)
+  - Files: `src/api/main.py`, `src/api/dependencies/__init__.py`, `src/api/dependencies/auth.py`, `src/api/dependencies/db.py`, `src/api/routes/__init__.py`, `src/api/routes/auth.py`, `src/api/routes/engagements.py`, `src/api/schemas/__init__.py`, `src/api/schemas/pagination.py`
+  - Refs: `Code_Patterns_Specification.md` §2 (route function pattern), §5 (exception pattern), §10 (FastAPI app initialization), §11 (PostgreSQL connection factory), §12 (get_db dependency), §18 (auth routes), `API_Design_Specification.md` (URL patterns, pagination, error envelope, OpenAPI rules), `Authentication_Middleware_Specification.md` (JWT claims, dependency chain, CORS, error codes), `phase-0-foundations.mdc` line 53 (FastAPI, `src/api/main.py`), `ADR-015` (AWS Cognito JWT validation), `Service_Interface_Contracts.md` cross-cutting error categories (lines 490-501), audit logging (line 505)
   - Depends on: P0-T12, P0-T13
-  - Done when: API starts, JWT middleware validates tokens and rejects invalid ones, routes return correct responses, OpenAPI docs render, error categories return correct HTTP codes
+  - Done when: API starts, JWT middleware validates Cognito tokens and rejects invalid ones, routes return correct responses, OpenAPI docs render, error categories return correct HTTP codes
 
 - [ ] **P0-T15: CI workflow and Phase 0 tests**
   - What: GitHub Actions CI workflow + tests for migrations, tenant isolation, S3 integration, Celery task execution, JWT auth
-  - Files: `.github/workflows/ci.yml`, `tests/unit/test_authz.py`, `tests/unit/test_engagement.py`, `tests/integration/test_migrations.py`, `tests/integration/test_s3.py`, `tests/integration/test_celery.py`, `tests/unit/test_auth_middleware.py`
-  - Refs: `Code_Patterns_Specification.md` §6 (test pattern), `Project_Skeleton_Specification.md` §7.1 (lines 333-343, CI steps), `phase-0-foundations.mdc` lines 62-65 (testing rules)
+  - Files: `.github/workflows/ci.yml`, `tests/unit/test_authz.py`, `tests/unit/test_engagement.py`, `tests/integration/test_migrations.py`, `tests/integration/test_s3.py`, `tests/integration/test_celery.py`, `tests/unit/test_auth_middleware.py`, `tests/conftest.py`
+  - Refs: `Code_Patterns_Specification.md` §6 (test pattern), `Development_Environment_Specification.md` §7 (CI workflow template), `Project_Skeleton_Specification.md` §7.1 (lines 333-343, CI steps), `phase-0-foundations.mdc` lines 68-73 (testing rules)
   - Depends on: P0-T12, P0-T13, P0-T14, P0-T16, P0-T17
   - Done when: CI pipeline runs ruff check + ruff format + pytest, all tests pass, migration up/down tested, tenant isolation tested, S3 integration tested, Celery task dispatch/execution tested, JWT validation tested
 
 - [ ] **P0-T16: Celery worker and Redis connection**
   - What: Set up Celery app configuration, Redis connection, and worker entry point. Define a sample task to verify the pipeline works.
   - Files: `src/worker.py`, `src/shared/celery_app.py`
-  - Refs: `Code_Patterns_Specification.md` §8 (Celery task pattern), `ADR-014` (Celery + Redis architecture, task patterns, worker entry point), `phase-0-foundations.mdc` line 49 (Celery + Redis)
+  - Refs: `Code_Patterns_Specification.md` §8 (Celery task pattern), §16 (Celery app factory), §17 (worker entry point), `ADR-014` (Celery + Redis architecture, task patterns, worker entry point), `phase-0-foundations.mdc` line 56 (Celery + Redis)
   - Depends on: P0-T02 (Redis in Docker Compose), P0-T03 (Redis URL in settings)
   - Done when: Celery worker starts, connects to Redis, can dispatch and execute a test task, task result is retrievable
 
-- [ ] **P0-T17: Auth provider integration**
-  - What: Select and configure managed auth provider (Auth0, Clerk, or Cognito). Set up tenant/org, create test users with roles matching `user_account.role` enum (admin, consultant, analyst, client_viewer). Configure JWT issuer/audience.
-  - Files: `.env.example` (auth provider settings), documentation of provider setup steps
-  - Refs: `Authentication_Middleware_Specification.md` (JWT claims schema, JWKS caching, token validation), `ADR-015` (managed auth provider, JWT validation, role mapping, provider selection criteria), `Database_Schema_Specification.md` — `user_account.role` enum (line 192)
+- [ ] **P0-T17: AWS Cognito integration**
+  - What: Configure AWS Cognito User Pool for authentication. Create User Pool with app client, configure hosted UI or custom domain. Create test users with roles matching `user_account.role` enum (admin, consultant, analyst, client_viewer) via Cognito groups. Set `COGNITO_USER_POOL_ID`, `COGNITO_REGION`, `COGNITO_APP_CLIENT_ID` in `.env.example`.
+  - Files: `.env.example` (Cognito settings), documentation of Cognito setup steps
+  - Refs: `Authentication_Middleware_Specification.md` (JWT claims schema, JWKS caching, Cognito token validation), `ADR-015` (AWS Cognito, JWT validation, role mapping), `Database_Schema_Specification.md` — `user_account.role` enum (line 192), `Infrastructure_Specification.md` (Cognito env vars)
   - Depends on: P0-T03
-  - Done when: Auth provider configured, test users created for each role, JWTs can be obtained for test users, JWT contains `sub` (user ID) claim, role resolved from `user_account` table per Authentication_Middleware_Specification.md
+  - Done when: Cognito User Pool configured, test users created for each role, JWTs can be obtained for test users, JWT contains `sub` (user ID) claim, role resolved from `user_account` table per Authentication_Middleware_Specification.md
 
 - [ ] **P0-T18: Audit logging service**
   - What: Implement audit logging to `audit_log` table for all state-changing operations. Log user_id, action, entity_type, entity_id, old/new values, timestamp.
   - Files: `src/shared/audit.py`
-  - Refs: `Code_Patterns_Specification.md` §7 (audit log helper pattern), `Observability_Specification.md` (audit logging rules, what gets audited), `Database_Schema_Specification.md` — `audit_log` (line 207), `Service_Interface_Contracts.md` line 505 (audit logging cross-cutting), `spec_1` Phase 0 item 4 (line 1311: "Implement audit logging and version registries")
+  - Refs: `Code_Patterns_Specification.md` §7 (audit log helper pattern), `Observability_Specification.md` (audit logging rules, what gets audited), `Database_Schema_Specification.md` — `audit_log` (line 207), `Service_Interface_Contracts.md` line 505 (audit logging cross-cutting), `spec_1` Phase 0 item 4 (line 1311: "Implement audit logging")
   - Depends on: P0-T08 (audit_log table), P0-T04 (PG connection), P0-T12 (AuthZ service), P0-T13 (Engagement service)
   - Done when: All AuthZ and Engagement service mutations produce audit log entries, log entries are queryable by entity
 
@@ -177,12 +191,12 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
 > Source: `agent_drift_prevention_strategy` plan, Option C (Hybrid)
 > Purpose: Review Phase 0 output, update Code Patterns Specification with anything learned, lock patterns before Phase 1
 
-**Prerequisite:** All Phase 0 tasks (P0-T01 through P0-T18) complete.
+**Prerequisite:** All Phase 0 tasks (P0-T01 through P0-T18, including P0-T09a and P0-T09b) complete.
 
 - [ ] **P0-CK1: Review Phase 0 code against Code Patterns Specification**
-  - What: Read every file produced in Phase 0 (`src/services/authz/`, `src/services/engagement/`, `src/api/routes/`, `src/api/dependencies/`, `src/shared/audit.py`, `src/shared/config/`, `src/shared/db/`, `src/shared/storage/`, `src/worker.py`, `src/shared/celery_app.py`). Compare against each of the 10 patterns in `Code_Patterns_Specification.md`. Document any deviations or patterns that emerged but were not specified.
+  - What: Read every file produced in Phase 0 (`src/services/authz/`, `src/services/engagement/`, `src/api/routes/`, `src/api/dependencies/`, `src/api/schemas/`, `src/shared/audit.py`, `src/shared/config/`, `src/shared/db/`, `src/shared/storage/`, `src/worker.py`, `src/shared/celery_app.py`). Compare against each of the 18 patterns in `Code_Patterns_Specification.md`. Document any deviations or patterns that emerged but were not specified.
   - Files: (read-only review)
-  - Refs: `Code_Patterns_Specification.md` (all 10 patterns)
+  - Refs: `Code_Patterns_Specification.md` (all 18 patterns)
   - Depends on: P0-T01 through P0-T18
   - Done when: Written report lists every deviation and every emergent pattern, with specific file:line citations
 
@@ -210,65 +224,65 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
 
 **Prerequisite:** All Phase 0 tasks complete AND Post-Phase 0 Checkpoint complete (P0-CK1 through P0-CK3 — Code Patterns Specification reviewed and locked).
 
-- [ ] **P1-T01: Asset domain migration**
-  - What: Alembic migration for Asset Hierarchy tables (13 tables) with RLS policies and indexes
-  - Files: `db/postgresql/migrations/versions/003_asset_domain.py`
-  - Refs: `Database_Schema_Specification.md` — Asset Hierarchy (13 tables per verification summary line 2826). Cross-ref spec_1 §3.2 Domain 1 (line 244)
-  - Depends on: P0-T08, P0-CK3 (pattern lock)
-  - Done when: All 13 asset tables created, FK constraints correct, indexes match DDL, RLS policies applied
+- [ ] **P1-T01: Asset domain migration (remaining)**
+  - What: Alembic migration for remaining Asset Hierarchy tables (10 tables: building, floor_plan, unit, unit_version, unit_existence_interval, unit_alias, calendar_day, property_amenity, unit_amenity, market_context) with RLS policies and indexes. Note: client, portfolio, property were created in Phase 0 (P0-T09a).
+  - Files: `db/postgresql/migrations/versions/005_asset_domain.py`
+  - Refs: `Database_Schema_Specification.md` — Domain 2 Asset Hierarchy. `Deployment_Roadmap.md` DDL Scope Per Phase (Phase 1: remaining Domain 2). Cross-ref spec_1 §3.2 Domain 1 (line 244)
+  - Depends on: P0-T09a, P0-CK3 (pattern lock)
+  - Done when: All 10 remaining asset tables created, FK constraints correct (building.property_id → property), indexes match DDL, RLS policies applied
 
 - [ ] **P1-T02: Resident and Lease domain migration**
   - What: Alembic migration for Resident & Lease tables (10 tables)
-  - Files: `db/postgresql/migrations/versions/004_resident_lease_domain.py`
+  - Files: `db/postgresql/migrations/versions/006_resident_lease_domain.py`
   - Refs: `Database_Schema_Specification.md` — Resident & Lease (10 tables per line 2827). Cross-ref spec_1 §3.2 Domain 2 (line 245)
   - Depends on: P1-T01
   - Done when: All 10 tables created, FK constraints correct, indexes match DDL
 
 - [ ] **P1-T03: Operations domain migration**
   - What: Alembic migration for Operations tables (15 tables)
-  - Files: `db/postgresql/migrations/versions/005_operations_domain.py`
+  - Files: `db/postgresql/migrations/versions/007_operations_domain.py`
   - Refs: `Database_Schema_Specification.md` — Operations (15 tables per line 2828). Cross-ref spec_1 §3.2 Domain 3 (line 246)
   - Depends on: P1-T01
   - Done when: All 15 tables created, FK constraints correct, indexes match DDL
 
 - [ ] **P1-T04: Demand domain migration**
   - What: Alembic migration for Demand (Leasing & CRM) tables (9 tables)
-  - Files: `db/postgresql/migrations/versions/006_demand_domain.py`
+  - Files: `db/postgresql/migrations/versions/008_demand_domain.py`
   - Refs: `Database_Schema_Specification.md` — Demand (9 tables per line 2829). Cross-ref spec_1 §3.2 Domain 4 (line 247)
   - Depends on: P1-T01
   - Done when: All 9 tables created, FK constraints correct, indexes match DDL
 
 - [ ] **P1-T05: Listing and Marketing domain migration**
   - What: Alembic migration for Listing & Marketing tables (13 tables)
-  - Files: `db/postgresql/migrations/versions/007_listing_marketing_domain.py`
+  - Files: `db/postgresql/migrations/versions/009_listing_marketing_domain.py`
   - Refs: `Database_Schema_Specification.md` — Listing & Marketing (13 tables per line 2830)
   - Depends on: P1-T01
   - Done when: All 13 tables created, FK constraints correct, indexes match DDL
 
 - [ ] **P1-T06: Market and Competition domain migration**
   - What: Alembic migration for Market & Competition tables (6 tables)
-  - Files: `db/postgresql/migrations/versions/008_market_competition_domain.py`
+  - Files: `db/postgresql/migrations/versions/010_market_competition_domain.py`
   - Refs: `Database_Schema_Specification.md` — Market & Competition (6 tables per line 2831). Cross-ref spec_1 §3.2 Domain 5 (line 248)
   - Depends on: P1-T01
   - Done when: All 6 tables created, FK constraints correct, indexes match DDL
 
 - [ ] **P1-T07: Field Evidence domain migration**
   - What: Alembic migration for Mystery Shop & Field Evidence (4 tables) + Technology Stack (2 tables) + Staffing & Programs (5 tables)
-  - Files: `db/postgresql/migrations/versions/009_field_evidence_domain.py`
+  - Files: `db/postgresql/migrations/versions/011_field_evidence_domain.py`
   - Refs: `Database_Schema_Specification.md` — Mystery Shop & Field Evidence (4, line 2832), Technology Stack (2, line 2833), Staffing & Programs (5, line 2835)
   - Depends on: P1-T01, P1-T02
   - Done when: All 11 tables created, FK constraints correct, indexes match DDL
 
-- [ ] **P1-T08: Assessment and Deliverables domain migration**
-  - What: Alembic migration for Assessment & Deliverables tables (15 tables) + Scoring Configuration (5 tables)
-  - Files: `db/postgresql/migrations/versions/010_assessment_scoring_domain.py`
-  - Refs: `Database_Schema_Specification.md` — Assessment & Deliverables (15, line 2834), Scoring Configuration (5, line 2836). Cross-ref spec_1 §3.2 Domain 6 (line 249)
+- [ ] **P1-T08: Assessment and Deliverables domain migration (remaining)**
+  - What: Alembic migration for remaining Assessment & Deliverables tables (7 tables: analysis_run, scorecard, score_result, finding, impact_estimate, contradiction, recommendation — `assessment` and `assessment_data_coverage` were created in Phase 0) + Scoring Configuration (5 tables) + Staffing domain (5 tables)
+  - Files: `db/postgresql/migrations/versions/012_assessment_scoring_domain.py`
+  - Refs: `Database_Schema_Specification.md` — Assessment & Deliverables Domain 10 (remaining 7), Scoring Configuration Domain 13 (5), Staffing Domain 12 (5). `Deployment_Roadmap.md` DDL Scope Per Phase (Phase 1)
   - Depends on: P1-T01, P1-T02, P1-T03
-  - Done when: All 20 tables created, FK constraints correct, indexes match DDL
+  - Done when: All 17 tables created, FK constraints correct (assessment FKs reference Phase 0 assessment table), indexes match DDL
 
 - [ ] **P1-T09: Workspace domain migration**
   - What: Alembic migration for Workspace (Studies/Reports) tables (10 tables: study, saved_query, result_snapshot, study_item, comparison_board, annotation, evidence_bundle, report, report_section, report_render)
-  - Files: `db/postgresql/migrations/versions/011_workspace_domain.py`
+  - Files: `db/postgresql/migrations/versions/013_workspace_domain.py`
   - Refs: `Database_Schema_Specification.md` — Domain 11 (line 2135). Tables: study, saved_query, result_snapshot, study_item, comparison_board, annotation, evidence_bundle, report, report_section, report_render (10 tables).
   - Depends on: P1-T08
   - Done when: All 10 Domain 11 tables created, FK constraints correct, indexes match DDL
@@ -276,7 +290,7 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
 - [ ] **P1-T10: Regenerate all Pydantic models**
   - What: Run `codegen/generate_models.py` against full DDL, copy all 14 domain modules to `src/shared/models/`
   - Files: All 14 files in `src/shared/models/` (asset.py, lease.py, operations.py, demand.py, marketing.py, competitive.py, field_evidence.py, assessment.py, scoring_config.py, workspace.py, infrastructure.py, raw_evidence.py, intake_snapshot.py, clickhouse_facts.py)
-  - Refs: `Project_Skeleton_Specification.md` §8.1 (lines 372-389, 14 domain modules), `rbv2-project.mdc` lines 148-153
+  - Refs: `Project_Skeleton_Specification.md` §8.1 (lines 372-389, 14 domain modules), `rbv2-project.mdc` lines 149-154
   - Depends on: P1-T01 through P1-T09
   - Done when: All 14 modules generated, 125 models total, 1,393 fields (per `Shared_Type_Definitions.md` lines 12-13)
 
@@ -346,7 +360,7 @@ Task-level implementation checklist for all 7 phases of the RBv2 Multifamily Pro
 - [ ] **P1-T20: Phase 1 integration tests**
   - What: Tests for adapters, entity resolution, E2E import pipeline, review queue
   - Files: `tests/unit/test_import_mapping.py`, `tests/unit/test_entity_resolution.py`, `tests/integration/test_import_pipeline.py`
-  - Refs: `phase-1-canonical-core.mdc` lines 76-79 (testing rules). `phase-0-foundations.mdc` line 60 (migration tests)
+  - Refs: `phase-1-canonical-core.mdc` lines 76-79 (testing rules). `phase-0-foundations.mdc` line 70 (migration tests)
   - Depends on: P1-T14 through P1-T19
   - Done when: Adapter tests with sample files pass, resolution scenarios tested (exact, alias, fuzzy, new, override), E2E import pipeline tested, review queue tested
 

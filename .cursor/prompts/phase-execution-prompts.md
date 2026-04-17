@@ -33,13 +33,14 @@ BEFORE WRITING ANY CODE, read these files in this order:
 10. specs/patterns/Development_Environment_Specification.md
 11. specs/patterns/Observability_Specification.md
 12. specs/platform/Project_Skeleton_Specification.md
-13. specs/platform/Database_Schema_Specification.md (Layer A raw evidence + tenancy/identity sections)
+13. specs/platform/Database_Schema_Specification.md (Layer A raw evidence + tenancy/identity + Domain 2 partial + Domain 10 partial)
 14. specs/platform/Service_Interface_Contracts.md (§1 AuthZ, §2 Engagement)
 15. planning/Implementation_Tasks.md (Phase 0 section)
+16. planning/Deployment_Roadmap.md (Phase 0 section, DDL Scope Per Phase)
 
 After reading all files, identify the first incomplete task (P0-T01 or the first task not marked [x]) and begin implementation following the Execution Protocol.
 
-Work through tasks sequentially: P0-T01, P0-T02, ..., P0-T18, then P0-CK1, P0-CK2, P0-CK3.
+Work through tasks sequentially: P0-T01, P0-T02, ..., P0-T09, P0-T09a, P0-T09b, P0-T10, ..., P0-T18, then P0-CK1, P0-CK2, P0-CK3.
 
 After completing all tasks and checkpoints, produce a Phase 0 Gate Report per specs/patterns/Phase_Gate_Specifications.md and present it for approval.
 ```
@@ -51,7 +52,7 @@ After completing all tasks and checkpoints, produce a Phase 0 Gate Report per sp
 ```
 You are implementing Phase 1 (Canonical Core) of the RBv2 platform.
 
-PREREQUISITE: Phase 0 must be complete. Verify by checking that P0-T01 through P0-T18 and P0-CK1 through P0-CK3 are all marked [x] in planning/Implementation_Tasks.md.
+PREREQUISITE: Phase 0 must be complete. Verify by checking that P0-T01 through P0-T18 (including P0-T09a and P0-T09b) and P0-CK1 through P0-CK3 are all marked [x] in planning/Implementation_Tasks.md.
 
 BEFORE WRITING ANY CODE, read these files:
 1. .cursor/rules/agent-behavior.mdc

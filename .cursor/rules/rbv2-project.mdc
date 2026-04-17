@@ -27,13 +27,14 @@ When information conflicts, the document higher in this list wins. Never invent 
 | 11 | `Database_Schema_Specification.md` | `specs/platform/` | Migration-ready DDL for all PostgreSQL (110 tables) and ClickHouse (15 fact tables) — 125 total, 1393 columns |
 | 12 | `Shared_Type_Definitions.md` | `specs/platform/` | Pydantic model reference — generated from DDL via `codegen/generate_models.py` (14 domain modules) |
 | 13 | `Service_Interface_Contracts.md` | `specs/platform/` | Service interfaces for 15 services (Phases 0-6), data shapes reference `src/shared/models/`, error conditions |
-| 14 | `Data_Onramp_Specification.md` | `specs/data/` | Two data streams, 4 intake channels, vendor adapters, column mapping, review queue, raw evidence pipeline |
-| 15 | `scoring_config.json` | `config/` | Machine-readable scoring structure (12 areas, 65 items, 315 sub-items, weights, tiers) |
-| 16 | `Code_Patterns_Specification.md` | `specs/patterns/` | Exact code templates for services, routes, repositories, exceptions, tests, Celery tasks, audit logging |
-| 17 | `API_Design_Specification.md` | `specs/patterns/` | REST API conventions: URL patterns, pagination, error shapes, auth headers, OpenAPI |
-| 18 | `Authentication_Middleware_Specification.md` | `specs/auth/` | JWT claims schema, FastAPI dependency chain, tenant resolution flow, CORS |
-| 19 | `Infrastructure_Specification.md` | `specs/patterns/` | Environment variables, Docker Compose, S3 bucket structure, secrets management, production topology |
-| 20 | `Observability_Specification.md` | `specs/patterns/` | Structured logging format, correlation IDs, health checks, audit logging, monitoring metrics |
+| 14 | `Deployment_Roadmap.md` | `planning/` | Phase scope authority: which services, DDL domains, and capabilities belong to each phase |
+| 15 | `Data_Onramp_Specification.md` | `specs/data/` | Two data streams, 4 intake channels, vendor adapters, column mapping, review queue, raw evidence pipeline |
+| 16 | `scoring_config.json` | `config/` | Machine-readable scoring structure (12 areas, 65 items, 315 sub-items, weights, tiers) |
+| 17 | `Code_Patterns_Specification.md` | `specs/patterns/` | Exact code templates for services, routes, repositories, exceptions, tests, Celery tasks, audit logging |
+| 18 | `API_Design_Specification.md` | `specs/patterns/` | REST API conventions: URL patterns, pagination, error shapes, auth headers, OpenAPI |
+| 19 | `Authentication_Middleware_Specification.md` | `specs/auth/` | JWT claims schema, FastAPI dependency chain, tenant resolution flow, CORS |
+| 20 | `Infrastructure_Specification.md` | `specs/patterns/` | Environment variables, Docker Compose, S3 bucket structure, secrets management, production topology |
+| 21 | `Observability_Specification.md` | `specs/patterns/` | Structured logging format, correlation IDs, health checks, audit logging, monitoring metrics |
 
 Specification files are organized under `specs/` by domain. Configuration files live in `config/`. Planning documents live in `planning/`.
 

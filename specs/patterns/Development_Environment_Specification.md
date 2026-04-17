@@ -8,7 +8,7 @@ Provides the exact Docker Compose configuration, Alembic workflow, ClickHouse mi
 
 - `Infrastructure_Specification.md` — Service definitions, ports, env vars, S3 bucket structure
 - `Project_Skeleton_Specification.md` lines 70–71 — `docker/docker-compose.yml`, `docker/docker-compose.test.yml`
-- `phase-0-foundations.mdc` lines 40–50 — Technology constraints
+- `phase-0-foundations.mdc` lines 46–57 — Technology constraints
 - `Implementation_Tasks.md` — P0-T02 (Docker Compose), P0-T07 (Alembic), P0-T10 (ClickHouse schema)
 - `Database_Schema_Specification.md` — All DDL (110 PostgreSQL tables, 15 ClickHouse tables)
 
@@ -183,11 +183,11 @@ Migrations are manually numbered with a 3-digit prefix:
 {NNN}_{descriptive_name}.py
 ```
 
-Phase 0 migrations: `001_` through `002_`.
-Phase 1 migrations: `003_` through `011_`.
+Phase 0 migrations: `001_` through `004_`.
+Phase 1 migrations: `005_` through `013_`.
 Phase 2+ migrations continue sequentially.
 
-Source: `Implementation_Tasks.md` — P0-T08 (`001_`), P0-T09 (`002_`), P1-T01 (`003_`), etc.
+Source: `Implementation_Tasks.md` — P0-T08 (`001_`), P0-T09 (`002_`), P0-T09a (`003_`), P0-T09b (`004_`), P1-T01 (`005_`), etc.
 
 ### Migration File Template
 
@@ -248,6 +248,103 @@ def downgrade() -> None:
 4. Never use `op.execute()` with dynamic user input.
 5. Test migrations with `alembic upgrade head && alembic downgrade base && alembic upgrade head` to verify round-trip.
 
+### `alembic.ini` Template
+
+File: `db/postgresql/migrations/alembic.ini`
+
+```ini
+[alembic]
+script_location = db/postgresql/migrations
+sqlalchemy.url = postgresql+asyncpg://postgres:postgres@localhost:5432/partners
+
+[loggers]
+keys = root,sqlalchemy,alembic
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = WARN
+handlers = console
+
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
+
+[logger_alembic]
+level = INFO
+handlers =
+qualname = alembic
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(levelname)-5.5s [%(name)s] %(message)s
+datefmt = %H:%M:%S
+```
+
+### `env.py` Template
+
+File: `db/postgresql/migrations/env.py`
+
+```python
+import asyncio
+from logging.config import fileConfig
+
+from alembic import context
+from sqlalchemy.ext.asyncio import create_async_engine
+
+from src.shared.config.settings import settings
+
+config = context.config
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+
+def run_migrations_offline() -> None:
+    context.configure(
+        url=settings.database_url,
+        target_metadata=None,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+    )
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def do_run_migrations(connection) -> None:
+    context.configure(connection=connection, target_metadata=None)
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+async def run_migrations_online() -> None:
+    connectable = create_async_engine(settings.database_url)
+    async with connectable.connect() as connection:
+        await connection.run_sync(do_run_migrations)
+    await connectable.dispose()
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    asyncio.run(run_migrations_online())
+```
+
+### env.py Rules
+
+- `env.py` reads the database URL from `Settings` (Code_Patterns_Specification.md §9), not from alembic.ini. The sqlalchemy.url key in alembic.ini is a fallback only.
+- The async pattern (`create_async_engine` + `run_sync`) is required because the application uses `asyncpg`.
+- `target_metadata=None` because we use hand-written migrations (not autogenerate).
+
 ---
 
 ## 4. ClickHouse Migrations
@@ -266,7 +363,7 @@ db/
       ...
 ```
 
-Source: `phase-0-foundations.mdc` line 44, `Implementation_Tasks.md` — P0-T10 (`001_`), P2-T14 (`002_`), P3-T21 (`003_`).
+Source: `phase-0-foundations.mdc` line 52, `Implementation_Tasks.md` — P0-T10 (`001_`), P2-T14 (`002_`), P3-T21 (`003_`).
 
 ### Migration Execution
 
@@ -401,7 +498,103 @@ docker compose -f docker/docker-compose.yml down -v
 ## Authoritative Sources
 
 - `Infrastructure_Specification.md` — Service definitions, ports, env vars, S3 structure, production topology
-- `Project_Skeleton_Specification.md` — Repository structure, directory layout
+- `Project_Skeleton_Specification.md` — Repository structure, directory layout, CI/CD steps
 - `phase-0-foundations.mdc` — Technology constraints (Alembic, ClickHouse migrations)
 - `Implementation_Tasks.md` — Migration numbering per phase
 - `Database_Schema_Specification.md` — All DDL for migrations
+
+---
+
+## 7. GitHub Actions CI Workflow
+
+Source: `Project_Skeleton_Specification.md` §7.1 (lines 384-394)
+
+File: `.github/workflows/ci.yml`
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --frozen
+      - run: uv run ruff check src/ tests/
+      - run: uv run ruff format --check src/ tests/
+
+  test-unit:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --frozen
+      - run: uv run pytest tests/unit/ -v
+
+  test-integration:
+    runs-on: ubuntu-latest
+    needs: lint
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: partners_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+      clickhouse:
+        image: clickhouse/clickhouse-server
+        ports:
+          - 8123:8123
+        options: >-
+          --health-cmd "clickhouse-client --query 'SELECT 1'"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --frozen
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/partners_test
+        run: uv run alembic upgrade head
+      - name: Run integration tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/partners_test
+          CLICKHOUSE_HOST: localhost
+          CLICKHOUSE_PORT: 8123
+          REDIS_URL: redis://localhost:6379/0
+        run: uv run pytest tests/integration/ -v
+```
+
+### Rules
+
+- Lint runs first; test jobs depend on lint passing.
+- Unit tests run without external services (all deps are mocked).
+- Integration tests use GitHub Actions service containers (not testcontainers) for consistency.
+- Branch protection on `main` requires CI to pass before merge.
+- `uv sync --frozen` ensures reproducible installs from the lockfile.

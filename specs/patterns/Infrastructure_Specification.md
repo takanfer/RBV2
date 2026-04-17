@@ -8,7 +8,7 @@ Defines the environment configuration, container topology, storage layout, and s
 - `ADR-014-task-queue.md` — Celery + Redis, worker at `src/worker.py`, tasks co-located with services
 - `Project_Skeleton_Specification.md` — `docker/docker-compose.yml` (line 70), `.env` (line 62), `docker/docker-compose.test.yml` (line 71)
 - `Implementation_Tasks.md` — P0-T02 (Docker Compose), P0-T03 (environment config), P0-T06 (S3 wrapper)
-- `phase-0-foundations.mdc` — technology constraints (lines 40-50)
+- `phase-0-foundations.mdc` — technology constraints (lines 46-57)
 
 ---
 
@@ -39,7 +39,7 @@ Provides isolated database instances for CI integration tests. Same images, diff
 
 ## Environment Variables
 
-Source: `phase-0-foundations.mdc` line 48, Implementation_Tasks P0-T03
+Source: `phase-0-foundations.mdc` line 54, Implementation_Tasks P0-T03
 
 All configuration is via environment variables loaded through Pydantic Settings (`src/shared/config/settings.py`). The `.env` file is used for local development only and is not committed to git.
 
@@ -62,9 +62,12 @@ All configuration is via environment variables loaded through Pydantic Settings 
 | `S3_BUCKET_REPORTS` | str | `partners-reports` | Bucket for rendered reports |
 | `REDIS_URL` | str | `redis://localhost:6379/0` | Redis connection for Celery broker |
 | `CELERY_RESULT_BACKEND` | str | `redis://localhost:6379/1` | Redis DB for Celery results |
-| `AUTH_ISSUER_URL` | str | *(none)* | Auth provider JWT issuer URL |
-| `AUTH_AUDIENCE` | str | *(none)* | Auth provider JWT audience |
-| `AUTH_JWKS_URL` | str | *(none)* | Auth provider JWKS endpoint for key retrieval |
+| `AUTH_ISSUER_URL` | str | *(none)* | Cognito issuer URL (computed: `https://cognito-idp.{COGNITO_REGION}.amazonaws.com/{COGNITO_USER_POOL_ID}`) |
+| `AUTH_AUDIENCE` | str | *(none)* | Cognito App Client ID (same as `COGNITO_APP_CLIENT_ID`) |
+| `AUTH_JWKS_URL` | str | *(none)* | Cognito JWKS URL (computed: `{AUTH_ISSUER_URL}/.well-known/jwks.json`) |
+| `COGNITO_USER_POOL_ID` | str | *(none)* | AWS Cognito User Pool ID (e.g., `us-east-1_AbCdEfGhI`) |
+| `COGNITO_REGION` | str | *(none)* | AWS region for Cognito User Pool (e.g., `us-east-1`) |
+| `COGNITO_APP_CLIENT_ID` | str | *(none)* | Cognito App Client ID for this application |
 | `LOG_LEVEL` | str | `INFO` | Structured logging level |
 | `LOG_FORMAT` | str | `json` | Log output format (`json` for production, `console` for local dev) |
 | `ENVIRONMENT` | str | `development` | `development`, `staging`, or `production` |
@@ -84,7 +87,7 @@ The `.env.example` file at repo root contains all variables with local-dev defau
 |-------------|-----------|-----------|
 | Database passwords | `.env` file | AWS Secrets Manager → ECS env vars |
 | S3 credentials | `.env` file (MinIO defaults) | IAM roles (no explicit keys) |
-| Auth provider config | `.env` file | AWS Secrets Manager → ECS env vars |
+| Auth provider config | `.env` file | AWS Secrets Manager → ECS env vars (Cognito User Pool ID, region, app client ID) |
 | Redis password | None (local Redis has no auth) | AWS Secrets Manager → ECS env vars |
 | API keys (future) | `.env` file | AWS Secrets Manager → ECS env vars |
 
@@ -93,13 +96,13 @@ The `.env.example` file at repo root contains all variables with local-dev defau
 - Never commit `.env` to git. `.env` is in `.gitignore`.
 - Never hardcode secrets in source code.
 - Production secrets are retrieved from AWS Secrets Manager at deployment time and injected as environment variables into ECS task definitions.
-- All environment variables have local-dev defaults in the Pydantic Settings class so the app starts with `docker compose up` and no `.env` file (see `Code_Patterns_Specification.md` §9). Auth variables (`AUTH_ISSUER_URL`, `AUTH_AUDIENCE`, `AUTH_JWKS_URL`) have empty-string defaults and are validated at middleware initialization, not at settings load.
+- All environment variables have local-dev defaults in the Pydantic Settings class so the app starts with `docker compose up` and no `.env` file (see `Code_Patterns_Specification.md` §9). Cognito variables (`COGNITO_USER_POOL_ID`, `COGNITO_REGION`, `COGNITO_APP_CLIENT_ID`) have empty-string defaults and are validated at middleware initialization, not at settings load.
 
 ---
 
 ## S3 Bucket Structure
 
-Source: `phase-0-foundations.mdc` line 42 (S3 for raw evidence), Implementation_Tasks P0-T06
+Source: `phase-0-foundations.mdc` line 50 (S3 for raw evidence), Implementation_Tasks P0-T06
 
 ### Buckets
 

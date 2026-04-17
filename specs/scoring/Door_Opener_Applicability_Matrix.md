@@ -8,7 +8,7 @@ Maps every scored item to whether it can be scored in a Door Opener (public-data
 - Item names and types: `Computation_Rules_DATA.json`
 - Data sources per item/sub-item: `Computation_Rules_DATA.json`
 - Door Opener badge classification: `Audit_Workbook_Specification.md` (lines 23-25, section badges throughout)
-- Scoring structure: `Scoring_Model_Specification.md`, `rbv2-project.mdc` lines 56-58
+- Scoring structure: `Scoring_Model_Specification.md`, `rbv2-project.mdc` lines 57-59
 
 ---
 
@@ -205,5 +205,5 @@ The 11 items scorable in a Door Opener assessment:
 | `Audit_Workbook_Specification.md` §2A-2E | [DOOR OPENER] Pre-Audit Digital Review sections |
 | `Audit_Workbook_Specification.md` §10A-10K | [DOOR OPENER] Comp data collection sections |
 | `Audit_Workbook_Specification.md` §4, §5, §6, §7, §8, §9 | [FULL ENGAGEMENT] sections (mystery shop, site visit, field audit, management interview, tour observation, financial data) |
-| `rbv2-project.mdc` lines 56-58 | Item type counts: 20 Data, 38 Checklist, 7 Comparative |
+| `rbv2-project.mdc` lines 57-59 | Item type counts: 20 Data, 38 Checklist, 7 Comparative |
 | `Scoring_Weights_Final_Update.json` | 12 area weights, 65 item weights, 315 sub-item budgets |

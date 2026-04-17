@@ -138,6 +138,9 @@ Locked technical decisions, monorepo structure, naming conventions, toolchain, t
 │   │   └── routes/                  # FastAPI routers
 │   │       ├── __init__.py
 │   │       └── ...                  # One module per domain
+│   ├── schemas/                     # Shared API response schemas
+│   │   ├── __init__.py
+│   │   └── pagination.py           # PaginatedResponse model
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── base_exceptions.py       # ServiceError base class (all services import)
@@ -201,7 +204,8 @@ Locked technical decisions, monorepo structure, naming conventions, toolchain, t
 │   │   └── authz/                   # AuthZ / Tenant Policy
 │   │       ├── __init__.py
 │   │       ├── service.py
-│   │       └── repository.py
+│   │       ├── repository.py
+│   │       └── exceptions.py
 │   ├── scoring_config/
 │   │   └── scoring_config.json      # Machine-readable scoring rubric
 │   └── worker.py                    # Celery worker entry point
